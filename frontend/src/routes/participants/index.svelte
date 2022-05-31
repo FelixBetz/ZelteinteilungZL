@@ -26,8 +26,9 @@
 		IColumn.friends
 	];
 	let participants: Participant[] = [];
-
+	let serachString = '';
 	let sortBy = { col: IColumn, ascending: true };
+
 	function numberSort(a: number, b: number) {
 		if (sortBy.ascending == true) {
 			let temp = a;
@@ -80,8 +81,6 @@
 	onMount(() => {
 		getParticipants();
 	});
-
-	let serachString = '';
 
 	function searchParticipant(p: Participant) {
 		return (

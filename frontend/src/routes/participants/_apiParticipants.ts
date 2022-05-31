@@ -21,7 +21,6 @@ function getAge(birthString: string) {
 }
 
 export async function apiGetParticipants(): Promise<Participant[]> {
-	// locals.userid comes from src/hooks.js
 	const response = await fetch(base + '/participants')
 		.then((res) => res.json())
 		.then((res: Participant[]) => {
