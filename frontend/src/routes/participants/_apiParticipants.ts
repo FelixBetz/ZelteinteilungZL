@@ -38,4 +38,3 @@ export async function apiGetParticipants(): Promise<Participant[]> {
 
 	return response;
 }
-
