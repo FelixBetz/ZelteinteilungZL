@@ -16,8 +16,7 @@ export async function apiGetParticipants(): Promise<Participant[]> {
 	const response = await fetch(base + "/participants")
 		.then(res => res.json())
 		.then((res: Participant[]) => {
-			console.log(res[0]);
-			let b: Participant[] = res; console.log(b)
+			let b: Participant[] = res;
 			return b;
 		})
 		.catch((error: Error) => {
