@@ -12,15 +12,10 @@
 	let isOpen = false;
 
 	function handleUpdate(event: CustomEvent) {
-		console.log(typeof event);
-		console.log(event);
-		console.log('tsd');
-
 		isOpen = event.detail.isOpen;
 	}
 </script>
 
-{isOpen}
 <Navbar color="dark" dark expand="md">
 	<NavbarBrand href="/">LaleControl</NavbarBrand>
 	<NavbarToggler on:click={() => (isOpen = !isOpen)} />
