@@ -23,6 +23,7 @@ def parse_input_csv():
     with open(INPUT_FILE, newline="") as csvfile:
 
         spamreader = csv.reader(csvfile, delimiter=";", quotechar="|")
+        id = 0
         for i, row in enumerate(spamreader):
 
             if 1 <= i < 6:
@@ -55,12 +56,14 @@ def parse_input_csv():
                 loc_friends = []
 
                 loc_participant = Participant(
+                    id,
                     loc_lastname,
                     loc_firstname,
                     loc_zipcode,
                     loc_village,
                     loc_birthdate,
                 )
+                id += 1
 
                 # parse pesons
                 for friend in [row[19], row[20]]:

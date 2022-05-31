@@ -6,12 +6,14 @@ class Participant:
 
     def __init__(
         self,
+        arg_id,
         arg_lastname,
         arg_firstname,
         arg_zipcode,
         arg_village,
         arg_birthdate,
     ):
+        self.id = arg_id
         self.lastname = arg_lastname
         self.firstname = arg_firstname
         self.zipcode = arg_zipcode
