@@ -3,7 +3,7 @@
 
 	import type { Participant } from './_apiParticipants';
 
-	import { Table, Button } from 'sveltestrap/src';
+	import { Table, Button, Input } from 'sveltestrap/src';
 	import { onMount } from 'svelte';
 
 	enum IColumn {
@@ -58,22 +58,16 @@
 			switch (column) {
 				case IColumn.id:
 					return numberSort(a.id, b.id);
-					break;
 				case IColumn.zipCode:
 					return numberSort(a.zipcode, b.zipcode);
-					break;
 				case IColumn.age:
 					return numberSort(a.age, b.age);
-					break;
 				case IColumn.firstName:
 					return textSort(a.firstname, b.firstname);
-					break;
 				case IColumn.lastName:
 					return textSort(a.lastname, b.lastname);
-					break;
 				case IColumn.village:
 					return textSort(a.village, b.village);
-					break;
 				default:
 					return 0;
 			}
@@ -87,19 +81,39 @@
 		getParticipants();
 	});
 
-	//let participants:
+	let serachString = '';
+
+	function searchParticipant(p: Participant) {
+		return (
+			p.firstname.toLowerCase().includes(serachString.toLowerCase()) ||
+			p.lastname.toLowerCase().includes(serachString.toLowerCase()) ||
+			p.zipcode.toString().toLowerCase().includes(serachString.toLowerCase()) ||
+			p.village.toLowerCase().includes(serachString.toLowerCase())
+		);
+	}
+
 	async function getParticipants() {
 		participants = await apiGetParticipants();
+		participants = participants.filter((p: Participant) => searchParticipant(p));
 	}
 </script>
 
 <Button on:click={getParticipants} color="primary">Refresh</Button>
 
+<Input
+	bind:value={serachString}
+	on:input={getParticipants}
+	type="search"
+	placeholder="Search"
+	class="ms-auto w-auto"
+	style="margin-right: 20px"
+/>
+
 <Table striped data-toggle="table" data-search="true" data-strict-search="true">
 	<thead>
 		<tr>
-			{#each columns as column, i}
-				<th on:click={() => clickSortTable(columns[i])}>{columns[i]}</th>
+			{#each columns as column}
+				<th on:click={() => clickSortTable(column)}>{column}</th>
 			{/each}
 		</tr>
 	</thead>

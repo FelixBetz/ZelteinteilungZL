@@ -7,18 +7,16 @@ export interface Participant {
 	village: string;
 	zipcode: number;
 	age: number;
-
 }
 
 const base = 'http://127.0.0.1:8080/api';
 
-
 function getAge(birthString: string) {
-	let today = new Date();
-	let birthDate = new Date(birthString);
+	const today = new Date();
+	const birthDate = new Date(birthString);
 
-	let diffMilliseconds = today.getTime() - birthDate.getTime();
-	let age = diffMilliseconds / 1000 / 3600 / 24 / 365;
+	const diffMilliseconds = today.getTime() - birthDate.getTime();
+	const age = diffMilliseconds / 1000 / 3600 / 24 / 365;
 	return age;
 }
 
