@@ -9,10 +9,10 @@
 	<slot />
 </main>
 
+<!-- todo
 <footer>
 	<p>visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to learn SvelteKit</p>
-</footer>
-
+</footer>-->
 <style>
 	main {
 		flex: 1;
