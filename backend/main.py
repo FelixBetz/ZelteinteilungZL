@@ -11,7 +11,7 @@ from flask_cors import CORS
 from participant import Participant
 
 
-INPUT_FILE = "input.csv"
+INPUT_FILE = "..\input.csv"
 participants = []
 
 app = Flask(__name__)
