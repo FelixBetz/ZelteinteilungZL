@@ -3,7 +3,7 @@
 	import type { Participant } from '../participants/_apiParticipants';
 	import { onMount } from 'svelte';
 	import { Col, Row, CardBody, CardHeader, CardTitle } from 'sveltestrap/src';
-	import Tent from './_tent.svelte';
+	import Tent from './_tentParticipant.svelte';
 
 	let participants: Participant[] = [];
 
@@ -98,7 +98,7 @@
 								<Row>
 									{#each b.items as item, itemIndex}
 										<Tent
-											participantName={participants[item].firstname}
+											participant={participants[item]}
 											on:dragstart={(event) => dragStart(event, basketIndex, itemIndex)}
 										/>
 									{/each}
@@ -127,7 +127,7 @@
 				<Row>
 					{#each baskets[0].items as item, itemIndex}
 						<Tent
-							participantName={participants[item].firstname}
+							participant={participants[item]}
 							on:dragstart={(event) => dragStart(event, 0, itemIndex)}
 						/>
 					{/each}
