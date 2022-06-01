@@ -1,4 +1,4 @@
-export interface Participant {
+interface Participant {
 	birthdate: string[];
 	firstname: string;
 	friends: string[];
@@ -9,26 +9,61 @@ export interface Participant {
 	age: number;
 }
 
-const base = 'http://127.0.0.1:8080/api';
+export class TentParticipant {
+	public age = 0;
+	constructor(
+		public id: number,
+		public firstname: string,
+		public lastname: string,
+		public zipcode: number,
+		public village: string,
+		public birthdateStr: string,
+		public friends: string[]
+	) {
+		this.calculateAge();
+	}
 
-function getAge(birthString: string) {
-	const today = new Date();
-	const birthDate = new Date(birthString);
+	private calculateAge() {
+		const today = new Date();
+		const birthDate = new Date(this.birthdateStr);
 
-	const diffMilliseconds = today.getTime() - birthDate.getTime();
-	const age = diffMilliseconds / 1000 / 3600 / 24 / 365;
-	return age;
+		const diffMilliseconds = today.getTime() - birthDate.getTime();
+		this.age = diffMilliseconds / 1000 / 3600 / 24 / 365;
+	}
+
+	public getAgeOneDecimal() {
+		return Math.round(this.age * 10) / 10;
+	}
+	public getAgeTwoDecimal() {
+		return Math.round(this.age * 100) / 100;
+	}
+
+	public getFullname() {
+		return this.firstname + ' ' + this.lastname;
+	}
 }
 
-export async function apiGetParticipants(): Promise<Participant[]> {
+const base = 'http://127.0.0.1:8080/api';
+
+export async function apiGetParticipants(): Promise<TentParticipant[]> {
 	const response = await fetch(base + '/participants')
 		.then((res) => res.json())
 		.then((res: Participant[]) => {
-			const b: Participant[] = res;
-			for (let i = 0; i < b.length; i++) {
-				b[i].age = getAge(b[i].birthdate[0]);
+			const ret: TentParticipant[] = [];
+			for (let i = 0; i < res.length; i++) {
+				const p = new TentParticipant(
+					res[i].id,
+					res[i].firstname,
+					res[i].lastname,
+					res[i].zipcode,
+					res[i].village,
+					res[i].birthdate[0],
+					res[i].friends
+				);
+				ret.push(p);
 			}
-			return b;
+
+			return ret;
 		})
 		.catch((error: Error) => {
 			console.error(error);

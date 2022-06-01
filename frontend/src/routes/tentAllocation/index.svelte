@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { apiGetParticipants } from '../participants/_apiParticipants';
-	import type { Participant } from '../participants/_apiParticipants';
+	import type { TentParticipant } from '../participants/_apiParticipants';
 	import { onMount } from 'svelte';
 	import { Col, Row, CardBody, CardHeader, CardTitle } from 'sveltestrap/src';
 	import Tent from './_tentParticipant.svelte';
 
-	let participants: Participant[] = [];
+	let participants: TentParticipant[] = [];
 
 	interface Basket {
 		name: string;
