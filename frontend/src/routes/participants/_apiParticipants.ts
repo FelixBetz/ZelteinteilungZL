@@ -31,7 +31,7 @@ export async function apiGetParticipants(): Promise<Participant[]> {
 			return b;
 		})
 		.catch((error: Error) => {
-			console.log(error);
+			console.error(error);
 			return [];
 		});
 

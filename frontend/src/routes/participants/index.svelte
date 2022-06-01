@@ -97,6 +97,9 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Stübis</title>
+</svelte:head>
 <Button on:click={getParticipants} color="primary">Refresh</Button>
 
 <Input

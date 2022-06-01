@@ -28,7 +28,7 @@
 				<NavLink href="/participants">Stübis</NavLink>
 			</NavItem>
 			<NavItem>
-				<NavLink href="/tentAlocation">Zelteinteilung</NavLink>
+				<NavLink href="/tentAllocation">Zelteinteilung</NavLink>
 			</NavItem>
 		</Nav>
 	</Collapse>
