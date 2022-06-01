@@ -30,6 +30,9 @@
 			<NavItem>
 				<NavLink href="/tentAllocation">Zelteinteilung</NavLink>
 			</NavItem>
+			<NavItem>
+				<NavLink href="/test">Test</NavLink>
+			</NavItem>
 		</Nav>
 	</Collapse>
 </Navbar>

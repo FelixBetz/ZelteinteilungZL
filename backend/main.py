@@ -4,11 +4,19 @@
 import csv
 from datetime import datetime
 import inspect
+from pydoc import doc
+
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 from participant import Participant
+
+import os
+from mailmerge import MailMerge
+from datetime import date
+import subprocess
+from docx2pdf import convert
 
 
 INPUT_FILE = r"..\input.csv"
@@ -106,6 +114,58 @@ def get_participant():
         print("ERROR: could not parse id")
 
     return jsonify(ret)
+
+
+@app.route("/api/test", methods=["POST"])
+def merge_docx():
+    """returns all participants as json"""
+
+    print(request.form.get("data"))
+
+    TEMPLATE_FILE = r"..\template.docx"
+    THUNDERBIRD_PATH = "C:\\Program Files (x86)\\Mozilla Thunderbird\\thunderbird.exe"
+
+    user = {"name": "Felix", "mail": "betz.felix@web.de"}
+    # return jsonify("ok")
+    output_dir = "..\\"
+    output_name = user["name"]
+    output_docx = output_name + ".docx"
+    output_pdf = output_name + ".pdf"
+
+    document = MailMerge(TEMPLATE_FILE)
+    print(document.get_merge_fields())
+    document.merge(Name=user["name"])
+    document.write(output_dir + output_docx)
+    convert(output_dir + output_docx)
+
+    subject = "Anfrage Leitungsteam"
+    inhalt = (
+        "<p>Hallo "
+        + user["name"]
+        + ",</br>Hast du Lust auf Zeltlager?</br> Viele Grüße Felix Betz</p>"
+    )
+    anhang = os.getcwd() + "\\..\\" + output_pdf
+
+    parameterliste = (
+        THUNDERBIRD_PATH
+        + " -compose "
+        + "to='"
+        + user["mail"]
+        + "',"
+        + "subject='"
+        + subject
+        + "',"
+        + "body='"
+        + inhalt
+        + "',"
+        + "attachment='"
+        + anhang
+        + "'"
+    )
+
+    subprocess.Popen(parameterliste)
+
+    return jsonify("ok")
 
 
 if __name__ == "__main__":
