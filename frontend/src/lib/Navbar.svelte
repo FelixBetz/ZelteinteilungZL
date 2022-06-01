@@ -16,7 +16,7 @@
 	}
 </script>
 
-<Navbar color="dark" dark expand="md">
+<Navbar color="dark" dark expand="md" fixed="top" height="50px">
 	<NavbarBrand href="/">LaleControl</NavbarBrand>
 	<NavbarToggler on:click={() => (isOpen = !isOpen)} />
 	<Collapse {isOpen} navbar expand="md" on:update={handleUpdate}>
