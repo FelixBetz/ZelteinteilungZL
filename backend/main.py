@@ -26,7 +26,7 @@ def parse_input_csv():
         id = 0
         for i, row in enumerate(spamreader):
 
-            if 1 <= i < 6:
+            if 1 <= i:
 
                 loc_lastname = row[3]
                 loc_firstname = row[4]
