@@ -2,10 +2,8 @@
 	import { apiGetParticipants } from '../participants/_apiParticipants';
 	import type { TentParticipant } from '../participants/_apiParticipants';
 	import { onMount } from 'svelte';
-	import { Col, Row, CardBody, CardHeader, CardTitle } from 'sveltestrap/src';
+	import { Col, Row, CardBody, CardHeader, CardTitle, Button } from 'sveltestrap/src';
 	import Tent from './_tentParticipant.svelte';
-
-	let participants: TentParticipant[] = [];
 
 	interface Basket {
 		name: string;
@@ -19,7 +17,7 @@
 		}
 	];
 	const numTents = 3;
-
+	let participants: TentParticipant[] = [];
 	for (let i = 0; i < numTents; i++) {
 		baskets.push({ name: 'Zelt ' + (i + 1), items: [] });
 	}
@@ -72,13 +70,20 @@
 <svelte:head>
 	<title>Zelteinteilung</title>
 </svelte:head>
-
-<Row style="margin: 10px">
+<Row style="padding: 10px;">
+	<Col>
+		<Button color="primary">Test</Button>
+		<Button color="primary">Test</Button>
+		<Button color="primary">Test</Button>
+		<Button color="primary">Test</Button>
+	</Col>
+</Row>
+<Row>
 	<Col sm="8">
 		<Row>
 			{#each baskets as b, basketIndex}
 				{#if basketIndex > 0}
-					<Col sm="6" style="padding:5px">
+					<Col sm="6">
 						<div
 							class="card"
 							class:hovering={hoveringOverBasket === b.name}
@@ -90,6 +95,7 @@
 									event.preventDefault();
 								}
 							}}
+							style="margin: 10px"
 						>
 							<CardHeader>
 								<CardTitle>Zelt {basketIndex}</CardTitle>
@@ -119,6 +125,7 @@
 			on:dragleave={() => (hoveringOverBasket = '')}
 			on:drop={(event) => drop(event, 0)}
 			on:dragover={(event) => event.preventDefault()}
+			style="margin: 10px"
 		>
 			<CardHeader>
 				<CardTitle>Backlog</CardTitle>
