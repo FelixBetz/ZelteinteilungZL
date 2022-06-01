@@ -6,7 +6,7 @@
 
 <Navbar />
 
-<main>
+<main style="margin-top: 50px;">
 	<slot />
 </main>
 

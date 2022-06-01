@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { apiGetParticipants } from './_apiParticipants';
 
-	import type { Participant } from './_apiParticipants';
+	import type { TentParticipant } from './_apiParticipants';
 
 	import { Table, Button, Input } from 'sveltestrap/src';
 	import { onMount } from 'svelte';
@@ -25,7 +25,7 @@
 		IColumn.age,
 		IColumn.friends
 	];
-	let participants: Participant[] = [];
+	let participants: TentParticipant[] = [];
 	let serachString = '';
 	let sortBy = { col: IColumn, ascending: true };
 
@@ -55,7 +55,7 @@
 		}
 	}
 	function clickSortTable(column: IColumn) {
-		let sort = (a: Participant, b: Participant) => {
+		let sort = (a: TentParticipant, b: TentParticipant) => {
 			switch (column) {
 				case IColumn.id:
 					return numberSort(a.id, b.id);
@@ -82,7 +82,7 @@
 		getParticipants();
 	});
 
-	function searchParticipant(p: Participant) {
+	function searchParticipant(p: TentParticipant) {
 		return (
 			p.firstname.toLowerCase().includes(serachString.toLowerCase()) ||
 			p.lastname.toLowerCase().includes(serachString.toLowerCase()) ||
@@ -93,10 +93,13 @@
 
 	async function getParticipants() {
 		participants = await apiGetParticipants();
-		participants = participants.filter((p: Participant) => searchParticipant(p));
+		participants = participants.filter((p: TentParticipant) => searchParticipant(p));
 	}
 </script>
 
+<svelte:head>
+	<title>Stübis</title>
+</svelte:head>
 <Button on:click={getParticipants} color="primary">Refresh</Button>
 
 <Input
@@ -124,7 +127,7 @@
 				<td>{participant.lastname}</td>
 				<td>{participant.zipcode}</td>
 				<td>{participant.village}</td>
-				<td>{Math.round(participant.age * 100) / 100}</td>
+				<td>{participant.getAgeTwoDecimal()}</td>
 				<td>{participant.friends}</td>
 			</tr>
 		{/each}
