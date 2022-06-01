@@ -51,16 +51,17 @@ export async function apiGetParticipants(): Promise<TentParticipant[]> {
 		.then((res: Participant[]) => {
 			const ret: TentParticipant[] = [];
 			for (let i = 0; i < res.length; i++) {
-				const p = new TentParticipant(
-					res[i].id,
-					res[i].firstname,
-					res[i].lastname,
-					res[i].zipcode,
-					res[i].village,
-					res[i].birthdate[0],
-					res[i].friends
+				ret.push(
+					new TentParticipant(
+						res[i].id,
+						res[i].firstname,
+						res[i].lastname,
+						res[i].zipcode,
+						res[i].village,
+						res[i].birthdate[0],
+						res[i].friends
+					)
 				);
-				ret.push(p);
 			}
 
 			return ret;
