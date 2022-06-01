@@ -85,7 +85,11 @@
 							on:dragenter={() => (hoveringOverBasket = b.name)}
 							on:dragleave={() => (hoveringOverBasket = '')}
 							on:drop={(event) => drop(event, basketIndex)}
-							on:dragover={(event) => event.preventDefault()}
+							on:dragover={(event) => {
+								if (b.items.length <= 6) {
+									event.preventDefault();
+								}
+							}}
 						>
 							<CardHeader>
 								<CardTitle>Zelt {basketIndex}</CardTitle>
