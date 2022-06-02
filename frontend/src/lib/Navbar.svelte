@@ -31,7 +31,7 @@
 				<NavLink href="/tentAllocation">Zelteinteilung</NavLink>
 			</NavItem>
 			<NavItem>
-				<NavLink href="/test">Test</NavLink>
+				<NavLink href="/mailing">Mailing</NavLink>
 			</NavItem>
 		</Nav>
 	</Collapse>
