@@ -132,7 +132,7 @@ def merge_docx():
     # anhang = os.getcwd() + "\\..\\" + output_pdf
 
     subject = request.form.get("subject")
-    content = request.form.get("mailText")
+    content = request.form.get("content")
 
     mail_mode = "bcc"
     if request.form.get("isBcc") is None:

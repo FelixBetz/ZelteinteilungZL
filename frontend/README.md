@@ -1,6 +1,7 @@
 ## docs
 
 sveltestrap: https://sveltestrap.js.org/?path=/story/components--get-started
+https://tiptap.dev/installation/svelte
 
 ## workaround when running npm run dev
 

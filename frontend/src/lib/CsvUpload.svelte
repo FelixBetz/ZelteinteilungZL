@@ -4,7 +4,7 @@
 	export let csvColumns: string[] = [];
 	export let csvFile: File;
 
-	const onFileSelected = (e) => {
+	const onFileSelected = (e: any) => {
 		csvFile = e.target.files[0];
 		let reader = new FileReader();
 		reader.readAsText(csvFile);
