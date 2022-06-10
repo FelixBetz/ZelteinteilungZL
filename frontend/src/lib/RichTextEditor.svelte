@@ -3,7 +3,7 @@
 	import { Editor } from '@tiptap/core';
 	import StarterKit from '@tiptap/starter-kit';
 	import type { Level } from '@tiptap/extension-heading/src/heading';
-	import { Card, CardHeader, CardTitle, CardBody, CardSubtitle } from 'sveltestrap/src';
+	import { Card, CardHeader, CardTitle, CardBody } from 'sveltestrap/src';
 
 	const headingsLevel: Level[] = [1, 2, 3, 4, 5, 6];
 
@@ -69,7 +69,7 @@
 					class="btn btn-secondary"
 					on:click={() => {
 						if (selected != '') {
-							const insertString = '$$$' + selected + '$$$';
+							const insertString = '[$$$' + selected + '$$$]';
 							editor.chain().insertContent(insertString).run();
 						}
 					}}

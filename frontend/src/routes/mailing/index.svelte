@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Input, Card, FormGroup, Label, Button, Row, Col, Container } from 'sveltestrap/src';
+	import { Input, Card, Button, Row, Col, Container } from 'sveltestrap/src';
 	import CsvUpload from '$lib/CsvUpload.svelte';
 	import RichTextEditor from '$lib/RichTextEditor.svelte';
 
@@ -22,7 +22,7 @@
 		{ id: 1, text: 'personalsierte Mail' },
 		{ id: 2, text: 'Word Template' }
 	];
-	let selected: MailTypeSelect = mailType[0];
+	let selectedMailType: MailTypeSelect = mailType[0];
 
 	let csvFile: File;
 	async function onSubmit(e: any) {
@@ -30,7 +30,7 @@
 			const formData = new FormData(e.target);
 			formData.append('content', editor.getHtmlString());
 			formData.append('csvFile', csvFile);
-			formData.append('mailType', selected.id.toString());
+			formData.append('mailType', selectedMailType.id.toString());
 
 			/*const data: any = {};
 			for (let field of formData) {
@@ -67,7 +67,7 @@
 				<Col sm="2">
 					<select
 						class="custom-select custom-select-lg mb-3"
-						bind:value={selected}
+						bind:value={selectedMailType}
 						on:change={() => (answer = '')}
 					>
 						{#each mailType as type}
@@ -81,10 +81,11 @@
 					<label for="subject">Subject:</label>
 					<input type="text" id="subject" name="subject" value="" placeholder="enter subject" />
 				</Col>
-				<Col sm="2">
-					<Input name="isBcc" id="isBcc" type="checkbox" label="Send as bcc" />
-				</Col>
-
+				{#if selectedMailType.id == MailTypeId.massMail}
+					<Col sm="2">
+						<Input name="isBcc" id="isBcc" type="checkbox" label="Send as bcc" />
+					</Col>
+				{/if}
 				<Col sm="6"><CsvUpload bind:csvColumns bind:csvFile /></Col>
 			</Row>
 		</Card>
@@ -94,7 +95,7 @@
 	<RichTextEditor
 		bind:this={editor}
 		style="margin-top: 100px;"
-		showCsvColums={selected.id != MailTypeId.massMail}
+		showCsvColums={selectedMailType.id != MailTypeId.massMail}
 		bind:csvColumns
 	/>
 </Container>

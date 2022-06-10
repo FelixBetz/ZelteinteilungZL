@@ -13,6 +13,7 @@ from flask_cors import CORS
 from mailmerge import MailMerge
 from docx2pdf import convert
 from participant import Participant
+from typedefs import MailType
 
 
 INPUT_FILE = r"..\input.csv"
@@ -25,7 +26,7 @@ cors = CORS(app)
 
 def parse_input_csv():
     """parses zeltlager participants from input csv file"""
-    with open(INPUT_FILE, newline="") as csv_file:
+    with open(INPUT_FILE, newline="", ) as csv_file:
 
         spamreader = csv.reader(csv_file, delimiter=";", quotechar="|")
         participant_id = 0
@@ -48,7 +49,8 @@ def parse_input_csv():
                     raise
                 loc_village = row[7]
                 try:
-                    loc_birthdate = (datetime.strptime(row[10], "%d.%m.%Y").date(),)
+                    loc_birthdate = (datetime.strptime(
+                        row[10], "%d.%m.%Y").date(),)
                 except:
                     print(
                         "failed to parse birthdate: i: ",
@@ -113,6 +115,62 @@ def get_participant():
     return jsonify(ret)
 
 
+def send_massmail(arg_mails, arg_mail_mode, arg_subject, arg_content):
+    """send massmail"""
+    exectue_thunderbird = (
+        THUNDERBIRD_PATH
+        + " -compose "
+        + arg_mail_mode
+        + "='"
+        + ",".join(arg_mails)
+        + "',"
+        + "subject='"
+        + arg_subject
+        + "',"
+        + "body='"
+        + arg_content
+        + "',"
+        # + "attachment='"
+        # + anhang
+        # + "'"
+    )
+
+    with subprocess.Popen(exectue_thunderbird):
+        pass
+
+
+def send_personalized_mail(arg_csv_file, arg_mails, arg_mail_mode, arg_subject, arg_content):
+    """send personalized mail"""
+    csv_cols = arg_csv_file[0].split(";")
+    for mail_index, mail in enumerate(arg_mails):
+        tmp_content = arg_content
+        for col_index, col in enumerate(csv_cols):
+
+            tmp_content = tmp_content.replace(
+                "[$$$"+col+"$$$]", arg_csv_file[mail_index+1].split(";")[col_index])
+
+        exectue_thunderbird = (
+            THUNDERBIRD_PATH
+            + " -compose "
+            + arg_mail_mode
+            + "='"
+            + mail
+            + "',"
+            + "subject='"
+            + arg_subject
+            + "',"
+            + "body='"
+            + tmp_content
+            + "',"
+            # + "attachment='"
+            # + anhang
+            # + "'"
+        )
+
+        with subprocess.Popen(exectue_thunderbird):
+            pass
+
+
 @app.route("/api/test", methods=["POST"])
 def merge_docx():
     """returns all participants as json"""
@@ -131,6 +189,7 @@ def merge_docx():
     # convert(output_dir + output_docx)
     # anhang = os.getcwd() + "\\..\\" + output_pdf
 
+    mail_type = MailType(int(request.form.get("mailType")))
     subject = request.form.get("subject")
     content = request.form.get("content")
 
@@ -141,7 +200,6 @@ def merge_docx():
     csv_filehandle = request.files["csvFile"]
 
     csv_file = csv_filehandle.read().decode("utf8").split("\r\n")
-
     mail_index = csv_file[0].split(";").index("mail")
     mails = []
     for i, row in enumerate(csv_file):
@@ -149,25 +207,12 @@ def merge_docx():
             mail = row.split(";")[mail_index]
             mails.append(mail)
 
-    parameterliste = (
-        THUNDERBIRD_PATH
-        + " -compose "
-        + mail_mode
-        + "='"
-        + ",".join(mails)
-        + "',"
-        + "subject='"
-        + subject
-        + "',"
-        + "body='"
-        + content
-        + "',"
-        # + "attachment='"
-        # + anhang
-        # + "'"
-    )
-
-    subprocess.Popen(parameterliste)
+    if mail_type == MailType.MASS_MAIL:
+        send_massmail(mails, mail_mode, subject, content)
+    elif mail_type == MailType.PERSONALIZED_MAIL:
+        send_personalized_mail(csv_file, mails, mail_mode, subject, content)
+    elif mail_type == MailType.TEMPLATE_MAIL:
+        pass
 
     return jsonify("ok")
 
