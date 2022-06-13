@@ -26,6 +26,7 @@
 		IColumn.friends
 	];
 	let participants: TentParticipant[] = [];
+	let filterdParticipants: TentParticipant[] = [];
 	let serachString = '';
 	let sortBy = { col: IColumn, ascending: true };
 
@@ -74,7 +75,7 @@
 			}
 		};
 
-		participants = participants.sort(sort);
+		filterdParticipants = filterdParticipants.sort(sort);
 		sortBy.ascending = !sortBy.ascending;
 	}
 
@@ -91,9 +92,14 @@
 		);
 	}
 
+	function onSearchParticipant() {
+		filterdParticipants = participants.filter((p: TentParticipant) => searchParticipant(p));
+	}
+
 	async function getParticipants() {
 		participants = await apiGetParticipants();
-		participants = participants.filter((p: TentParticipant) => searchParticipant(p));
+		filterdParticipants = participants;
+		filterdParticipants = participants.filter((p: TentParticipant) => searchParticipant(p));
 	}
 </script>
 
@@ -104,7 +110,8 @@
 
 <Input
 	bind:value={serachString}
-	on:input={getParticipants}
+	on:input={onSearchParticipant}
+	on:change={onSearchParticipant}
 	type="search"
 	placeholder="Search"
 	class="ms-auto w-auto"
@@ -120,7 +127,7 @@
 		</tr>
 	</thead>
 	<tbody>
-		{#each participants as participant}
+		{#each filterdParticipants as participant}
 			<tr>
 				<th scope="row">{participant.id}</th>
 				<td>{participant.firstname}</td>
