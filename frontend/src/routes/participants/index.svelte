@@ -110,8 +110,7 @@
 
 <Input
 	bind:value={serachString}
-	on:input={onSearchParticipant}
-	on:change={onSearchParticipant}
+	on:keyup={onSearchParticipant}
 	type="search"
 	placeholder="Search"
 	class="ms-auto w-auto"
