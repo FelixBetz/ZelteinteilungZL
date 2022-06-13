@@ -4,10 +4,11 @@
 import csv
 from datetime import datetime
 import inspect
-
-from flask import Flask, jsonify, request
+import json
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
-
+from maps import generate_maps
+import os
 from participant import Participant
 
 
@@ -16,6 +17,8 @@ participants = []
 
 app = Flask(__name__)
 cors = CORS(app)
+
+app.config["MAPS_OUTPUT"] = "output_maps"
 
 
 def parse_input_csv():
@@ -106,6 +109,27 @@ def get_participant():
         print("ERROR: could not parse id")
 
     return jsonify(ret)
+
+
+@app.route("/api/maps", methods=["POST"])
+def get_maps():
+    """returns todo"""
+    zipCodes = []
+    req = request.form.get("zipCodes")
+    for zipCode in json.loads(req):
+        zipCodes.append((zipCode["zipCode"], zipCode["location"]))
+
+    generate_maps(zipCodes)
+
+    path = os.getcwd() + "\\output"
+
+    return send_from_directory("heatmap.html", path)
+    return jsonify("ok")
+
+
+@app.route("/api/maps/<path:filename>")
+def download_file(filename):
+    return send_from_directory(app.config["MAPS_OUTPUT"], filename)
 
 
 if __name__ == "__main__":

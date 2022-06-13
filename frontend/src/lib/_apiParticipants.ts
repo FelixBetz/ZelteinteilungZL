@@ -9,7 +9,7 @@ interface Participant {
 	age: number;
 }
 
-export class TentParticipant {
+export class cTentParticipant {
 	public age = 0;
 	constructor(
 		public id: number,
@@ -43,16 +43,16 @@ export class TentParticipant {
 	}
 }
 
-const base = 'http://127.0.0.1:8080/api';
+export const baseUrl = 'http://127.0.0.1:8080/api';
 
-export async function apiGetParticipants(): Promise<TentParticipant[]> {
-	const response = await fetch(base + '/participants')
+export async function apiGetParticipants(): Promise<cTentParticipant[]> {
+	const response = await fetch(baseUrl + '/participants')
 		.then((res) => res.json())
 		.then((res: Participant[]) => {
-			const ret: TentParticipant[] = [];
+			const ret: cTentParticipant[] = [];
 			for (let i = 0; i < res.length; i++) {
 				ret.push(
-					new TentParticipant(
+					new cTentParticipant(
 						res[i].id,
 						res[i].firstname,
 						res[i].lastname,
@@ -69,6 +69,30 @@ export async function apiGetParticipants(): Promise<TentParticipant[]> {
 		.catch((error: Error) => {
 			console.error(error);
 			return [];
+		});
+
+	return response;
+}
+
+export interface ZipCodes {
+	zipCode: number;
+	location: string;
+}
+
+export async function apiGetMaps(zipCodes: ZipCodes[]): Promise<string> {
+	const formData = new FormData();
+	formData.append('zipCodes', JSON.stringify(zipCodes));
+	const response = await fetch(baseUrl + '/maps', {
+		method: 'POST',
+		body: formData
+	})
+		.then((res) => {
+			console.log(res);
+			return 'ok';
+		})
+		.catch((error: Error) => {
+			console.error(error);
+			return 'error';
 		});
 
 	return response;

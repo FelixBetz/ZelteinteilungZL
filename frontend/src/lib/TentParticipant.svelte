@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { Col, CardTitle } from 'sveltestrap/src';
-	import type { TentParticipant } from '../participants/_apiParticipants';
+	import type { cTentParticipant } from '$lib/_apiParticipants';
 
-	export let participant: TentParticipant;
+	export let participant: cTentParticipant;
 </script>
 
 <Col sm="6" style="padding: 5px">

@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { apiGetParticipants } from '../participants/_apiParticipants';
-	import type { TentParticipant } from '../participants/_apiParticipants';
+	import { apiGetParticipants } from '$lib/_apiParticipants';
+	import type { cTentParticipant } from '$lib/_apiParticipants';
 	import { onMount } from 'svelte';
 	import { Col, Row, CardBody, CardHeader, CardTitle, Button } from 'sveltestrap/src';
-	import Tent from './_tentParticipant.svelte';
+	import Tent from '$lib/TentParticipant.svelte';
+	import TentParticipant from '$lib/TentParticipant.svelte';
 
 	interface Basket {
 		name: string;
@@ -17,7 +18,7 @@
 		}
 	];
 	const numTents = 3;
-	let participants: TentParticipant[] = [];
+	let participants: cTentParticipant[] = [];
 	for (let i = 0; i < numTents; i++) {
 		baskets.push({ name: 'Zelt ' + (i + 1), items: [] });
 	}
@@ -133,7 +134,7 @@
 			<CardBody>
 				<Row>
 					{#each baskets[0].items as item, itemIndex}
-						<Tent
+						<TentParticipant
 							participant={participants[item]}
 							on:dragstart={(event) => dragStart(event, 0, itemIndex)}
 						/>
@@ -143,6 +144,3 @@
 		</div>
 	</Col>
 </Row>
-
-<style>
-</style>
