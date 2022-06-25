@@ -13,7 +13,6 @@
 
 	let element: HTMLDivElement;
 	let editor: Editor;
-	let selected = '';
 
 	onMount(() => {
 		editor = new Editor({
@@ -63,32 +62,31 @@
 			>
 				P
 			</button>
+			<br />
 			{#if showCsvColums}
-				<button
-					type="button"
-					class="btn btn-secondary"
-					on:click={() => {
-						if (selected != '') {
-							const insertString = '[$$$' + selected + '$$$]';
+				{#each csvColumns as column}
+					<button
+						type="button"
+						class="btn btn-secondary"
+						on:click={() => {
+							const insertString = '[$$$' + column + '$$$]';
 							editor.chain().insertContent(insertString).run();
-						}
-					}}
-				>
-					Insert CSV Col: {selected}
-				</button>
-				<select class="custom-select custom-select-lg mb-3" bind:value={selected}>
-					{#each csvColumns as column}
-						<option value={column}>
-							{column}
-						</option>
-					{/each}
-				</select>
-				<ul>
-					{#each csvColumns as column}
-						<li>{column}</li>
-					{/each}
-				</ul>
+						}}
+					>
+						{column}
+					</button>
+				{/each}
 			{/if}
+			<br />
+			<button
+				type="button"
+				class="btn btn-secondary"
+				on:click={() => {
+					console.log('clear');
+					editor.chain().clearContent().run();
+				}}
+				>Clear All
+			</button>
 		{/if}
 	</CardHeader>
 	<CardBody>

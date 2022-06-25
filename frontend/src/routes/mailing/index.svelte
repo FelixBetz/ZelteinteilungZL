@@ -55,7 +55,6 @@
 
 <Container>
 	<ul>
-		<li>Personalisierte Mail aus CSV Liste => persönliche Felder konfigurierbar</li>
 		<li>Personalisierte Mail aus CSV Liste mit Word Template</li>
 		<ul>
 			<li>pdf oder docx</li>

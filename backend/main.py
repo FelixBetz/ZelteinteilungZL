@@ -115,9 +115,9 @@ def get_participant():
     return jsonify(ret)
 
 
-def send_massmail(arg_mails, arg_mail_mode, arg_subject, arg_content):
-    """send massmail"""
-    exectue_thunderbird = (
+def send_mail(arg_mails, arg_mail_mode, arg_subject, arg_content, arg_attachments):
+
+    execute_thunderbird = (
         THUNDERBIRD_PATH
         + " -compose "
         + arg_mail_mode
@@ -135,11 +135,16 @@ def send_massmail(arg_mails, arg_mail_mode, arg_subject, arg_content):
         # + "'"
     )
 
-    with subprocess.Popen(exectue_thunderbird):
-        pass
+    subprocess.Popen(execute_thunderbird)
 
 
-def send_personalized_mail(arg_csv_file, arg_mails, arg_mail_mode, arg_subject, arg_content):
+def send_massmail(arg_mails, arg_mail_mode, arg_subject, arg_content, arg_attachments):
+    """send massmail"""
+    send_mail(arg_mails, arg_mail_mode, arg_subject,
+              arg_content, arg_attachments)
+
+
+def send_personalized_mail(arg_csv_file, arg_mails,  arg_subject, arg_content, arg_attachments):
     """send personalized mail"""
     csv_cols = arg_csv_file[0].split(";")
     for mail_index, mail in enumerate(arg_mails):
@@ -149,53 +154,41 @@ def send_personalized_mail(arg_csv_file, arg_mails, arg_mail_mode, arg_subject, 
             tmp_content = tmp_content.replace(
                 "[$$$"+col+"$$$]", arg_csv_file[mail_index+1].split(";")[col_index])
 
-        exectue_thunderbird = (
-            THUNDERBIRD_PATH
-            + " -compose "
-            + arg_mail_mode
-            + "='"
-            + mail
-            + "',"
-            + "subject='"
-            + arg_subject
-            + "',"
-            + "body='"
-            + tmp_content
-            + "',"
-            # + "attachment='"
-            # + anhang
-            # + "'"
-        )
-
-        with subprocess.Popen(exectue_thunderbird):
-            pass
+        send_mail([mail], "to", arg_subject, tmp_content, arg_attachments)
 
 
-@app.route("/api/test", methods=["POST"])
+def send_template_mail(arg_csv_file, arg_mails,  arg_subject, arg_content, arg_attachments):
+    """send mail based on a word template"""
+    csv_cols = arg_csv_file[0].split(";")
+    for mail_index, mail in enumerate(arg_mails):
+        TEMPLATE_FILE = r"..\template.docx"
+
+        output_dir = "..\\"
+        output_name = str(mail_index)+"test"
+        output_docx = output_name + ".docx"
+        output_pdf = output_name + ".pdf"
+
+        document = MailMerge(TEMPLATE_FILE)
+
+        for col_index, col in enumerate(csv_cols):
+            splitted_row = arg_csv_file[mail_index+1].split(";")
+            document.merge_templates(
+                [{col: splitted_row[col_index]}], separator='page_break')
+
+        document.write(output_dir + output_docx)
+        convert(output_dir + output_docx)
+        anhang = os.getcwd() + "\\..\\" + output_pdf
+        send_personalized_mail(arg_csv_file, arg_mails,
+                               arg_subject, arg_content, arg_attachments)
+
+
+@ app.route("/api/test", methods=["POST"])
 def merge_docx():
     """returns all participants as json"""
-
-    # TEMPLATE_FILE = r"..\template.docx"
-
-    # output_dir = "..\\"
-    # output_name = user["name"]
-    # output_docx = output_name + ".docx"
-    # output_pdf = output_name + ".pdf"
-
-    # document = MailMerge(TEMPLATE_FILE)
-    # print(document.get_merge_fields())
-    # document.merge(Name=user["name"])
-    # document.write(output_dir + output_docx)
-    # convert(output_dir + output_docx)
-    # anhang = os.getcwd() + "\\..\\" + output_pdf
 
     mail_type = MailType(int(request.form.get("mailType")))
     subject = request.form.get("subject")
     content = request.form.get("content")
-
-    mail_mode = "bcc"
-    if request.form.get("isBcc") is None:
-        mail_mode = "to"
 
     csv_filehandle = request.files["csvFile"]
 
@@ -208,11 +201,14 @@ def merge_docx():
             mails.append(mail)
 
     if mail_type == MailType.MASS_MAIL:
-        send_massmail(mails, mail_mode, subject, content)
+        mail_mode = "bcc"
+        if request.form.get("isBcc") is None:
+            mail_mode = "to"
+        send_massmail(mails, mail_mode, subject, content, [])
     elif mail_type == MailType.PERSONALIZED_MAIL:
-        send_personalized_mail(csv_file, mails, mail_mode, subject, content)
+        send_personalized_mail(csv_file, mails,  subject, content, [])
     elif mail_type == MailType.TEMPLATE_MAIL:
-        pass
+        send_template_mail(csv_file, mails,  subject, content, [])
 
     return jsonify("ok")
 

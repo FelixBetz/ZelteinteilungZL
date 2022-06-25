@@ -72,9 +72,9 @@
 </svelte:head>
 <Row style="padding: 10px;">
 	<Col>
-		<Button color="primary">Test</Button>
-		<Button color="primary">Test</Button>
-		<Button color="primary">Test</Button>
+		<Button color="primary">Group by friend</Button>
+		<Button color="primary">Group by age</Button>
+		<Button color="primary">Group by village</Button>
 		<Button color="primary">Test</Button>
 	</Col>
 </Row>
