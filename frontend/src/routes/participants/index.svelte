@@ -1,10 +1,11 @@
 <script lang="ts">
-	import { apiGetMaps, apiGetParticipants, baseUrl } from '$lib/_apiParticipants';
+	import { apiGetMaps, apiGetParticipants } from '$lib/_apiParticipants';
 
 	import type { cTentParticipant, ZipCodes } from '$lib/_apiParticipants';
 
-	import { Table, Button, Input, TabContent, TabPane } from 'sveltestrap/src';
+	import { Table, Button, Input } from 'sveltestrap/src';
 	import { onMount } from 'svelte';
+	import NavbarParticipants from '$lib/NavbarParticipants.svelte';
 
 	enum IColumn {
 		id = 'id',
@@ -120,58 +121,40 @@
 	<title>Stübis</title>
 </svelte:head>
 
-<TabContent pills style="margin:10px;">
-	<TabPane tabId="table" tab="table" active>
-		<div style="margin-top: 10px;" />
-		<Button on:click={getParticipants} color="secondary">Refresh</Button>
-		<Button on:click={getMaps} color="secondary">generate Maps</Button>
+<NavbarParticipants />
 
-		<Input
-			bind:value={serachString}
-			on:keyup={onSearchParticipant}
-			type="search"
-			placeholder="Search"
-			class="ms-auto w-auto"
-			style="margin-right: 20px"
-		/>
+<div style="margin-top: 10px;" />
+<Button on:click={getParticipants} color="secondary">Refresh</Button>
+<Button on:click={getMaps} color="secondary">generate Maps</Button>
 
-		<Table striped data-toggle="table" data-search="true" data-strict-search="true">
-			<thead>
-				<tr>
-					{#each columns as column}
-						<th on:click={() => clickSortTable(column)}>{column}</th>
-					{/each}
-				</tr>
-			</thead>
-			<tbody>
-				{#each filterdParticipants as participant}
-					<tr>
-						<th scope="row">{participant.id}</th>
-						<td>{participant.firstname}</td>
-						<td>{participant.lastname}</td>
-						<td>{participant.zipcode}</td>
-						<td>{participant.village}</td>
-						<td>{participant.getAgeTwoDecimal()}</td>
-						<td>{participant.friends}</td>
-					</tr>
-				{/each}
-			</tbody>
-		</Table>
-	</TabPane>
-	<TabPane tabId="heatmap" tab="Heatmap">
-		<embed
-			on:click={() => console.log('asdfasf')}
-			id="id_heatmap"
-			title="heatmap"
-			src={baseUrl + '/maps/heatmap.html'}
-			style="width:100%; height: calc(100vh - 125px) !important; "
-		/>
-	</TabPane>
-	<TabPane tabId="markermap" tab="markermap" on:clic>
-		<embed
-			title="markermap"
-			src={baseUrl + '/maps/markermap.html'}
-			style="width:100%; height: calc(100vh - 125px) !important; "
-		/>
-	</TabPane>
-</TabContent>
+<Input
+	bind:value={serachString}
+	on:keyup={onSearchParticipant}
+	type="search"
+	placeholder="Search"
+	class="ms-auto w-auto"
+	style="margin-right: 20px"
+/>
+
+<Table striped data-toggle="table" data-search="true" data-strict-search="true">
+	<thead>
+		<tr>
+			{#each columns as column}
+				<th on:click={() => clickSortTable(column)}>{column}</th>
+			{/each}
+		</tr>
+	</thead>
+	<tbody>
+		{#each filterdParticipants as participant}
+			<tr>
+				<th scope="row">{participant.id}</th>
+				<td>{participant.firstname}</td>
+				<td>{participant.lastname}</td>
+				<td>{participant.zipcode}</td>
+				<td>{participant.village}</td>
+				<td>{participant.getAgeTwoDecimal()}</td>
+				<td>{participant.friends}</td>
+			</tr>
+		{/each}
+	</tbody>
+</Table>

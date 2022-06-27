@@ -8,7 +8,7 @@ import json
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from maps import generate_maps
-import os
+
 from participant import Participant
 
 
@@ -26,10 +26,10 @@ def parse_input_csv():
     with open(INPUT_FILE, newline="") as csvfile:
 
         spamreader = csv.reader(csvfile, delimiter=";", quotechar="|")
-        id = 0
+        loc_id = 0
         for i, row in enumerate(spamreader):
 
-            if 1 <= i:
+            if i >= 1:
 
                 loc_lastname = row[3]
                 loc_firstname = row[4]
@@ -59,14 +59,14 @@ def parse_input_csv():
                 loc_friends = []
 
                 loc_participant = Participant(
-                    id,
+                    loc_id,
                     loc_lastname,
                     loc_firstname,
                     loc_zipcode,
                     loc_village,
                     loc_birthdate,
                 )
-                id += 1
+                loc_id += 1
 
                 # parse pesons
                 for friend in [row[19], row[20]]:
@@ -114,21 +114,18 @@ def get_participant():
 @app.route("/api/maps", methods=["POST"])
 def get_maps():
     """returns todo"""
-    zipCodes = []
+    zip_codes = []
     req = request.form.get("zipCodes")
-    for zipCode in json.loads(req):
-        zipCodes.append((zipCode["zipCode"], zipCode["location"]))
+    for zip_code in json.loads(req):
+        zip_codes.append((zip_code["zipCode"], zip_code["location"]))
 
-    generate_maps(zipCodes)
-
-    path = os.getcwd() + "\\output"
-
-    return send_from_directory("heatmap.html", path)
+    generate_maps(zip_codes)
     return jsonify("ok")
 
 
 @app.route("/api/maps/<path:filename>")
 def download_file(filename):
+    """returns map file by filename"""
     return send_from_directory(app.config["MAPS_OUTPUT"], filename)
 
 
