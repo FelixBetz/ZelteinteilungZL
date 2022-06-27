@@ -3,7 +3,7 @@
 
 	import type { cTentParticipant, ZipCodes } from '$lib/_apiParticipants';
 
-	import { Table, Button, Input } from 'sveltestrap/src';
+	import { Table, Button, Input, Row, Col } from 'sveltestrap/src';
 	import { onMount } from 'svelte';
 	import NavbarParticipants from '$lib/NavbarParticipants.svelte';
 
@@ -115,6 +115,8 @@
 
 		await apiGetMaps(zipCodes);
 	}
+
+	function reviewParticipants() {}
 </script>
 
 <svelte:head>
@@ -123,9 +125,14 @@
 
 <NavbarParticipants />
 
-<div style="margin-top: 10px;" />
-<Button on:click={getParticipants} color="secondary">Refresh</Button>
-<Button on:click={getMaps} color="secondary">generate Maps</Button>
+<Row style="padding: 10px;">
+	<Col>
+		<Button on:click={reviewParticipants} color="warning" on:click={getParticipants}>Refresh</Button
+		>
+		<Button color="primary">Review participants</Button>
+		<Button on:click={getMaps} color="primary">generate Maps</Button>
+	</Col>
+</Row>
 
 <Input
 	bind:value={serachString}
@@ -147,7 +154,11 @@
 	<tbody>
 		{#each filterdParticipants as participant}
 			<tr>
-				<th scope="row">{participant.id}</th>
+				<th scope="row">
+					<a target="_blank" href={'/participant/' + participant.id}>
+						{participant.id}
+					</a>
+				</th>
 				<td>{participant.firstname}</td>
 				<td>{participant.lastname}</td>
 				<td>{participant.zipcode}</td>

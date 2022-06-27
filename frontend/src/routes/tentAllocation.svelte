@@ -17,7 +17,7 @@
 			items: []
 		}
 	];
-	const numTents = 3;
+	const numTents = 14;
 	let participants: cTentParticipant[] = [];
 	for (let i = 0; i < numTents; i++) {
 		baskets.push({ name: 'Zelt ' + (i + 1), items: [] });
@@ -71,14 +71,7 @@
 <svelte:head>
 	<title>Zelteinteilung</title>
 </svelte:head>
-<Row style="padding: 10px;">
-	<Col>
-		<Button color="primary">Test</Button>
-		<Button color="primary">Test</Button>
-		<Button color="primary">Test</Button>
-		<Button color="primary">Test</Button>
-	</Col>
-</Row>
+
 <Row>
 	<Col sm="8">
 		<Row>

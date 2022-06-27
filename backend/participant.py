@@ -13,13 +13,27 @@ class Participant:
         arg_village,
         arg_birthdate,
     ):
-        self.id = arg_id
-        self.lastname = arg_lastname
+        self.identifier = arg_id
         self.firstname = arg_firstname
+        self.lastname = arg_lastname
+        self.birthdate = arg_birthdate
+
+        self.address = "todo street"
         self.zipcode = arg_zipcode
         self.village = arg_village
-        self.birthdate = arg_birthdate
+
+        self.mail = "test@web.de"
+        self.phone = "07392/17792"
+
+        self.emergency_contact = "Max Mustermann"
+        self.emergency_phone = "todo"
+
         self.friends = []
+
+        self.is_reduced = False
+        self.is_photo_allowed = False
+        self.is_afe = False
+        self.is_event_mail = False
 
     def __str__(self):
         friends_str = ""

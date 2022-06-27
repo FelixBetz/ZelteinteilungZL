@@ -1,18 +1,26 @@
 interface Participant {
+	address: string;
 	birthdate: string[];
+	emergency_contact: string;
+	emergency_phone: string;
 	firstname: string;
 	friends: string[];
-	id: number;
+	identifier: number;
+	is_afe: boolean;
+	is_event_mail: boolean;
+	is_photo_allowed: boolean;
+	is_reduced: boolean;
 	lastname: string;
+	mail: string;
+	phone: string;
 	village: string;
 	zipcode: number;
-	age: number;
 }
 
 export class cTentParticipant {
 	public age = 0;
 	constructor(
-		public id: number,
+		public identifier: number,
 		public firstname: string,
 		public lastname: string,
 		public zipcode: number,
@@ -53,7 +61,7 @@ export async function apiGetParticipants(): Promise<cTentParticipant[]> {
 			for (let i = 0; i < res.length; i++) {
 				ret.push(
 					new cTentParticipant(
-						res[i].id,
+						res[i].identifier,
 						res[i].firstname,
 						res[i].lastname,
 						res[i].zipcode,
@@ -74,6 +82,32 @@ export async function apiGetParticipants(): Promise<cTentParticipant[]> {
 	return response;
 }
 
+export async function apiGetParticipant(arg_id: number): Promise<cTentParticipant | null> {
+	const response = await fetch(baseUrl + '/participant?id=' + arg_id)
+		.then(res => res.json()
+		)
+		.then((res: Participant) => {
+			const ret: cTentParticipant = new cTentParticipant(
+				res.identifier,
+				res.firstname,
+				res.lastname,
+				res.zipcode,
+				res.village,
+				res.birthdate[0],
+				res.friends);
+
+			return ret;
+		})
+		.catch((error: Error) => {
+			console.error(error);
+			return null;
+		});
+
+	return response;
+}
+
+
+
 export interface ZipCodes {
 	zipCode: number;
 	location: string;
@@ -87,7 +121,6 @@ export async function apiGetMaps(zipCodes: ZipCodes[]): Promise<string> {
 		body: formData
 	})
 		.then((res) => {
-			console.log(res);
 			return 'ok';
 		})
 		.catch((error: Error) => {

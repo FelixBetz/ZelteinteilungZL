@@ -5,7 +5,7 @@ import csv
 from datetime import datetime
 import inspect
 import json
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, abort, jsonify, request, send_from_directory
 from flask_cors import CORS
 from maps import generate_maps
 
@@ -107,6 +107,7 @@ def get_participant():
 
     except:
         print("ERROR: could not parse id")
+        abort(404)
 
     return jsonify(ret)
 
