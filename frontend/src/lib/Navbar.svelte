@@ -9,6 +9,17 @@
 		NavLink
 	} from 'sveltestrap/src';
 
+	interface NavEntry {
+		label: string;
+		route: string;
+	}
+
+	let navEntries: NavEntry[] = [
+		{ label: 'Home', route: '/' },
+		{ label: 'Stübis', route: '/participants' },
+		{ label: 'Zelteinteilung', route: '/tentAllocation' }
+	];
+
 	let isOpen = false;
 
 	function handleUpdate(event: CustomEvent) {
@@ -21,15 +32,11 @@
 	<NavbarToggler on:click={() => (isOpen = !isOpen)} />
 	<Collapse {isOpen} navbar expand="md" on:update={handleUpdate}>
 		<Nav class="ms-auto" navbar>
-			<NavItem>
-				<NavLink href="/">Home</NavLink>
-			</NavItem>
-			<NavItem>
-				<NavLink href="/participants">Stübis</NavLink>
-			</NavItem>
-			<NavItem>
-				<NavLink href="/tentAllocation">Zelteinteilung</NavLink>
-			</NavItem>
+			{#each navEntries as entry}
+				<NavItem>
+					<NavLink href={entry.route}>{entry.label}</NavLink>
+				</NavItem>
+			{/each}
 		</Nav>
 	</Collapse>
 </Navbar>
