@@ -128,6 +128,48 @@ def download_file(filename):
     """returns map file by filename"""
     return send_from_directory(app.config["MAPS_OUTPUT"], filename)
 
+def parseStuebi():
+
+    loc_stuebiNames = []
+    with open(r"..\test_graph.csv", newline="") as csvfile:
+
+        spamreader = csv.reader(csvfile, delimiter=";", quotechar="|")
+        for i, row in enumerate(spamreader):
+
+            if i >= 1:
+
+                loc_name = row[1].strip() + " " + row[0].strip()
+                loc_stuebiNames.append(loc_name)
+    loc_stuebis = []
+    with open(r"..\test_graph.csv", newline="") as csvfile:
+
+        spamreader = csv.reader(csvfile, delimiter=";", quotechar="|")
+        for i, row in enumerate(spamreader):
+
+            if i >= 1:
+
+                loc_name = row[1].strip() + " " + row[0].strip()
+
+                loc_friends = []
+                for f in [row[4], row[5]]:
+                    splitted = f.split(",")
+                    for s in splitted:
+                        s = s.strip()
+                        if s != "":
+                            if s in loc_stuebiNames:
+                                loc_friends.append(s)
+                            else:
+                                print("cannot find: ", s, " (", loc_name, ")")
+
+                loc_stuebis.append({"name": loc_name, "friends": loc_friends})
+    return loc_stuebis
+
+
+@app.route("/api/tmp", methods=["GET"])
+def getTemp():
+    loc_stuebis = parseStuebi()
+    return jsonify(loc_stuebis)
+
 
 if __name__ == "__main__":
     # create this node as publisher
