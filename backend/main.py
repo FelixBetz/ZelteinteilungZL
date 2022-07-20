@@ -2,6 +2,7 @@
 
 import time
 import csv
+import os
 from datetime import datetime
 import inspect
 import json
@@ -10,9 +11,13 @@ from flask_cors import CORS
 from maps import generate_maps
 from participant import Participant
 
+INPUT_FILE_PATH = r"..\\"
+INPUT_FILE_NAME = "input.csv"
 
-INPUT_FILE = r"..\input.csv"
+input_file = INPUT_FILE_PATH + INPUT_FILE_NAME
+
 participants = []
+csv_revison_num = -1
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -44,7 +49,10 @@ def bool_to_tex_zugestimmt(arg_bool):
 
 def save_participants_to_csv():
     """save participants back to csv file"""
-    with open(INPUT_FILE + "_out.txt", "w") as outfile:
+    global csv_revison_num
+    with open(
+        INPUT_FILE_PATH + INPUT_FILE_NAME + "." + str(csv_revison_num + 1).zfill(5), "w"
+    ) as outfile:
         loc_header = ""
         loc_header += "Lfd-Nr;"
         loc_header += "Eingegangen;"
@@ -121,15 +129,31 @@ def save_participants_to_csv():
 
 def parse_input_csv():
     """parses zeltlager participants from input csv file"""
+    global input_file, csv_revison_num
+
+    # parse csv_revison_num
+
+    loc_rev_filename = ""
+    for file in os.listdir(".."):
+        if file.startswith(INPUT_FILE_NAME):
+            loc_splitted = file.split(".")
+            if loc_splitted[-1] != "csv":
+                loc_comp_num = int(loc_splitted[-1])
+                if loc_comp_num > csv_revison_num:
+                    csv_revison_num = loc_comp_num
+                    loc_rev_filename = file
+    print(csv_revison_num)
+    if csv_revison_num >= 0:
+        input_file = INPUT_FILE_PATH + loc_rev_filename
 
     # check number of semicolons
-    with open(INPUT_FILE, newline="") as csvfile:
+    with open(input_file, newline="") as csvfile:
         for check_row in csvfile:
             cnt_semicolon = check_row.count(";")
             if cnt_semicolon != 25:
                 print("ERROR at row:", check_row)
 
-    with open(INPUT_FILE, newline="") as csvfile:
+    with open(input_file, newline="") as csvfile:
         spamreader = csv.reader(csvfile, delimiter=";", quotechar="|")
         loc_id = 0
         for i, row in enumerate(spamreader):
@@ -219,6 +243,7 @@ def parse_input_csv():
                 loc_participant.set_friends(loc_friends)
 
                 participants.append(loc_participant)
+        print("parsed input file: ", input_file)
 
 
 def props(obj):
@@ -306,7 +331,6 @@ def download_file(filename):
 
 
 if __name__ == "__main__":
-    # create this node as publisher
 
     parse_input_csv()
     for index, participant in enumerate(participants):
