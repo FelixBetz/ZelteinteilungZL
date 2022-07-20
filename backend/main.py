@@ -50,80 +50,86 @@ def bool_to_tex_zugestimmt(arg_bool):
 def save_participants_to_csv():
     """save participants back to csv file"""
     global csv_revison_num
+    loc_row_str = []
+
+    loc_header = ""
+    loc_header += "Lfd-Nr;"
+    loc_header += "Eingegangen;"
+    loc_header += "Zelt;"
+    loc_header += "Nachname;"
+    loc_header += "Vorname;"
+    loc_header += "Straße mit Hausnummer;"
+    loc_header += "PLZ;"
+    loc_header += "Ort;"
+    loc_header += "Alter;"
+    loc_header += "Heute;"
+    loc_header += "Geburtstag;"
+    loc_header += "Telefon;"
+    loc_header += "eMail;"
+    loc_header += "Ansprechpartner für Notfälle während des Lagers (Name);"
+    loc_header += "Telefonnummer Ansprechpartner;"
+    loc_header += (
+        "Was wir sonst noch wissen sollten (tägliche Medikamente, Allergien o.ä);"
+    )
+    loc_header += (
+        "Unsere Tochter nimmt an der Ferienwoche der Mädchenjugend in Harthausen teil.;"
+    )
+    loc_header += "Ermäßigter Beitrag;"
+    loc_header += "Ich möchte auch über weitere Veranstaltungen der Schönstattjugend per Mail informiert werden;"
+
+    loc_header += "Person 1:;"
+    loc_header += "Person 2:;"
+    loc_header += "Schadensfreisspruch;"
+    loc_header += "Fotografieren;"
+    loc_header += (
+        "Die Anmeldung ist erst mit der Überweisung des Teilnahmebeitrags wirksam;"
+    )
+    loc_header += "Personenbezogene Daten;"
+    loc_header += "Ich bin damit einverstanden, dass im Falle einer Infektion meine Kontaktdaten an das Gesundheitsamt weitergegeben werden"
+    loc_header += "\n"
+
+    loc_row_str.append(loc_header)
+
+    for part in participants:
+
+        loc_row = ""
+        loc_row += ";"  # Lfd-Nr
+        loc_row += ";"  # Eingegangen
+        loc_row += str(part.tent) + ";"  # Zelt
+        loc_row += part.lastname + ";"
+        loc_row += part.firstname + ";"
+        loc_row += part.street + ";"
+        loc_row += str(part.zipcode) + ";"
+        loc_row += part.village + ";"
+        loc_row += ";"  # Alter
+        loc_row += ";"  # Heute
+        loc_row += part.birthdate + ";"
+        loc_row += part.phone + ";"
+        loc_row += part.mail + ";"
+        loc_row += part.emergency_contact + ";"
+        loc_row += part.emergency_phone + ";"
+        loc_row += part.other + ";"
+
+        loc_row += bool_to_tex_yes_no(part.is_afe) + ";"
+        loc_row += bool_to_tex_yes_no(part.is_reduced) + ";"
+        loc_row += bool_to_tex_yes_no(part.is_event_mail) + ";"
+
+        loc_row += part.get_friend_string(0) + ";"
+        loc_row += part.get_friend_string(1) + ";"
+
+        loc_row += "Zugestimmt;"  # Schadensfreisspruch
+
+        loc_row += bool_to_tex_zugestimmt(part.is_photo_allowed) + ";"
+        loc_row += "Zugestimmt;"  #  Teilnahmebeitrag mit Überweisung wirksam
+        loc_row += "Zugestimmt;"  # Personenbezogene Daten
+        loc_row += "Zugestimmt"  # Gesundheitsamt
+
+        loc_row += "\n"
+        loc_row_str.append(loc_row)
     with open(
         INPUT_FILE_PATH + INPUT_FILE_NAME + "." + str(csv_revison_num + 1).zfill(5), "w"
     ) as outfile:
-        loc_header = ""
-        loc_header += "Lfd-Nr;"
-        loc_header += "Eingegangen;"
-        loc_header += "Zelt;"
-        loc_header += "Nachname;"
-        loc_header += "Vorname;"
-        loc_header += "Straße mit Hausnummer;"
-        loc_header += "PLZ;"
-        loc_header += "Ort;"
-        loc_header += "Alter;"
-        loc_header += "Heute;"
-        loc_header += "Geburtstag;"
-        loc_header += "Telefon;"
-        loc_header += "eMail;"
-        loc_header += "Ansprechpartner für Notfälle während des Lagers (Name);"
-        loc_header += "Telefonnummer Ansprechpartner;"
-        loc_header += (
-            "Was wir sonst noch wissen sollten (tägliche Medikamente, Allergien o.ä);"
-        )
-        loc_header += "Unsere Tochter nimmt an der Ferienwoche der Mädchenjugend in Harthausen teil.;"
-        loc_header += "Ermäßigter Beitrag;"
-        loc_header += "Ich möchte auch über weitere Veranstaltungen der Schönstattjugend per Mail informiert werden;"
-
-        loc_header += "Person 1:;"
-        loc_header += "Person 2:;"
-        loc_header += "Schadensfreisspruch;"
-        loc_header += "Fotografieren;"
-        loc_header += (
-            "Die Anmeldung ist erst mit der Überweisung des Teilnahmebeitrags wirksam;"
-        )
-        loc_header += "Personenbezogene Daten;"
-        loc_header += "Ich bin damit einverstanden, dass im Falle einer Infektion meine Kontaktdaten an das Gesundheitsamt weitergegeben werden"
-        loc_header += "\n"
-
-        outfile.write(loc_header)
-
-        for part in participants:
-            loc_row = ""
-            loc_row += ";"  # Lfd-Nr
-            loc_row += ";"  # Eingegangen
-            loc_row += ";"  # Zelt
-            loc_row += part.lastname + ";"
-            loc_row += part.firstname + ";"
-            loc_row += part.street + ";"
-            loc_row += str(part.zipcode) + ";"
-            loc_row += part.village + ";"
-            loc_row += ";"  # Alter
-            loc_row += ";"  # Heute
-            loc_row += part.birthdate + ";"
-            loc_row += part.phone + ";"
-            loc_row += part.mail + ";"
-            loc_row += part.emergency_contact + ";"
-            loc_row += part.emergency_phone + ";"
-            loc_row += part.other + ";"
-
-            loc_row += bool_to_tex_yes_no(part.is_afe) + ";"
-            loc_row += bool_to_tex_yes_no(part.is_reduced) + ";"
-            loc_row += bool_to_tex_yes_no(part.is_event_mail) + ";"
-
-            loc_row += part.get_friend_string(0) + ";"
-            loc_row += part.get_friend_string(1) + ";"
-
-            loc_row += "Zugestimmt;"  # Schadensfreisspruch
-
-            loc_row += bool_to_tex_zugestimmt(part.is_photo_allowed) + ";"
-            loc_row += "Zugestimmt;"  #  Teilnahmebeitrag mit Überweisung wirksam
-            loc_row += "Zugestimmt;"  # Personenbezogene Daten
-            loc_row += "Zugestimmt"  # Gesundheitsamt
-
-            loc_row += "\n"
-            outfile.write(loc_row)
+        outfile.writelines(loc_row_str)
     # parse_input_csv()
 
 
