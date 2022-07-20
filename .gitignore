@@ -1,2 +1,3 @@
 input.csv
+*.csv*
 backend/output_maps/

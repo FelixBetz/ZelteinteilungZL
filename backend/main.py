@@ -129,7 +129,9 @@ def save_participants_to_csv():
 
 def parse_input_csv():
     """parses zeltlager participants from input csv file"""
-    global input_file, csv_revison_num
+    global input_file, csv_revison_num, participants
+
+    participants = []
 
     # parse csv_revison_num
 
@@ -142,7 +144,7 @@ def parse_input_csv():
                 if loc_comp_num > csv_revison_num:
                     csv_revison_num = loc_comp_num
                     loc_rev_filename = file
-    print(csv_revison_num)
+
     if csv_revison_num >= 0:
         input_file = INPUT_FILE_PATH + loc_rev_filename
 
@@ -160,9 +162,23 @@ def parse_input_csv():
 
             if i >= 1:
 
+                # parse tent number
+                if row[2] == "":
+                    loc_tent = 9999
+                else:
+                    try:
+                        loc_tent = int(row[2].strip())
+                    except:
+                        print(
+                            "ERROR: failed to parse tent number: ", row[2], "row: ", row
+                        )
+                        raise
+
                 loc_lastname = row[3].strip()
                 loc_firstname = row[4].strip()
                 loc_street = row[5].strip()
+
+                # parse zip code
                 try:
                     loc_zipcode = int(row[6].strip())
                 except:
@@ -212,8 +228,6 @@ def parse_input_csv():
                 loc_is_photo_allowed = parse_yes_no(row[22])
 
                 loc_friends = []
-
-                loc_tent = 22
 
                 loc_participant = Participant(
                     loc_id,
