@@ -16,6 +16,7 @@ interface Participant {
 	village: string;
 	zipcode: number;
 	other: string;
+	tent: number;
 }
 
 export class cTentParticipant {
@@ -37,7 +38,8 @@ export class cTentParticipant {
 		public is_photo_allowed: boolean,
 		public is_reduced: boolean,
 		public friends: string[],
-		public other: string
+		public other: string,
+		public tent: number
 	) {
 		this.calculateAge();
 	}
@@ -89,7 +91,8 @@ export async function apiGetParticipants(): Promise<cTentParticipant[]> {
 						res[i].is_photo_allowed,
 						res[i].is_reduced,
 						res[i].friends,
-						res[i].other
+						res[i].other,
+						res[i].tent
 					)
 				);
 			}
@@ -125,7 +128,8 @@ export async function apiGetParticipant(arg_id: number): Promise<cTentParticipan
 				res.is_photo_allowed,
 				res.is_reduced,
 				res.friends,
-				res.other
+				res.other,
+				res.tent
 			);
 
 			return ret;

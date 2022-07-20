@@ -36,7 +36,7 @@ def parse_input_csv():
         for check_row in csvfile:
             cnt_semicolon = check_row.count(";")
             if cnt_semicolon != 25:
-                print(check_row)
+                print("ERROR at row:", check_row)
 
     with open(INPUT_FILE, newline="") as csvfile:
         spamreader = csv.reader(csvfile, delimiter=";", quotechar="|")
@@ -52,7 +52,7 @@ def parse_input_csv():
                     loc_zipcode = int(row[6].strip())
                 except:
                     print(
-                        "failed to parse zip coce: i: ",
+                        "ERROR: failed to parse zip coce: i: ",
                         i,
                         loc_firstname,
                         " ",
@@ -60,7 +60,7 @@ def parse_input_csv():
                     )
                     raise
                 loc_village = row[7].strip()
-                print(row[10])
+
                 try:
                     loc_time_string = datetime.strptime(
                         row[10].strip(), "%d.%m.%Y"
@@ -98,6 +98,8 @@ def parse_input_csv():
 
                 loc_friends = []
 
+                loc_tent = 22
+
                 loc_participant = Participant(
                     loc_id,
                     loc_lastname,
@@ -115,6 +117,7 @@ def parse_input_csv():
                     loc_is_afe,
                     loc_is_event_mail,
                     loc_other,
+                    loc_tent,
                 )
                 loc_id += 1
 
@@ -164,7 +167,7 @@ def get_participant():
 
 @app.route("/api/maps", methods=["POST"])
 def get_maps():
-    """returns todo"""
+    """generate maps by given zipcode an location"""
     zip_codes = []
     req = request.form.get("zipCodes")
     for zip_code in json.loads(req):

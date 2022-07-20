@@ -44,7 +44,7 @@
 	<Container>
 		<Form>
 			<Row>
-				<Col><h1>{participant.getFullname() + ' (Zelt X)'}</h1></Col>
+				<Col><h1>{participant.getFullname() + ' (Zelt ' + participant.tent + ')'}</h1></Col>
 			</Row>
 			<Row>
 				<h3>Persönliche Infos:</h3>
@@ -171,7 +171,7 @@
 				</Col>
 				<Col>
 					<Row>
-						<h3>todo:</h3>
+						<h3>&nbsp;</h3>
 						<Col>
 							<FormGroup floating>
 								<Input type="checkbox" label="ermäßigt" bind:checked={participant.is_reduced} />

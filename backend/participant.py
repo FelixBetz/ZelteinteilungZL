@@ -22,6 +22,7 @@ class Participant:
         arg_is_afe,
         arg_is_event_mail,
         arg_other,
+        arg_tent,
     ):
         self.identifier = arg_id
         self.lastname = arg_lastname
@@ -47,6 +48,7 @@ class Participant:
         self.is_photo_allowed = arg_is_photo_allowed
 
         self.other = arg_other
+        self.tent = arg_tent
 
     def __str__(self):
         friends_str = ""
