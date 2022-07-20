@@ -6,6 +6,7 @@
 	import { schemeCategory10 } from 'd3-scale-chromatic';
 	import { select, selectAll } from 'd3-selection';
 	import { drag } from 'd3-drag';
+	import { transition } from 'd3-transition';
 
 	import {
 		forceSimulation,
@@ -33,14 +34,15 @@
 		forceManyBody,
 		forceCenter,
 		forceX,
-		forceY
+		forceY,
+		transition
 	};
 
 	export let graph: IData;
 
-	let svg;
-	let width = 1500;
-	let height = 750;
+	let svg: SVGSVGElement;
+	export let width = 1500;
+	export let height = 750;
 	const nodeRadius = 10;
 
 	const padding = { top: 20, right: 40, bottom: 40, left: 25 };
@@ -139,12 +141,39 @@
 	function resize() {
 		({ width, height } = svg.getBoundingClientRect());
 	}
+
+	function zoomFit(paddingPercent: number, transitionDuration: number) {
+		var bounds = svg.getBBox();
+		var parent = svg.parentElement;
+		var fullWidth = parent.clientWidth,
+			fullHeight = parent.clientHeight;
+		var width = bounds.width,
+			height = bounds.height;
+		var midX = bounds.x + width / 2,
+			midY = bounds.y + height / 2;
+		if (width == 0 || height == 0) return; // nothing to fit
+		var scale = (paddingPercent || 0.75) / Math.max(width / fullWidth, height / fullHeight);
+		var translate = [fullWidth / 2 - scale * midX, fullHeight / 2 - scale * midY];
+
+		//console.trace('zoomFit', translate, scale);
+		console.trace(translate);
+
+		//http://bl.ocks.org/TWiStErRob/b1c62730e01fe33baa2dea0d0aa29359
+		/* todo
+		let test = d3
+			.select(svg)
+			.transition()
+			.duration(transitionDuration || 0) // milliseconds
+			.call(zoom.translate(translate).scale(scale).event);*/
+	}
 </script>
 
 <svelte:window on:resize={resize} />
 
+<button on:click={() => zoomFit(0.95, 500)}>fit</button>
 <!-- SVG was here -->
-<svg bind:this={svg} {width} {height} style="border: 1px solid black">
+<!--<svg bind:this={svg} {width} {height} style="border: 1px black solid">-->
+<svg bind:this={svg} style="border: 1px black solid">
 	{#each links as link}
 		<g stroke="#999" stroke-opacity="0.6">
 			<line

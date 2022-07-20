@@ -97,7 +97,7 @@ export async function apiGetMaps(zipCodes: ZipCodes[]): Promise<string> {
 
 	return response;
 }
-interface TmpTodo {
+export interface TmpTodo {
 	friends: string[];
 	name: string;
 }
