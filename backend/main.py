@@ -1,6 +1,6 @@
 """main file of ZelteinteilungZL"""
 
-
+import time
 import csv
 from datetime import datetime
 import inspect
@@ -8,7 +8,6 @@ import json
 from flask import Flask, abort, jsonify, request, send_from_directory
 from flask_cors import CORS
 from maps import generate_maps
-
 from participant import Participant
 
 
@@ -21,20 +20,36 @@ cors = CORS(app)
 app.config["MAPS_OUTPUT"] = "output_maps"
 
 
+def parse_yes_no(arg_string):
+    """parses formular ja/zugestimmt to boolean"""
+    arg_string = arg_string.strip()
+    if arg_string in ("ja", "Zugestimmt", "zugestimmt"):
+        return True
+    return False
+
+
 def parse_input_csv():
     """parses zeltlager participants from input csv file"""
-    with open(INPUT_FILE, newline="") as csvfile:
 
+    # check number of semicolons
+    with open(INPUT_FILE, newline="") as csvfile:
+        for check_row in csvfile:
+            cnt_semicolon = check_row.count(";")
+            if cnt_semicolon != 25:
+                print(check_row)
+
+    with open(INPUT_FILE, newline="") as csvfile:
         spamreader = csv.reader(csvfile, delimiter=";", quotechar="|")
         loc_id = 0
         for i, row in enumerate(spamreader):
 
             if i >= 1:
 
-                loc_lastname = row[3]
-                loc_firstname = row[4]
+                loc_lastname = row[3].strip()
+                loc_firstname = row[4].strip()
+                loc_street = row[5].strip()
                 try:
-                    loc_zipcode = int(row[6])
+                    loc_zipcode = int(row[6].strip())
                 except:
                     print(
                         "failed to parse zip coce: i: ",
@@ -44,9 +59,16 @@ def parse_input_csv():
                         loc_lastname,
                     )
                     raise
-                loc_village = row[7]
+                loc_village = row[7].strip()
+                print(row[10])
                 try:
-                    loc_birthdate = (datetime.strptime(row[10], "%d.%m.%Y").date(),)
+                    loc_time_string = datetime.strptime(
+                        row[10].strip(), "%d.%m.%Y"
+                    ).date()
+                    loc_tuple = loc_time_string.timetuple()
+                    timestamp = time.mktime(loc_tuple)
+                    loc_birthdate = timestamp
+
                 except:
                     print(
                         "failed to parse birthdate: i: ",
@@ -56,15 +78,43 @@ def parse_input_csv():
                         loc_lastname,
                     )
                     raise
+                loc_birthdate = row[10].strip()
+
+                loc_phone = row[11].strip()
+                loc_mail = row[12].strip()
+                loc_emergency_contact = row[13].strip()
+                loc_emergency_phone = row[14].strip()
+
+                loc_other = row[15].strip()
+
+                loc_is_afe = parse_yes_no(row[16])
+                loc_is_reduced = parse_yes_no(row[17])
+                loc_is_event_mail = parse_yes_no(row[18])
+
+                # row[19] = friend1
+                # row[20] = friend2
+
+                loc_is_photo_allowed = parse_yes_no(row[22])
+
                 loc_friends = []
 
                 loc_participant = Participant(
                     loc_id,
                     loc_lastname,
                     loc_firstname,
+                    loc_street,
                     loc_zipcode,
                     loc_village,
                     loc_birthdate,
+                    loc_phone,
+                    loc_mail,
+                    loc_emergency_contact,
+                    loc_emergency_phone,
+                    loc_is_reduced,
+                    loc_is_photo_allowed,
+                    loc_is_afe,
+                    loc_is_event_mail,
+                    loc_other,
                 )
                 loc_id += 1
 
@@ -136,6 +186,7 @@ if __name__ == "__main__":
     parse_input_csv()
 
     for index, participant in enumerate(participants):
-        print("[", index, "] ", participant)
+        pass
+        # print("[", index, "] ", participant)
 
     app.run(host="0.0.0.0", port=8080, debug=True)

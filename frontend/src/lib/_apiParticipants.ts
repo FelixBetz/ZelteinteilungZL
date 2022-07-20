@@ -1,6 +1,6 @@
 interface Participant {
-	address: string;
-	birthdate: string[];
+	street: string;
+	birthdate: string;
 	emergency_contact: string;
 	emergency_phone: string;
 	firstname: string;
@@ -15,6 +15,7 @@ interface Participant {
 	phone: string;
 	village: string;
 	zipcode: number;
+	other: string;
 }
 
 export class cTentParticipant {
@@ -23,18 +24,29 @@ export class cTentParticipant {
 		public identifier: number,
 		public firstname: string,
 		public lastname: string,
+		public street: string,
 		public zipcode: number,
 		public village: string,
-		public birthdateStr: string,
-		public friends: string[]
+		public birthdate: string,
+		public phone: string,
+		public mail: string,
+		public emergency_contact: string,
+		public emergency_phone: string,
+		public is_afe: boolean,
+		public is_event_mail: boolean,
+		public is_photo_allowed: boolean,
+		public is_reduced: boolean,
+		public friends: string[],
+		public other: string
 	) {
 		this.calculateAge();
 	}
 
 	private calculateAge() {
 		const today = new Date();
-		const birthDate = new Date(this.birthdateStr);
 
+		const [day, month, year] = this.birthdate.split('.');
+		const birthDate = new Date(+year, +month - 1, +day); //(0 = January to 11 = December)
 		const diffMilliseconds = today.getTime() - birthDate.getTime();
 		this.age = diffMilliseconds / 1000 / 3600 / 24 / 365;
 	}
@@ -64,10 +76,20 @@ export async function apiGetParticipants(): Promise<cTentParticipant[]> {
 						res[i].identifier,
 						res[i].firstname,
 						res[i].lastname,
+						res[i].street,
 						res[i].zipcode,
 						res[i].village,
-						res[i].birthdate[0],
-						res[i].friends
+						res[i].birthdate,
+						res[i].phone,
+						res[i].mail,
+						res[i].emergency_contact,
+						res[i].emergency_phone,
+						res[i].is_afe,
+						res[i].is_event_mail,
+						res[i].is_photo_allowed,
+						res[i].is_reduced,
+						res[i].friends,
+						res[i].other
 					)
 				);
 			}
@@ -90,10 +112,20 @@ export async function apiGetParticipant(arg_id: number): Promise<cTentParticipan
 				res.identifier,
 				res.firstname,
 				res.lastname,
+				res.street,
 				res.zipcode,
 				res.village,
-				res.birthdate[0],
-				res.friends
+				res.birthdate,
+				res.phone,
+				res.mail,
+				res.emergency_contact,
+				res.emergency_phone,
+				res.is_afe,
+				res.is_event_mail,
+				res.is_photo_allowed,
+				res.is_reduced,
+				res.friends,
+				res.other
 			);
 
 			return ret;
@@ -105,8 +137,6 @@ export async function apiGetParticipant(arg_id: number): Promise<cTentParticipan
 
 	return response;
 }
-
-
 
 export interface ZipCodes {
 	zipCode: number;

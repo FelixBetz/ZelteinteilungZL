@@ -9,31 +9,44 @@ class Participant:
         arg_id,
         arg_lastname,
         arg_firstname,
+        arg_street,
         arg_zipcode,
         arg_village,
         arg_birthdate,
+        arg_phone,
+        arg_mail,
+        arg_emergency_contact,
+        arg_emergency_phone,
+        arg_is_reduced,
+        arg_is_photo_allowed,
+        arg_is_afe,
+        arg_is_event_mail,
+        arg_other,
     ):
         self.identifier = arg_id
-        self.firstname = arg_firstname
         self.lastname = arg_lastname
+        self.firstname = arg_firstname
         self.birthdate = arg_birthdate
 
-        self.address = "todo street"
+        self.street = arg_street
         self.zipcode = arg_zipcode
         self.village = arg_village
 
-        self.mail = "test@web.de"
-        self.phone = "07392/17792"
+        self.phone = arg_phone
+        self.mail = arg_mail
 
-        self.emergency_contact = "Max Mustermann"
-        self.emergency_phone = "todo"
+        self.emergency_contact = arg_emergency_contact
+        self.emergency_phone = arg_emergency_phone
+
+        self.is_afe = arg_is_afe
+        self.is_reduced = arg_is_reduced
+        self.is_event_mail = arg_is_event_mail
 
         self.friends = []
 
-        self.is_reduced = False
-        self.is_photo_allowed = False
-        self.is_afe = False
-        self.is_event_mail = False
+        self.is_photo_allowed = arg_is_photo_allowed
+
+        self.other = arg_other
 
     def __str__(self):
         friends_str = ""

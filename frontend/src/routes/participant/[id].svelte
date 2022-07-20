@@ -8,10 +8,24 @@
 	import { Container, Input, Row, Col, Form, FormGroup } from 'sveltestrap/src';
 
 	let participant: cTentParticipant | null = null;
+	let inputBirthdateValue: string;
+
+	function parseTimeStr(argParticipant: cTentParticipant | null): string {
+		if (argParticipant == null) {
+			return '';
+		}
+		let splittedBitdateStr = argParticipant.birthdate.split('.');
+		let y = splittedBitdateStr[2];
+		let m = splittedBitdateStr[1];
+		let d = splittedBitdateStr[0];
+		inputBirthdateValue = y + '-' + m + '-' + d;
+		return inputBirthdateValue;
+	}
+
+	$: inputBirthdateValue = parseTimeStr(participant);
 
 	async function getParticipant(id: number) {
 		participant = await apiGetParticipant(id);
-		console.log(participant);
 	}
 
 	onMount(() => {
@@ -56,7 +70,16 @@
 						<Input
 							type="date"
 							placeholder="Enter birthdate"
-							bind:value={participant.birthdateStr}
+							bind:value={inputBirthdateValue}
+							on:change={() => {
+								let splittedBitdateStr = inputBirthdateValue.split('-');
+								let y = splittedBitdateStr[0];
+								let m = splittedBitdateStr[1];
+								let d = splittedBitdateStr[2];
+								if (participant != undefined) {
+									participant.birthdate = d + '.' + m + '.' + y;
+								}
+							}}
 						/>
 						<div slot="label">birthdate</div>
 					</FormGroup>
@@ -66,7 +89,7 @@
 				<h3>Adresse:</h3>
 				<Col>
 					<FormGroup floating>
-						<Input placeholder="Enter street" />
+						<Input placeholder="Enter street" bind:value={participant.street} />
 						<div slot="label">street</div>
 					</FormGroup>
 				</Col>
@@ -85,17 +108,18 @@
 			</Row>
 			<Row>
 				<Col>
+					<!--contact data-->
 					<Row>
 						<h3>Kontaktdaten:</h3>
 						<Col>
 							<FormGroup floating>
-								<Input type="email" />
+								<Input type="email" bind:value={participant.mail} />
 								<div slot="label">mail</div>
 							</FormGroup>
 						</Col>
 						<Col>
 							<FormGroup floating>
-								<Input placeholder="Enter phone number" />
+								<Input placeholder="Enter phone number" bind:value={participant.phone} />
 								<div slot="label">phone</div>
 							</FormGroup>
 						</Col>
@@ -103,17 +127,18 @@
 				</Col>
 
 				<Col>
+					<!--emercency contact-->
 					<Row>
 						<h3>Notfallkontakt:</h3>
 						<Col>
 							<FormGroup floating>
-								<Input />
+								<Input bind:value={participant.emergency_contact} />
 								<div slot="label">name</div>
 							</FormGroup>
 						</Col>
 						<Col>
 							<FormGroup floating>
-								<Input placeholder="Enter phone number" />
+								<Input placeholder="Enter phone number" bind:value={participant.emergency_phone} />
 								<div slot="label">phone</div>
 							</FormGroup>
 						</Col>
@@ -123,12 +148,13 @@
 
 			<Row>
 				<Col>
+					<!--friends-->
 					<Row>
 						<h3>Mit wem möchte ich ins Zelt:</h3>
 						<Row>
 							<Col>
 								<FormGroup floating>
-									<Input placeholder="Enter name" />
+									<Input placeholder="Enter name" bind:value={participant.friends[0]} />
 									<div slot="label">friend1</div>
 								</FormGroup>
 							</Col>
@@ -136,7 +162,7 @@
 						<Row>
 							<Col>
 								<FormGroup floating>
-									<Input placeholder="Enter name" />
+									<Input placeholder="Enter name" bind:value={participant.friends[1]} />
 									<div slot="label">friend2</div>
 								</FormGroup>
 							</Col>
@@ -148,22 +174,26 @@
 						<h3>todo:</h3>
 						<Col>
 							<FormGroup floating>
-								<Input type="checkbox" label="ermäßigt" />
+								<Input type="checkbox" label="ermäßigt" bind:checked={participant.is_reduced} />
 							</FormGroup>
 						</Col>
 						<Col>
 							<FormGroup floating>
-								<Input type="checkbox" label="fotografieren" />
+								<Input
+									type="checkbox"
+									label="fotografieren"
+									bind:checked={participant.is_photo_allowed}
+								/>
 							</FormGroup>
 						</Col>
 						<Col>
 							<FormGroup floating>
-								<Input type="checkbox" label="Tochter Afe" />
+								<Input type="checkbox" label="Tochter Afe" bind:checked={participant.is_afe} />
 							</FormGroup>
 						</Col>
 						<Col>
 							<FormGroup floating>
-								<Input type="checkbox" label="verteiler" />
+								<Input type="checkbox" label="verteiler" bind:checked={participant.is_event_mail} />
 							</FormGroup>
 						</Col>
 					</Row>
@@ -172,7 +202,15 @@
 
 			<Row>
 				<h3>Sonstiges:</h3>
-				<Col><Input rows={1} type="textarea" bind:inner on:input={resize} /></Col>
+				<Col
+					><Input
+						rows={1}
+						type="textarea"
+						bind:inner
+						bind:value={participant.other}
+						on:input={resize}
+					/></Col
+				>
 			</Row>
 		</Form>
 	</Container>
