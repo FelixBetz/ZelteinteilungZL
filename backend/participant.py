@@ -78,3 +78,9 @@ class Participant:
     def get_name(self):
         """returns lastname and firstname"""
         return self.lastname, self.firstname
+
+    def get_friend_string(self, index):
+        """return friend string by index"""
+        if index > 1 or (index + 1) > len(self.friends):
+            return ""
+        return self.friends[index]
