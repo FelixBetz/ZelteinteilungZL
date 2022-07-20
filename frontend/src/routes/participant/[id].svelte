@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { apiGetParticipant } from '$lib/_apiParticipants';
+	import { apiGetParticipant, apiPostParticipant } from '$lib/_apiParticipants';
 
 	import type { cTentParticipant } from '$lib/_apiParticipants';
 
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { Container, Input, Row, Col, Form, FormGroup } from 'sveltestrap/src';
+	import { Container, Input, Row, Col, Form, FormGroup, Button } from 'sveltestrap/src';
 
 	let participant: cTentParticipant | null = null;
 	let inputBirthdateValue: string;
@@ -26,6 +26,10 @@
 
 	async function getParticipant(id: number) {
 		participant = await apiGetParticipant(id);
+	}
+
+	async function postParticipant() {
+		participant = await apiPostParticipant(participant);
 	}
 
 	onMount(() => {
@@ -213,5 +217,10 @@
 				>
 			</Row>
 		</Form>
+		<Row style="margin-top: 20px">
+			<Col sm="12"
+				><Button class="w-100" color="primary" on:click={() => postParticipant()}>Save</Button>
+			</Col>
+		</Row>
 	</Container>
 {/if}

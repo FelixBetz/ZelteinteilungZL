@@ -73,30 +73,8 @@ export async function apiGetParticipants(): Promise<cTentParticipant[]> {
 		.then((res: Participant[]) => {
 			const ret: cTentParticipant[] = [];
 			for (let i = 0; i < res.length; i++) {
-				ret.push(
-					new cTentParticipant(
-						res[i].identifier,
-						res[i].firstname,
-						res[i].lastname,
-						res[i].street,
-						res[i].zipcode,
-						res[i].village,
-						res[i].birthdate,
-						res[i].phone,
-						res[i].mail,
-						res[i].emergency_contact,
-						res[i].emergency_phone,
-						res[i].is_afe,
-						res[i].is_event_mail,
-						res[i].is_photo_allowed,
-						res[i].is_reduced,
-						res[i].friends,
-						res[i].other,
-						res[i].tent
-					)
-				);
+				ret.push(partipantInterfaceToParticipantObject(res[i]));
 			}
-
 			return ret;
 		})
 		.catch((error: Error) => {
@@ -111,26 +89,7 @@ export async function apiGetParticipant(arg_id: number): Promise<cTentParticipan
 	const response = await fetch(baseUrl + '/participant?id=' + arg_id)
 		.then((res) => res.json())
 		.then((res: Participant) => {
-			const ret: cTentParticipant = new cTentParticipant(
-				res.identifier,
-				res.firstname,
-				res.lastname,
-				res.street,
-				res.zipcode,
-				res.village,
-				res.birthdate,
-				res.phone,
-				res.mail,
-				res.emergency_contact,
-				res.emergency_phone,
-				res.is_afe,
-				res.is_event_mail,
-				res.is_photo_allowed,
-				res.is_reduced,
-				res.friends,
-				res.other,
-				res.tent
-			);
+			const ret: cTentParticipant = partipantInterfaceToParticipantObject(res);
 
 			return ret;
 		})
@@ -140,6 +99,116 @@ export async function apiGetParticipant(arg_id: number): Promise<cTentParticipan
 		});
 
 	return response;
+}
+
+function partipantInterfaceToParticipantObject(p: Participant): cTentParticipant {
+	const tentParticipant: cTentParticipant = new cTentParticipant(
+		p.identifier,
+		p.firstname,
+		p.lastname,
+		p.street,
+		p.zipcode,
+		p.village,
+		p.birthdate,
+		p.phone,
+		p.mail,
+		p.emergency_contact,
+		p.emergency_phone,
+		p.is_afe,
+		p.is_event_mail,
+		p.is_photo_allowed,
+		p.is_reduced,
+		p.friends,
+		p.other,
+		p.tent
+	);
+	return tentParticipant;
+}
+
+function participantObjectToParticipantInterface(p: cTentParticipant): Participant {
+	const participant: Participant = {
+		street: p.street,
+		birthdate: p.birthdate,
+		emergency_contact: p.emergency_contact,
+		emergency_phone: p.emergency_phone,
+		firstname: p.firstname,
+		friends: p.friends,
+		identifier: p.identifier,
+		is_afe: p.is_afe,
+		is_event_mail: p.is_event_mail,
+		is_photo_allowed: p.is_photo_allowed,
+		is_reduced: p.is_reduced,
+		lastname: p.lastname,
+		mail: p.mail,
+		phone: p.phone,
+		village: p.village,
+		zipcode: p.zipcode,
+		other: p.other,
+		tent: p.tent
+	};
+	return participant;
+}
+
+export async function apiPostParticipant(
+	arg_participant: cTentParticipant | null
+): Promise<cTentParticipant | null> {
+	if (arg_participant == null) {
+		return null;
+	}
+
+	const participant = participantObjectToParticipantInterface(arg_participant);
+	const formData = new FormData();
+	formData.append('participant', JSON.stringify(participant));
+	const response = await fetch(baseUrl + '/participant?id=' + participant.identifier, {
+		method: 'POST',
+		body: formData
+	})
+		.then((res) => res.json())
+		.then((res: Participant) => {
+			const ret: cTentParticipant = partipantInterfaceToParticipantObject(res);
+
+			return ret;
+		})
+		.catch((error: Error) => {
+			console.error(error);
+			return null;
+		});
+
+	return response;
+
+	/*
+		const response = await fetch(baseUrl + '/participant?id=' + arg_id)
+			.then((res) => res.json())
+			.then((res: Participant) => {
+				const ret: cTentParticipant = new cTentParticipant(
+					res.identifier,
+					res.firstname,
+					res.lastname,
+					res.street,
+					res.zipcode,
+					res.village,
+					res.birthdate,
+					res.phone,
+					res.mail,
+					res.emergency_contact,
+					res.emergency_phone,
+					res.is_afe,
+					res.is_event_mail,
+					res.is_photo_allowed,
+					res.is_reduced,
+					res.friends,
+					res.other,
+					res.tent
+				);
+	
+				return ret;
+			})
+			.catch((error: Error) => {
+				console.error(error);
+				return null;
+			});
+	
+		return response;*/
 }
 
 export interface ZipCodes {

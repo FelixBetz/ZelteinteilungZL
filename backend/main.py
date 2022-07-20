@@ -150,13 +150,42 @@ def get_participants():
     return jsonify(ret)
 
 
-@app.route("/api/participant", methods=["GET"])
+@app.route("/api/participant", methods=["GET", "POST"])
 def get_participant():
     """returns participant by given id as json"""
     ret = {}
     try:
-        loc_id = int(request.args.get("id"))
-        ret = props(participants[loc_id])
+        if request.method == "POST":
+
+            req = request.form.get("participant")
+            req = json.loads(req)
+
+            loc_id = req["identifier"]
+            participants[loc_id].tent = 234
+
+            participants[loc_id].identifier = req["identifier"]
+            participants[loc_id].lastname = req["lastname"]
+            participants[loc_id].firstname = req["firstname"]
+            participants[loc_id].birthdate = req["birthdate"]
+            participants[loc_id].street = req["street"]
+            participants[loc_id].zipcode = req["zipcode"]
+            participants[loc_id].village = req["village"]
+            participants[loc_id].phone = req["phone"]
+            participants[loc_id].mail = req["mail"]
+            participants[loc_id].emergency_contact = req["emergency_contact"]
+            participants[loc_id].emergency_phone = req["emergency_phone"]
+            participants[loc_id].is_afe = req["is_afe"]
+            participants[loc_id].is_reduced = req["is_reduced"]
+            participants[loc_id].is_event_mail = req["is_event_mail"]
+            participants[loc_id].friends = req["friends"]
+            participants[loc_id].is_photo_allowed = req["is_photo_allowed"]
+            participants[loc_id].other = req["other"]
+            participants[loc_id].tent = req["tent"]
+
+            ret = props(participants[loc_id])
+        else:
+            loc_id = int(request.args.get("id"))
+            ret = props(participants[loc_id])
 
     except:
         print("ERROR: could not parse id")
