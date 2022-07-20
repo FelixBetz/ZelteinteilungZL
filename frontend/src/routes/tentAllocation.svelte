@@ -2,7 +2,7 @@
 	import { apiGetParticipants } from '$lib/_apiParticipants';
 	import type { cTentParticipant } from '$lib/_apiParticipants';
 	import { onMount } from 'svelte';
-	import { Col, Row, CardBody, CardHeader, CardTitle, Button } from 'sveltestrap/src';
+	import { Col, Row, CardBody, CardHeader, CardTitle } from 'sveltestrap/src';
 	import Tent from '$lib/TentParticipant.svelte';
 	import TentParticipant from '$lib/TentParticipant.svelte';
 
@@ -27,7 +27,7 @@
 	async function getParticipants() {
 		participants = await apiGetParticipants();
 		for (let i = 0; i < participants.length; i++) {
-			baskets[0].items[baskets[0].items.length] = participants[i].id;
+			baskets[0].items[baskets[0].items.length] = participants[i].identifier;
 		}
 
 		//baskets[0].items.push('safsdf'); //participants[i].firstname;

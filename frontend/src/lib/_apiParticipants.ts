@@ -84,8 +84,7 @@ export async function apiGetParticipants(): Promise<cTentParticipant[]> {
 
 export async function apiGetParticipant(arg_id: number): Promise<cTentParticipant | null> {
 	const response = await fetch(baseUrl + '/participant?id=' + arg_id)
-		.then(res => res.json()
-		)
+		.then((res) => res.json())
 		.then((res: Participant) => {
 			const ret: cTentParticipant = new cTentParticipant(
 				res.identifier,
@@ -94,7 +93,8 @@ export async function apiGetParticipant(arg_id: number): Promise<cTentParticipan
 				res.zipcode,
 				res.village,
 				res.birthdate[0],
-				res.friends);
+				res.friends
+			);
 
 			return ret;
 		})
@@ -121,6 +121,7 @@ export async function apiGetMaps(zipCodes: ZipCodes[]): Promise<string> {
 		body: formData
 	})
 		.then((res) => {
+			res;
 			return 'ok';
 		})
 		.catch((error: Error) => {

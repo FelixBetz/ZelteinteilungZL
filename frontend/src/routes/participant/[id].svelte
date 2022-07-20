@@ -5,7 +5,7 @@
 
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { Container, Button, Input, Row, Col, Form, FormGroup } from 'sveltestrap/src';
+	import { Container, Input, Row, Col, Form, FormGroup } from 'sveltestrap/src';
 
 	let participant: cTentParticipant | null = null;
 

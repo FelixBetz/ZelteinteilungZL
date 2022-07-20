@@ -60,7 +60,7 @@
 		let sort = (a: cTentParticipant, b: cTentParticipant) => {
 			switch (column) {
 				case IColumn.id:
-					return numberSort(a.id, b.id);
+					return numberSort(a.identifier, b.identifier);
 				case IColumn.zipCode:
 					return numberSort(a.zipcode, b.zipcode);
 				case IColumn.age:
@@ -116,7 +116,9 @@
 		await apiGetMaps(zipCodes);
 	}
 
-	function reviewParticipants() {}
+	function reviewParticipants() {
+		console.log('todo reviewParticipants');
+	}
 </script>
 
 <svelte:head>
@@ -155,8 +157,8 @@
 		{#each filterdParticipants as participant}
 			<tr>
 				<th scope="row">
-					<a target="_blank" href={'/participant/' + participant.id}>
-						{participant.id}
+					<a target="_blank" href={'/participant/' + participant.identifier}>
+						{participant.identifier}
 					</a>
 				</th>
 				<td>{participant.firstname}</td>
