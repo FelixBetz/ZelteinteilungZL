@@ -3,7 +3,7 @@
 
 	import type { cTentParticipant, ZipCodes } from '$lib/_apiParticipants';
 
-	import { Table, Button, Input } from 'sveltestrap/src';
+	import { Table, Button, Input, Row, Col } from 'sveltestrap/src';
 	import { onMount } from 'svelte';
 	import NavbarParticipants from '$lib/NavbarParticipants.svelte';
 
@@ -30,6 +30,20 @@
 	let filterdParticipants: cTentParticipant[] = [];
 	let serachString = '';
 	let sortBy = { col: IColumn, ascending: true };
+
+	let avgAge = 0;
+	$: avgAge = calculateAvgAge(participants);
+
+	function calculateAvgAge(arg_participants: cTentParticipant[]): number {
+		if (arg_participants.length == 0) {
+			return 0;
+		}
+		let ageSum = 0;
+		for (let i = 0; i < arg_participants.length; i++) {
+			ageSum += arg_participants[i].age;
+		}
+		return Math.round((ageSum / arg_participants.length) * 100) / 100;
+	}
 
 	function numberSort(a: number, b: number) {
 		if (sortBy.ascending == true) {
@@ -60,7 +74,7 @@
 		let sort = (a: cTentParticipant, b: cTentParticipant) => {
 			switch (column) {
 				case IColumn.id:
-					return numberSort(a.id, b.id);
+					return numberSort(a.identifier, b.identifier);
 				case IColumn.zipCode:
 					return numberSort(a.zipcode, b.zipcode);
 				case IColumn.age:
@@ -115,6 +129,10 @@
 
 		await apiGetMaps(zipCodes);
 	}
+
+	function reviewParticipants() {
+		console.log('todo reviewParticipants');
+	}
 </script>
 
 <svelte:head>
@@ -123,9 +141,15 @@
 
 <NavbarParticipants />
 
-<div style="margin-top: 10px;" />
-<Button on:click={getParticipants} color="secondary">Refresh</Button>
-<Button on:click={getMaps} color="secondary">generate Maps</Button>
+<Row style="padding: 10px;">
+	<Col sm="3">
+		<Button on:click={reviewParticipants} color="warning" on:click={getParticipants}>Refresh</Button
+		>
+		<Button color="primary">Review participants</Button>
+		<Button on:click={getMaps} color="primary">generate Maps</Button>
+	</Col>
+	<Col sm="3">average age: {avgAge}</Col>
+</Row>
 
 <Input
 	bind:value={serachString}
@@ -147,7 +171,11 @@
 	<tbody>
 		{#each filterdParticipants as participant}
 			<tr>
-				<th scope="row">{participant.id}</th>
+				<th scope="row">
+					<a target="_blank" href={'/participant/' + participant.identifier}>
+						{participant.identifier}
+					</a>
+				</th>
 				<td>{participant.firstname}</td>
 				<td>{participant.lastname}</td>
 				<td>{participant.zipcode}</td>

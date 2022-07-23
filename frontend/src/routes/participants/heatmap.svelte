@@ -12,7 +12,6 @@
 <NavbarParticipants />
 <!--add radnom number to iframe src, to prevent browser from caching the iframe-->
 <iframe
-	on:click={() => console.log('asdfasf')}
 	id="id_heatmap"
 	title="heatmap"
 	src={baseUrl + '/maps/heatmap.html?' + randomNumber}

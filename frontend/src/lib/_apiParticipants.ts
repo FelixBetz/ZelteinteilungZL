@@ -1,32 +1,54 @@
 interface Participant {
-	birthdate: string[];
+	street: string;
+	birthdate: string;
+	emergency_contact: string;
+	emergency_phone: string;
 	firstname: string;
 	friends: string[];
-	id: number;
+	identifier: number;
+	is_afe: boolean;
+	is_event_mail: boolean;
+	is_photo_allowed: boolean;
+	is_reduced: boolean;
 	lastname: string;
+	mail: string;
+	phone: string;
 	village: string;
 	zipcode: number;
-	age: number;
+	other: string;
+	tent: number;
 }
 
 export class cTentParticipant {
 	public age = 0;
 	constructor(
-		public id: number,
+		public identifier: number,
 		public firstname: string,
 		public lastname: string,
+		public street: string,
 		public zipcode: number,
 		public village: string,
-		public birthdateStr: string,
-		public friends: string[]
+		public birthdate: string,
+		public phone: string,
+		public mail: string,
+		public emergency_contact: string,
+		public emergency_phone: string,
+		public is_afe: boolean,
+		public is_event_mail: boolean,
+		public is_photo_allowed: boolean,
+		public is_reduced: boolean,
+		public friends: string[],
+		public other: string,
+		public tent: number
 	) {
 		this.calculateAge();
 	}
 
 	private calculateAge() {
 		const today = new Date();
-		const birthDate = new Date(this.birthdateStr);
 
+		const [day, month, year] = this.birthdate.split('.');
+		const birthDate = new Date(+year, +month - 1, +day); //(0 = January to 11 = December)
 		const diffMilliseconds = today.getTime() - birthDate.getTime();
 		this.age = diffMilliseconds / 1000 / 3600 / 24 / 365;
 	}
@@ -51,19 +73,8 @@ export async function apiGetParticipants(): Promise<cTentParticipant[]> {
 		.then((res: Participant[]) => {
 			const ret: cTentParticipant[] = [];
 			for (let i = 0; i < res.length; i++) {
-				ret.push(
-					new cTentParticipant(
-						res[i].id,
-						res[i].firstname,
-						res[i].lastname,
-						res[i].zipcode,
-						res[i].village,
-						res[i].birthdate[0],
-						res[i].friends
-					)
-				);
+				ret.push(partipantInterfaceToParticipantObject(res[i]));
 			}
-
 			return ret;
 		})
 		.catch((error: Error) => {
@@ -72,6 +83,132 @@ export async function apiGetParticipants(): Promise<cTentParticipant[]> {
 		});
 
 	return response;
+}
+
+export async function apiGetParticipant(arg_id: number): Promise<cTentParticipant | null> {
+	const response = await fetch(baseUrl + '/participant?id=' + arg_id)
+		.then((res) => res.json())
+		.then((res: Participant) => {
+			const ret: cTentParticipant = partipantInterfaceToParticipantObject(res);
+
+			return ret;
+		})
+		.catch((error: Error) => {
+			console.error(error);
+			return null;
+		});
+
+	return response;
+}
+
+function partipantInterfaceToParticipantObject(p: Participant): cTentParticipant {
+	const tentParticipant: cTentParticipant = new cTentParticipant(
+		p.identifier,
+		p.firstname,
+		p.lastname,
+		p.street,
+		p.zipcode,
+		p.village,
+		p.birthdate,
+		p.phone,
+		p.mail,
+		p.emergency_contact,
+		p.emergency_phone,
+		p.is_afe,
+		p.is_event_mail,
+		p.is_photo_allowed,
+		p.is_reduced,
+		p.friends,
+		p.other,
+		p.tent
+	);
+	return tentParticipant;
+}
+
+function participantObjectToParticipantInterface(p: cTentParticipant): Participant {
+	const participant: Participant = {
+		street: p.street,
+		birthdate: p.birthdate,
+		emergency_contact: p.emergency_contact,
+		emergency_phone: p.emergency_phone,
+		firstname: p.firstname,
+		friends: p.friends,
+		identifier: p.identifier,
+		is_afe: p.is_afe,
+		is_event_mail: p.is_event_mail,
+		is_photo_allowed: p.is_photo_allowed,
+		is_reduced: p.is_reduced,
+		lastname: p.lastname,
+		mail: p.mail,
+		phone: p.phone,
+		village: p.village,
+		zipcode: p.zipcode,
+		other: p.other,
+		tent: p.tent
+	};
+	return participant;
+}
+
+export async function apiPostParticipant(
+	arg_participant: cTentParticipant | null
+): Promise<cTentParticipant | null> {
+	if (arg_participant == null) {
+		return null;
+	}
+
+	const participant = participantObjectToParticipantInterface(arg_participant);
+	const formData = new FormData();
+	formData.append('participant', JSON.stringify(participant));
+	const response = await fetch(baseUrl + '/participant?id=' + participant.identifier, {
+		method: 'POST',
+		body: formData
+	})
+		.then((res) => res.json())
+		.then((res: Participant) => {
+			const ret: cTentParticipant = partipantInterfaceToParticipantObject(res);
+
+			return ret;
+		})
+		.catch((error: Error) => {
+			console.error(error);
+			return null;
+		});
+
+	return response;
+
+	/*
+		const response = await fetch(baseUrl + '/participant?id=' + arg_id)
+			.then((res) => res.json())
+			.then((res: Participant) => {
+				const ret: cTentParticipant = new cTentParticipant(
+					res.identifier,
+					res.firstname,
+					res.lastname,
+					res.street,
+					res.zipcode,
+					res.village,
+					res.birthdate,
+					res.phone,
+					res.mail,
+					res.emergency_contact,
+					res.emergency_phone,
+					res.is_afe,
+					res.is_event_mail,
+					res.is_photo_allowed,
+					res.is_reduced,
+					res.friends,
+					res.other,
+					res.tent
+				);
+	
+				return ret;
+			})
+			.catch((error: Error) => {
+				console.error(error);
+				return null;
+			});
+	
+		return response;*/
 }
 
 export interface ZipCodes {
@@ -87,12 +224,45 @@ export async function apiGetMaps(zipCodes: ZipCodes[]): Promise<string> {
 		body: formData
 	})
 		.then((res) => {
-			console.log(res);
+			res;
 			return 'ok';
 		})
 		.catch((error: Error) => {
 			console.error(error);
 			return 'error';
+		});
+
+	return response;
+}
+export interface TmpTodo {
+	friends: string[];
+	name: string;
+}
+
+export interface INode {
+	id: string;
+	group: number;
+}
+export interface ILink {
+	source: string;
+	target: string;
+	value: number;
+}
+
+export interface IData {
+	nodes: INode[];
+	links: ILink[];
+}
+export async function apiGetTmpTodo(): Promise<TmpTodo[]> {
+	const response = await fetch(baseUrl + '/tmp')
+		.then((res) => res.json())
+		.then((res: TmpTodo[]) => {
+			return res
+
+		})
+		.catch((error: Error) => {
+			console.error(error);
+			return [];
 		});
 
 	return response;
