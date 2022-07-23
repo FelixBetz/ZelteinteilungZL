@@ -132,5 +132,9 @@
 </Row>-->
 
 {#each chartData as data, index}
-	<NetworkChart bind:this={chart} graph={data} height={400} width={600} />
+	{#if index == 0}
+		<NetworkChart bind:this={chart} graph={data} height={800} width={600} />
+	{:else}
+		<NetworkChart bind:this={chart} graph={data} height={400} width={600} />
+	{/if}
 {/each}

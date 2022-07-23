@@ -170,10 +170,10 @@
 
 <svelte:window on:resize={resize} />
 
-<button on:click={() => zoomFit(0.95, 500)}>fit</button>
+<!--<button on:click={() => zoomFit(0.95, 500)}>fit</button>-->
 <!-- SVG was here -->
 <!--<svg bind:this={svg} {width} {height} style="border: 1px black solid">-->
-<svg bind:this={svg} style="border: 1px black solid">
+<svg bind:this={svg} {width} {height} style="border: 1px black solid">
 	{#each links as link}
 		<g stroke="#999" stroke-opacity="0.6">
 			<line

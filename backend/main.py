@@ -131,7 +131,6 @@ def save_participants_to_csv():
             str(csv_revison_num + 1).zfill(5), "w"
     ) as outfile:
         outfile.writelines(loc_row_str)
-    # parse_input_csv()
 
 
 def parse_input_csv():
@@ -234,8 +233,6 @@ def parse_input_csv():
 
                 loc_is_photo_allowed = parse_yes_no(row[22])
 
-                loc_friends = []
-
                 loc_participant = Participant(
                     loc_id,
                     loc_lastname,
@@ -257,13 +254,34 @@ def parse_input_csv():
                 )
                 loc_id += 1
 
-                # parse pesons
-                for friend in [row[19], row[20]]:
-                    if friend != "":
-                        loc_friends.append(friend)
-                loc_participant.set_friends(loc_friends)
-
                 participants.append(loc_participant)
+
+        # parse freinds
+        with open(input_file, newline="") as csvfile:
+            spamreader = csv.reader(csvfile, delimiter=";", quotechar="|")
+
+            loc_names = []
+            for participant in participants:
+                loc_names.append(participant.get_fullname())
+
+            loc_id = 0
+            for i, row in enumerate(spamreader):
+                if i >= 1:
+                    loc_friends = []
+                    loc_name = participants[loc_id].get_fullname()
+                    for f in [row[19], row[20]]:
+                        splitted = f.split(",")
+                        for s in splitted:
+                            s = s.strip()
+                            if s != "":
+                                if s in loc_names:
+                                    loc_friends.append(s)
+                                else:
+                                    print("cannot find: ", s,
+                                          " (", loc_name, ")")
+                        participants[loc_id].set_friends(loc_friends)
+                    loc_id += 1
+
         print("parsed input file: ", input_file)
 
 
@@ -350,46 +368,15 @@ def download_file(filename):
     """returns map file by filename"""
     return send_from_directory(app.config["MAPS_OUTPUT"], filename)
 
-def parseStuebi():
-
-    loc_stuebiNames = []
-    with open(r"..\test_graph.csv", newline="") as csvfile:
-
-        spamreader = csv.reader(csvfile, delimiter=";", quotechar="|")
-        for i, row in enumerate(spamreader):
-
-            if i >= 1:
-
-                loc_name = row[1].strip() + " " + row[0].strip()
-                loc_stuebiNames.append(loc_name)
-    loc_stuebis = []
-    with open(r"..\test_graph.csv", newline="") as csvfile:
-
-        spamreader = csv.reader(csvfile, delimiter=";", quotechar="|")
-        for i, row in enumerate(spamreader):
-
-            if i >= 1:
-
-                loc_name = row[1].strip() + " " + row[0].strip()
-
-                loc_friends = []
-                for f in [row[4], row[5]]:
-                    splitted = f.split(",")
-                    for s in splitted:
-                        s = s.strip()
-                        if s != "":
-                            if s in loc_stuebiNames:
-                                loc_friends.append(s)
-                            else:
-                                print("cannot find: ", s, " (", loc_name, ")")
-
-                loc_stuebis.append({"name": loc_name, "friends": loc_friends})
-    return loc_stuebis
-
 
 @app.route("/api/tmp", methods=["GET"])
 def getTemp():
-    loc_stuebis = parseStuebi()
+    loc_stuebis = []
+
+    for participant in participants:
+        loc_stuebis.append(
+            {"name": participant.get_fullname(), "friends": participant.friends})
+
     return jsonify(loc_stuebis)
 
 
