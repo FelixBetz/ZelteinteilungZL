@@ -31,6 +31,20 @@
 	let serachString = '';
 	let sortBy = { col: IColumn, ascending: true };
 
+	let avgAge = 0;
+	$: avgAge = calculateAvgAge(participants);
+
+	function calculateAvgAge(arg_participants: cTentParticipant[]): number {
+		if (arg_participants.length == 0) {
+			return 0;
+		}
+		let ageSum = 0;
+		for (let i = 0; i < arg_participants.length; i++) {
+			ageSum += arg_participants[i].age;
+		}
+		return Math.round((ageSum / arg_participants.length) * 100) / 100;
+	}
+
 	function numberSort(a: number, b: number) {
 		if (sortBy.ascending == true) {
 			let temp = a;
@@ -128,12 +142,13 @@
 <NavbarParticipants />
 
 <Row style="padding: 10px;">
-	<Col>
+	<Col sm="3">
 		<Button on:click={reviewParticipants} color="warning" on:click={getParticipants}>Refresh</Button
 		>
 		<Button color="primary">Review participants</Button>
 		<Button on:click={getMaps} color="primary">generate Maps</Button>
 	</Col>
+	<Col sm="3">average age: {avgAge}</Col>
 </Row>
 
 <Input
