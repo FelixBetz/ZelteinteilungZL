@@ -9,7 +9,7 @@
 	<div class="card" style="padding:5px; background-color:lightgray" draggable="true" on:dragstart>
 		<CardTitle>
 			{participant.getFullname()}
-			({participant.getAgeOneDecimal()})
+			({participant.getAgeTwoDecimal()})
 		</CardTitle>
 	</div>
 </Col>

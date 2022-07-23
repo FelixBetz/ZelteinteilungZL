@@ -5,6 +5,7 @@
 	import { Col, Row, CardBody, CardHeader, CardTitle } from 'sveltestrap/src';
 	import Tent from '$lib/TentParticipant.svelte';
 	import TentParticipant from '$lib/TentParticipant.svelte';
+	import { select, timeDay } from 'd3';
 
 	interface Basket {
 		name: string;
@@ -17,20 +18,35 @@
 			items: []
 		}
 	];
-	const numTents = 14;
+	const numTents = 13;
 	let participants: cTentParticipant[] = [];
 	for (let i = 0; i < numTents; i++) {
 		baskets.push({ name: 'Zelt ' + (i + 1), items: [] });
 	}
 
+	function compareByAge(a: cTentParticipant, b: cTentParticipant) {
+		if (a.age < b.age) {
+			return 1;
+		}
+		if (a.age > b.age) {
+			return -1;
+		}
+		return 0;
+	}
+
 	let hoveringOverBasket: string;
 	async function getParticipants() {
-		participants = await apiGetParticipants();
-		for (let i = 0; i < participants.length; i++) {
-			baskets[0].items[baskets[0].items.length] = participants[i].identifier;
-		}
+		let unsortedParticipants = await apiGetParticipants();
+		participants = unsortedParticipants.sort(compareByAge);
 
-		//baskets[0].items.push('safsdf'); //participants[i].firstname;
+		for (let i = 0; i < participants.length; i++) {
+			let tentNumber = participants[i].tent;
+			if (tentNumber < numTents) {
+				baskets[tentNumber].items[baskets[tentNumber].items.length] = i;
+			} else {
+				baskets[0].items[baskets[0].items.length] = i;
+			}
+		}
 	}
 
 	onMount(() => {
@@ -89,12 +105,12 @@
 									event.preventDefault();
 								}
 							}}
-							style="margin: 10px"
+							style="margin: 10px; "
 						>
 							<CardHeader>
 								<CardTitle>Zelt {basketIndex}</CardTitle>
 							</CardHeader>
-							<CardBody>
+							<div class="card-body" class:tent_alert={b.items.length >= 7}>
 								<Row>
 									{#each b.items as item, itemIndex}
 										<Tent
@@ -103,7 +119,7 @@
 										/>
 									{/each}
 								</Row>
-							</CardBody>
+							</div>
 						</div>
 					</Col>
 				{/if}
@@ -111,7 +127,7 @@
 		</Row>
 	</Col>
 
-	<Col sm="4">
+	<Col sm="4" style="overflow-y: scroll;">
 		<div
 			class="card"
 			class:hovering={hoveringOverBasket === baskets[0].name}
@@ -137,3 +153,9 @@
 		</div>
 	</Col>
 </Row>
+
+<style>
+	.tent_alert {
+		background-color: indianred;
+	}
+</style>
