@@ -54,7 +54,7 @@ def save_participants_to_csv():
 
     loc_header = ""
     loc_header += "Lfd-Nr;"
-    loc_header += "Eingegangen;"
+    loc_header += "Bezahlt;"
     loc_header += "Zelt;"
     loc_header += "Nachname;"
     loc_header += "Vorname;"
@@ -120,14 +120,15 @@ def save_participants_to_csv():
         loc_row += "Zugestimmt;"  # Schadensfreisspruch
 
         loc_row += bool_to_tex_zugestimmt(part.is_photo_allowed) + ";"
-        loc_row += "Zugestimmt;"  #  Teilnahmebeitrag mit Überweisung wirksam
+        loc_row += "Zugestimmt;"  # Teilnahmebeitrag mit Überweisung wirksam
         loc_row += "Zugestimmt;"  # Personenbezogene Daten
         loc_row += "Zugestimmt"  # Gesundheitsamt
 
         loc_row += "\n"
         loc_row_str.append(loc_row)
     with open(
-        INPUT_FILE_PATH + INPUT_FILE_NAME + "." + str(csv_revison_num + 1).zfill(5), "w"
+        INPUT_FILE_PATH + INPUT_FILE_NAME + "." +
+            str(csv_revison_num + 1).zfill(5), "w"
     ) as outfile:
         outfile.writelines(loc_row_str)
     # parse_input_csv()
