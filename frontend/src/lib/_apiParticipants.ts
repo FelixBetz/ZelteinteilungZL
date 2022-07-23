@@ -234,3 +234,36 @@ export async function apiGetMaps(zipCodes: ZipCodes[]): Promise<string> {
 
 	return response;
 }
+export interface TmpTodo {
+	friends: string[];
+	name: string;
+}
+
+export interface INode {
+	id: string;
+	group: number;
+}
+export interface ILink {
+	source: string;
+	target: string;
+	value: number;
+}
+
+export interface IData {
+	nodes: INode[];
+	links: ILink[];
+}
+export async function apiGetTmpTodo(): Promise<TmpTodo[]> {
+	const response = await fetch(baseUrl + '/tmp')
+		.then((res) => res.json())
+		.then((res: TmpTodo[]) => {
+			return res
+
+		})
+		.catch((error: Error) => {
+			console.error(error);
+			return [];
+		});
+
+	return response;
+}
