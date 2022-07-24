@@ -2,7 +2,7 @@
 	import { apiGetParticipants } from '$lib/_apiParticipants';
 	import type { cTentParticipant } from '$lib/_apiParticipants';
 	import { onMount } from 'svelte';
-	import { Col, Row, CardBody, CardHeader, CardTitle } from 'sveltestrap/src';
+	import { Col, Row, CardBody, CardHeader, CardTitle, Button } from 'sveltestrap/src';
 	import Tent from '$lib/TentParticipant.svelte';
 	import TentParticipant from '$lib/TentParticipant.svelte';
 	import { select, timeDay } from 'd3';
@@ -87,7 +87,9 @@
 <svelte:head>
 	<title>Zelteinteilung</title>
 </svelte:head>
-
+<Row style="padding: 20px">
+	<Col><Button class="w-100" color="primary">Save</Button></Col>
+</Row>
 <Row>
 	<Col sm="8">
 		<Row>
@@ -105,7 +107,7 @@
 									event.preventDefault();
 								}
 							}}
-							style="margin: 10px; "
+							style="margin: 10px; border: 1px solid black; "
 						>
 							<CardHeader>
 								<CardTitle>Zelt {basketIndex}</CardTitle>
