@@ -200,6 +200,11 @@
 								<Input type="checkbox" label="verteiler" bind:checked={participant.is_event_mail} />
 							</FormGroup>
 						</Col>
+						<Col>
+							<FormGroup floating>
+								<Input type="checkbox" label="bezahlt" bind:checked={participant.paid} />
+							</FormGroup>
+						</Col>
 					</Row>
 				</Col>
 			</Row>

@@ -40,7 +40,7 @@ def bool_to_tex_yes_no(arg_bool):
     return "nein"
 
 
-def bool_to_tex_zugestimmt(arg_bool):
+def bool_to_text_zugestimmt(arg_bool):
     """parse bool to 'zugestimmt' or 'nein' nicht zugestimmt"""
     if arg_bool:
         return "zugestimmt"
@@ -94,7 +94,11 @@ def save_participants_to_csv():
 
         loc_row = ""
         loc_row += ";"  # Lfd-Nr
-        loc_row += ";"  # Eingegangen
+        # paid
+        if part.paid:
+            loc_row += "True;"
+        else:
+            loc_row += "False;"
         loc_row += str(part.tent) + ";"  # Zelt
         loc_row += part.lastname + ";"
         loc_row += part.firstname + ";"
@@ -119,7 +123,7 @@ def save_participants_to_csv():
 
         loc_row += "Zugestimmt;"  # Schadensfreisspruch
 
-        loc_row += bool_to_tex_zugestimmt(part.is_photo_allowed) + ";"
+        loc_row += bool_to_text_zugestimmt(part.is_photo_allowed) + ";"
         loc_row += "Zugestimmt;"  # Teilnahmebeitrag mit Überweisung wirksam
         loc_row += "Zugestimmt;"  # Personenbezogene Daten
         loc_row += "Zugestimmt"  # Gesundheitsamt
@@ -131,6 +135,12 @@ def save_participants_to_csv():
             str(csv_revison_num + 1).zfill(5), "w"
     ) as outfile:
         outfile.writelines(loc_row_str)
+
+
+def isPaided(arg_paided):
+    if arg_paided in ["true", "True"]:
+        return True
+    return False
 
 
 def parse_input_csv():
@@ -167,6 +177,8 @@ def parse_input_csv():
         for i, row in enumerate(spamreader):
 
             if i >= 1:
+
+                loc_paided = isPaided(row[1].strip())
 
                 # parse tent number
                 if row[2] == "":
@@ -235,6 +247,7 @@ def parse_input_csv():
 
                 loc_participant = Participant(
                     loc_id,
+                    loc_paided,
                     loc_lastname,
                     loc_firstname,
                     loc_street,
@@ -295,9 +308,43 @@ def props(obj):
     return props_dict
 
 
-@app.route("/api/participants", methods=["GET"])
+def particpant_object_to_class(arg_participant, arg_id):
+    """converts dict object to participant object"""
+    participants[arg_id].identifier = arg_participant["identifier"]
+    participants[arg_id].paid = arg_participant["paid"]
+    participants[arg_id].lastname = arg_participant["lastname"]
+    participants[arg_id].firstname = arg_participant["firstname"]
+    participants[arg_id].birthdate = arg_participant["birthdate"]
+    participants[arg_id].street = arg_participant["street"]
+    participants[arg_id].zipcode = arg_participant["zipcode"]
+    participants[arg_id].village = arg_participant["village"]
+    participants[arg_id].phone = arg_participant["phone"]
+    participants[arg_id].mail = arg_participant["mail"]
+    participants[arg_id].emergency_contact = arg_participant["emergency_contact"]
+    participants[arg_id].emergency_phone = arg_participant["emergency_phone"]
+    participants[arg_id].is_afe = arg_participant["is_afe"]
+    participants[arg_id].is_reduced = arg_participant["is_reduced"]
+    participants[arg_id].is_event_mail = arg_participant["is_event_mail"]
+    participants[arg_id].friends = arg_participant["friends"]
+    participants[arg_id].is_photo_allowed = arg_participant["is_photo_allowed"]
+    participants[arg_id].other = arg_participant["other"]
+    participants[arg_id].tent = arg_participant["tent"]
+
+
+@app.route("/api/participants", methods=["GET", "POST"])
 def get_participants():
     """returns all participants as json"""
+    if request.method == "POST":
+
+        req = request.form.get("participants")
+        req = json.loads(req)
+
+        for loc_particpant in req:
+            loc_id = loc_particpant["identifier"]
+            particpant_object_to_class(loc_particpant, loc_id)
+
+        save_participants_to_csv()
+        parse_input_csv()
 
     ret = []
     for loc_participant in participants:
@@ -314,27 +361,8 @@ def get_participant():
 
             req = request.form.get("participant")
             req = json.loads(req)
-
             loc_id = req["identifier"]
-
-            participants[loc_id].identifier = req["identifier"]
-            participants[loc_id].lastname = req["lastname"]
-            participants[loc_id].firstname = req["firstname"]
-            participants[loc_id].birthdate = req["birthdate"]
-            participants[loc_id].street = req["street"]
-            participants[loc_id].zipcode = req["zipcode"]
-            participants[loc_id].village = req["village"]
-            participants[loc_id].phone = req["phone"]
-            participants[loc_id].mail = req["mail"]
-            participants[loc_id].emergency_contact = req["emergency_contact"]
-            participants[loc_id].emergency_phone = req["emergency_phone"]
-            participants[loc_id].is_afe = req["is_afe"]
-            participants[loc_id].is_reduced = req["is_reduced"]
-            participants[loc_id].is_event_mail = req["is_event_mail"]
-            participants[loc_id].friends = req["friends"]
-            participants[loc_id].is_photo_allowed = req["is_photo_allowed"]
-            participants[loc_id].other = req["other"]
-            participants[loc_id].tent = req["tent"]
+            particpant_object_to_class(req, loc_id)
 
             save_participants_to_csv()
             parse_input_csv()
