@@ -181,7 +181,6 @@ export async function apiPostParticipant(
 	return response;
 }
 
-
 export async function apiPostParticipants(
 	arg_participant: cTentParticipant[]
 ): Promise<cTentParticipant[]> {
@@ -193,7 +192,6 @@ export async function apiPostParticipants(
 	for (let i = 0; i < arg_participant.length; i++) {
 		const participant = participantObjectToParticipantInterface(arg_participant[i]);
 		participants.push(participant);
-
 	}
 	const formData = new FormData();
 	formData.append('participants', JSON.stringify(participants));
@@ -264,8 +262,7 @@ export async function apiGetTmpTodo(): Promise<TmpTodo[]> {
 	const response = await fetch(baseUrl + '/tmp')
 		.then((res) => res.json())
 		.then((res: TmpTodo[]) => {
-			return res
-
+			return res;
 		})
 		.catch((error: Error) => {
 			console.error(error);

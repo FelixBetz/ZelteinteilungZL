@@ -5,7 +5,6 @@
 	import { Col, Row, CardBody, CardHeader, CardTitle, Button } from 'sveltestrap/src';
 	import Tent from '$lib/TentParticipant.svelte';
 	import TentParticipant from '$lib/TentParticipant.svelte';
-	import { select, timeDay } from 'd3';
 	import { NUM_TENTS } from '$lib/constants';
 
 	interface Basket {

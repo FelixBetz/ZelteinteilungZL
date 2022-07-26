@@ -2,7 +2,7 @@
 	import { apiGetParticipants } from '$lib/_apiParticipants';
 	import type { cTentParticipant } from '$lib/_apiParticipants';
 
-	import { Button, Container, Row, Col } from 'sveltestrap/src';
+	import { Row, Col } from 'sveltestrap/src';
 	import { onMount } from 'svelte';
 	import { NUM_TENTS } from '$lib/constants';
 
@@ -96,7 +96,7 @@
 
 		//parse bithday
 		for (let i = 0; i < participants.length; i++) {
-			const [day, month, year] = participants[i].birthdate.split('.');
+			const [day, month] = participants[i].birthdate.split('.');
 			const beginZlDate = new Date(2022, 7, 5);
 			const endZlDate = new Date(2022, 7, 12);
 			const birthDate = new Date(2022, +month - 1, +day); //(0 = January to 11 = December)
