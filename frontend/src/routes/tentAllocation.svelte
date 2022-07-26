@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { apiGetParticipants } from '$lib/_apiParticipants';
+	import { apiGetParticipants, apiPostParticipants } from '$lib/_apiParticipants';
 	import type { cTentParticipant } from '$lib/_apiParticipants';
 	import { onMount } from 'svelte';
 	import { Col, Row, CardBody, CardHeader, CardTitle, Button } from 'sveltestrap/src';
@@ -19,10 +19,20 @@
 		}
 	];
 	const numTents = 13;
-	let participants: cTentParticipant[] = [];
-	for (let i = 0; i < numTents; i++) {
-		baskets.push({ name: 'Zelt ' + (i + 1), items: [] });
+
+	function clearBaskets() {
+		baskets = [
+			{
+				name: 'Backlog',
+				items: []
+			}
+		];
+		for (let i = 0; i < numTents; i++) {
+			baskets.push({ name: 'Zelt ' + (i + 1), items: [] });
+		}
 	}
+
+	let participants: cTentParticipant[] = [];
 
 	function compareByAge(a: cTentParticipant, b: cTentParticipant) {
 		if (a.age < b.age) {
@@ -35,18 +45,40 @@
 	}
 
 	let hoveringOverBasket: string;
-	async function getParticipants() {
-		let unsortedParticipants = await apiGetParticipants();
-		participants = unsortedParticipants.sort(compareByAge);
+
+	function distributePartiscipantsToBaskets(arg_participants: cTentParticipant[]) {
+		clearBaskets();
+		participants = arg_participants.sort(compareByAge);
 
 		for (let i = 0; i < participants.length; i++) {
 			let tentNumber = participants[i].tent;
-			if (tentNumber < numTents) {
+			if (tentNumber <= numTents) {
 				baskets[tentNumber].items[baskets[tentNumber].items.length] = i;
 			} else {
 				baskets[0].items[baskets[0].items.length] = i;
 			}
 		}
+	}
+
+	async function getParticipants() {
+		let unsortedParticipants = await apiGetParticipants();
+		distributePartiscipantsToBaskets(unsortedParticipants);
+	}
+
+	async function saveParticipants() {
+		for (let i = 0; i < baskets.length; i++) {
+			for (let k = 0; k < baskets[i].items.length; k++) {
+				let id = baskets[i].items[k];
+				if (i == 0) {
+					participants[id].tent = 9999;
+				} else {
+					participants[id].tent = i;
+				}
+				console.log(id, participants[id]);
+			}
+		}
+		let unsortedParticipants = await apiPostParticipants(participants);
+		distributePartiscipantsToBaskets(unsortedParticipants);
 	}
 
 	onMount(() => {
@@ -88,7 +120,7 @@
 	<title>Zelteinteilung</title>
 </svelte:head>
 <Row style="padding: 20px">
-	<Col><Button class="w-100" color="primary">Save</Button></Col>
+	<Col><Button class="w-100" color="primary" on:click={saveParticipants}>Save</Button></Col>
 </Row>
 <Row>
 	<Col sm="8">
@@ -112,7 +144,11 @@
 							<CardHeader>
 								<CardTitle>Zelt {basketIndex}</CardTitle>
 							</CardHeader>
-							<div class="card-body" class:tent_alert={b.items.length >= 7}>
+							<div
+								class="card-body"
+								class:tent_alert={b.items.length >= 7}
+								class:tent_warning={b.items.length <= 5}
+							>
 								<Row>
 									{#each b.items as item, itemIndex}
 										<Tent
@@ -159,5 +195,8 @@
 <style>
 	.tent_alert {
 		background-color: indianred;
+	}
+	.tent_warning {
+		background-color: orange;
 	}
 </style>
