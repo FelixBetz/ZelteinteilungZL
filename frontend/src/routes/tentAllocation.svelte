@@ -6,6 +6,7 @@
 	import Tent from '$lib/TentParticipant.svelte';
 	import TentParticipant from '$lib/TentParticipant.svelte';
 	import { select, timeDay } from 'd3';
+	import { NUM_TENTS } from '$lib/constants';
 
 	interface Basket {
 		name: string;
@@ -18,7 +19,6 @@
 			items: []
 		}
 	];
-	const numTents = 13;
 
 	function clearBaskets() {
 		baskets = [
@@ -27,7 +27,7 @@
 				items: []
 			}
 		];
-		for (let i = 0; i < numTents; i++) {
+		for (let i = 0; i < NUM_TENTS; i++) {
 			baskets.push({ name: 'Zelt ' + (i + 1), items: [] });
 		}
 	}
@@ -52,7 +52,7 @@
 
 		for (let i = 0; i < participants.length; i++) {
 			let tentNumber = participants[i].tent;
-			if (tentNumber <= numTents) {
+			if (tentNumber <= NUM_TENTS) {
 				baskets[tentNumber].items[baskets[tentNumber].items.length] = i;
 			} else {
 				baskets[0].items[baskets[0].items.length] = i;

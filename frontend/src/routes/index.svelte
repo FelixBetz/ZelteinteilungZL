@@ -4,6 +4,7 @@
 
 	import { Button, Container, Row, Col } from 'sveltestrap/src';
 	import { onMount } from 'svelte';
+	import { NUM_TENTS } from '$lib/constants';
 
 	let participants: cTentParticipant[] = [];
 	let birthDayParticipants: cTentParticipant[] = [];
@@ -58,6 +59,26 @@
 			')'
 		);
 	}
+	interface TentAvg {
+		avg: number;
+		num: number;
+		tentNumber: number;
+	}
+
+	let tentAvgAge: TentAvg[] = [];
+	function calculateTentAvgAge() {
+		tentAvgAge = [];
+		for (let i = 0; i < NUM_TENTS; i++) {
+			tentAvgAge[tentAvgAge.length] = { avg: 0, num: 0, tentNumber: i + 1 };
+		}
+		for (let i = 0; i < participants.length; i++) {
+			let tentNumber = participants[i].tent;
+			if (tentNumber <= NUM_TENTS) {
+				tentAvgAge[tentNumber - 1].avg += participants[i].age;
+				tentAvgAge[tentNumber - 1].num++;
+			}
+		}
+	}
 
 	function calculateAvgAge(arg_participants: cTentParticipant[]): number {
 		if (arg_participants.length == 0) {
@@ -84,6 +105,8 @@
 				birthDayParticipants[birthDayParticipants.length] = participants[i];
 			}
 		}
+
+		calculateTentAvgAge();
 	}
 </script>
 
@@ -92,7 +115,14 @@
 </svelte:head>
 <div style="margin-top: 80px; margin-left: 10px;">
 	<Row>
-		<Col><h1>Hi Lale</h1></Col>
+		<Col
+			><h1>Durchschnittsalter Zelte:</h1>
+			<ul>
+				{#each tentAvgAge as avg}
+					<li>Zelt {avg.tentNumber} ({Math.round((100 * avg.avg) / avg.num) / 100})</li>
+				{/each}
+			</ul>
+		</Col>
 		<Col>
 			<h1>Participants Statistics:</h1>
 			<ul>
