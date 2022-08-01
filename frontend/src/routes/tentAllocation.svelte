@@ -1,5 +1,10 @@
 <script lang="ts">
-	import { apiGetParticipants, apiPostParticipants } from '$lib/_apiParticipants';
+	import {
+		apiGetParticipants,
+		apiGetTentLeader,
+		apiPostParticipants,
+		type TentLeader
+	} from '$lib/_apiParticipants';
 	import type { cTentParticipant } from '$lib/_apiParticipants';
 	import { onMount } from 'svelte';
 	import { Col, Row, CardBody, CardHeader, CardTitle, Button } from 'sveltestrap/src';
@@ -10,12 +15,14 @@
 	interface Basket {
 		name: string;
 		items: number[];
+		tentLeaders: string[];
 	}
 
 	let baskets: Basket[] = [
 		{
 			name: 'Backlog',
-			items: []
+			items: [],
+			tentLeaders: []
 		}
 	];
 
@@ -23,11 +30,12 @@
 		baskets = [
 			{
 				name: 'Backlog',
-				items: []
+				items: [],
+				tentLeaders: []
 			}
 		];
 		for (let i = 0; i < NUM_TENTS; i++) {
-			baskets.push({ name: 'Zelt ' + (i + 1), items: [] });
+			baskets.push({ name: 'Zelt ' + (i + 1), items: [], tentLeaders: [] });
 		}
 	}
 
@@ -45,10 +53,14 @@
 
 	let hoveringOverBasket: string;
 
-	function distributePartiscipantsToBaskets(arg_participants: cTentParticipant[]) {
+	function distributePartiscipantsToBaskets(
+		arg_participants: cTentParticipant[],
+		arg_tentLeaders: TentLeader[]
+	) {
 		clearBaskets();
 		participants = arg_participants.sort(compareByAge);
 
+		//add participants to baskets
 		for (let i = 0; i < participants.length; i++) {
 			let tentNumber = participants[i].tent;
 			if (tentNumber <= NUM_TENTS) {
@@ -57,11 +69,21 @@
 				baskets[0].items[baskets[0].items.length] = i;
 			}
 		}
+
+		//add tent leaders to baskets
+		for (let i = 0; i < arg_tentLeaders.length; i++) {
+			let tentNumber = arg_tentLeaders[i].tent;
+			if (tentNumber > 0 && tentNumber <= NUM_TENTS) {
+				baskets[tentNumber].tentLeaders[baskets[tentNumber].tentLeaders.length] =
+					arg_tentLeaders[i].firstname + ' ' + arg_tentLeaders[i].lastname;
+			}
+		}
 	}
 
 	async function getParticipants() {
+		let tentLeaders = await apiGetTentLeader();
 		let unsortedParticipants = await apiGetParticipants();
-		distributePartiscipantsToBaskets(unsortedParticipants);
+		distributePartiscipantsToBaskets(unsortedParticipants, tentLeaders);
 	}
 
 	async function saveParticipants() {
@@ -73,11 +95,11 @@
 				} else {
 					participants[id].tent = i;
 				}
-				console.log(id, participants[id]);
 			}
 		}
 		let unsortedParticipants = await apiPostParticipants(participants);
-		distributePartiscipantsToBaskets(unsortedParticipants);
+		let tentLeaders = await apiGetTentLeader();
+		distributePartiscipantsToBaskets(unsortedParticipants, tentLeaders);
 	}
 
 	onMount(() => {
@@ -141,7 +163,12 @@
 							style="margin: 10px; border: 1px solid black; "
 						>
 							<CardHeader>
-								<CardTitle>Zelt {basketIndex}</CardTitle>
+								<CardTitle
+									>Zelt {basketIndex} (
+									{#each b.tentLeaders as leader}
+										{leader}
+									{/each})
+								</CardTitle>
 							</CardHeader>
 							<div
 								class="card-body"

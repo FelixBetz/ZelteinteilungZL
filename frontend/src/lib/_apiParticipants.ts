@@ -20,6 +20,22 @@ interface Participant {
 	paid: boolean;
 }
 
+export interface TentLeader {
+	birthdate: string;
+	comment: string;
+	firstname: string;
+	handy: string;
+	identifier: number;
+	job: string;
+	lastname: string;
+	mail: string;
+	phone: string;
+	street: string;
+	team: string;
+	tent: number;
+	village: string;
+	zipcode: number;
+}
 export class cTentParticipant {
 	public age = 0;
 	constructor(
@@ -207,6 +223,21 @@ export async function apiPostParticipants(
 			}
 
 			return ret;
+		})
+		.catch((error: Error) => {
+			console.error(error);
+			return [];
+		});
+
+	return response;
+}
+
+
+export async function apiGetTentLeader(): Promise<TentLeader[]> {
+	const response = await fetch(baseUrl + '/tentleaders')
+		.then((res) => res.json())
+		.then((res: TentLeader[]) => {
+			return res;
 		})
 		.catch((error: Error) => {
 			console.error(error);

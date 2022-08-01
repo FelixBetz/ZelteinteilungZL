@@ -1,5 +1,6 @@
 """main file of ZelteinteilungZL"""
 
+
 import time
 import csv
 import os
@@ -10,11 +11,16 @@ from flask import Flask, abort, jsonify, request, send_from_directory
 from flask_cors import CORS
 from maps import generate_maps
 from participant import Participant
+from tent_leader import TentLeader
 
 INPUT_FILE_PATH = r"..\\"
 INPUT_FILE_NAME = "input.csv"
+INPUT_TENT_LEADER_FILE_NAME = "2022_leitungsteam_anfrage.csv"
 
 input_file = INPUT_FILE_PATH + INPUT_FILE_NAME
+input_tent_leader_file = INPUT_FILE_PATH + INPUT_TENT_LEADER_FILE_NAME
+
+tent_leaders = []
 
 participants = []
 csv_revison_num = -1
@@ -143,7 +149,7 @@ def isPaided(arg_paided):
     return False
 
 
-def parse_input_csv():
+def parse_participants():
     """parses zeltlager participants from input csv file"""
     global input_file, csv_revison_num, participants
 
@@ -298,6 +304,82 @@ def parse_input_csv():
         print("parsed input file: ", input_file)
 
 
+def parse_tent_leader():
+    """parses zeltlager tent leader from input csv file"""
+    global input_tent_leader_file, tent_leaders
+
+    tent_leaders = []
+
+    with open(input_tent_leader_file, newline="") as csvfile:
+        spamreader = csv.reader(csvfile, delimiter=";", quotechar="|")
+        loc_id = 0
+        for i, row in enumerate(spamreader):
+
+            if i >= 1:
+
+                loc_job = row[0].strip()
+                loc_lastname = row[1].strip()
+                loc_firstname = row[2].strip()
+                loc_street = row[3].strip()
+
+                # parse zip code
+                try:
+                    loc_zipcode = int(row[4].strip())
+                except:
+                    print(
+                        "ERROR: failed to parse zip coce: i: ",
+                        i,
+                        loc_firstname,
+                        " ",
+                        loc_lastname,
+                    )
+                    raise
+                loc_village = row[5].strip()
+
+                loc_phone = row[6].strip()
+                loc_handy = row[7].strip()
+                loc_mail = row[8].strip()
+
+                loc_birthdate = row[9].strip()
+
+                # parse tent number
+                if row[10] == "":
+                    loc_tent = 9999
+                else:
+                    try:
+                        loc_tent = int(row[10].strip())
+                    except:
+                        print(
+                            "ERROR: failed to parse tent number: ", row[10], "row: ", row
+                        )
+                        raise
+
+                loc_team = row[11].strip()
+                loc_comment = row[12].strip()
+
+                loc_tent_leader = TentLeader(
+                    loc_id,
+                    loc_job,
+                    loc_lastname,
+                    loc_firstname,
+                    loc_street,
+                    loc_zipcode,
+                    loc_village,
+                    loc_phone,
+                    loc_handy,
+                    loc_mail,
+                    loc_birthdate,
+                    loc_tent,
+                    loc_team,
+                    loc_comment
+                )
+                loc_id += 1
+
+                tent_leaders.append(loc_tent_leader)
+
+        print("parsed input file: ", input_file)
+
+
 def props(obj):
     """converts class object into an dictonary"""
     props_dict = {}
@@ -344,7 +426,7 @@ def get_participants():
             particpant_object_to_class(loc_particpant, loc_id)
 
         save_participants_to_csv()
-        parse_input_csv()
+        parse_participants()
 
     ret = []
     for loc_participant in participants:
@@ -365,7 +447,7 @@ def get_participant():
             particpant_object_to_class(req, loc_id)
 
             save_participants_to_csv()
-            parse_input_csv()
+            parse_participants()
 
             ret = props(participants[loc_id])
         else:
@@ -376,6 +458,15 @@ def get_participant():
         print("ERROR: could not parse id")
         abort(404)
 
+    return jsonify(ret)
+
+
+@app.route("/api/tentleaders", methods=["GET"])
+def get_tent_leaders():
+    """returns all tent_leaders as json"""
+    ret = []
+    for loc_tent_leader in tent_leaders:
+        ret.append(props(loc_tent_leader))
     return jsonify(ret)
 
 
@@ -410,7 +501,8 @@ def getTemp():
 
 if __name__ == "__main__":
 
-    parse_input_csv()
+    parse_participants()
+    parse_tent_leader()
     for index, participant in enumerate(participants):
         pass
         # print("[", index, "] ", participant)
