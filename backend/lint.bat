@@ -1,4 +1,4 @@
 @echo off
 
 
-pylint ../backend
+python -m pylint ../backend

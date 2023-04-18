@@ -13,7 +13,7 @@ from maps import generate_maps
 from participant import Participant
 from tent_leader import TentLeader
 
-INPUT_FILE_PATH = r"..\\"
+INPUT_FILE_PATH = r"..\\input\\"
 INPUT_FILE_NAME = "input.csv"
 INPUT_TENT_LEADER_FILE_NAME = "2022_leitungsteam_anfrage.csv"
 
@@ -81,7 +81,8 @@ def save_participants_to_csv():
         "Unsere Tochter nimmt an der Ferienwoche der Mädchenjugend in Harthausen teil.;"
     )
     loc_header += "Ermäßigter Beitrag;"
-    loc_header += "Ich möchte auch über weitere Veranstaltungen der Schönstattjugend per Mail informiert werden;"
+    loc_header += "Ich möchte auch über weitere Veranstaltungen der\
+          Schönstattjugend per Mail informiert werden;"
 
     loc_header += "Person 1:;"
     loc_header += "Person 2:;"
@@ -91,7 +92,8 @@ def save_participants_to_csv():
         "Die Anmeldung ist erst mit der Überweisung des Teilnahmebeitrags wirksam;"
     )
     loc_header += "Personenbezogene Daten;"
-    loc_header += "Ich bin damit einverstanden, dass im Falle einer Infektion meine Kontaktdaten an das Gesundheitsamt weitergegeben werden"
+    loc_header += "Ich bin damit einverstanden, dass im Falle einer Infektion\
+          meine Kontaktdaten an das Gesundheitsamt weitergegeben werden"
     loc_header += "\n"
 
     loc_row_str.append(loc_header)
@@ -143,7 +145,8 @@ def save_participants_to_csv():
         outfile.writelines(loc_row_str)
 
 
-def isPaided(arg_paided):
+def is_paided(arg_paided):
+    """is paided"""
     if arg_paided in ["true", "True"]:
         return True
     return False
@@ -184,7 +187,7 @@ def parse_participants():
 
             if i >= 1:
 
-                loc_paided = isPaided(row[1].strip())
+                loc_paided = is_paided(row[1].strip())
 
                 # parse tent number
                 if row[2] == "":
@@ -288,15 +291,15 @@ def parse_participants():
                 if i >= 1:
                     loc_friends = []
                     loc_name = participants[loc_id].get_fullname()
-                    for f in [row[19], row[20]]:
-                        splitted = f.split(",")
-                        for s in splitted:
-                            s = s.strip()
-                            if s != "":
-                                if s in loc_names:
-                                    loc_friends.append(s)
+                    for friend in [row[19], row[20]]:
+                        splitted = friend.split(",")
+                        for friend_str in splitted:
+                            friend_str = friend_str.strip()
+                            if friend_str != "":
+                                if friend_str in loc_names:
+                                    loc_friends.append(friend_str)
                                 else:
-                                    print("cannot find: ", s,
+                                    print("cannot find: ", friend_str,
                                           " (", loc_name, ")")
                         participants[loc_id].set_friends(loc_friends)
                     loc_id += 1
@@ -489,7 +492,8 @@ def download_file(filename):
 
 
 @app.route("/api/tmp", methods=["GET"])
-def getTemp():
+def get_temp():
+    """get_temp"""
     loc_stuebis = []
 
     for participant in participants:

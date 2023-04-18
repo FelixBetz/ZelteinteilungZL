@@ -42,10 +42,6 @@ class TentLeader:
         self.comment = arg_comment
 
     def __str__(self):
-        friends_str = ""
-        for friend in self.friends:
-            friends_str += friend + ", "
-
         ret_str = (
             self.firstname
             + " "
