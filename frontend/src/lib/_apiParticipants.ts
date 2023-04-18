@@ -17,12 +17,30 @@ interface Participant {
 	zipcode: number;
 	other: string;
 	tent: number;
+	paid: boolean;
 }
 
+export interface TentLeader {
+	birthdate: string;
+	comment: string;
+	firstname: string;
+	handy: string;
+	identifier: number;
+	job: string;
+	lastname: string;
+	mail: string;
+	phone: string;
+	street: string;
+	team: string;
+	tent: number;
+	village: string;
+	zipcode: number;
+}
 export class cTentParticipant {
 	public age = 0;
 	constructor(
 		public identifier: number,
+		public paid: boolean,
 		public firstname: string,
 		public lastname: string,
 		public street: string,
@@ -104,6 +122,7 @@ export async function apiGetParticipant(arg_id: number): Promise<cTentParticipan
 function partipantInterfaceToParticipantObject(p: Participant): cTentParticipant {
 	const tentParticipant: cTentParticipant = new cTentParticipant(
 		p.identifier,
+		p.paid,
 		p.firstname,
 		p.lastname,
 		p.street,
@@ -144,7 +163,8 @@ function participantObjectToParticipantInterface(p: cTentParticipant): Participa
 		village: p.village,
 		zipcode: p.zipcode,
 		other: p.other,
-		tent: p.tent
+		tent: p.tent,
+		paid: p.paid
 	};
 	return participant;
 }
@@ -175,40 +195,56 @@ export async function apiPostParticipant(
 		});
 
 	return response;
+}
 
-	/*
-		const response = await fetch(baseUrl + '/participant?id=' + arg_id)
-			.then((res) => res.json())
-			.then((res: Participant) => {
-				const ret: cTentParticipant = new cTentParticipant(
-					res.identifier,
-					res.firstname,
-					res.lastname,
-					res.street,
-					res.zipcode,
-					res.village,
-					res.birthdate,
-					res.phone,
-					res.mail,
-					res.emergency_contact,
-					res.emergency_phone,
-					res.is_afe,
-					res.is_event_mail,
-					res.is_photo_allowed,
-					res.is_reduced,
-					res.friends,
-					res.other,
-					res.tent
-				);
-	
-				return ret;
-			})
-			.catch((error: Error) => {
-				console.error(error);
-				return null;
-			});
-	
-		return response;*/
+export async function apiPostParticipants(
+	arg_participant: cTentParticipant[]
+): Promise<cTentParticipant[]> {
+	if (arg_participant.length == 0) {
+		return [];
+	}
+
+	const participants: Participant[] = [];
+	for (let i = 0; i < arg_participant.length; i++) {
+		const participant = participantObjectToParticipantInterface(arg_participant[i]);
+		participants.push(participant);
+	}
+	const formData = new FormData();
+	formData.append('participants', JSON.stringify(participants));
+	const response = await fetch(baseUrl + '/participants', {
+		method: 'POST',
+		body: formData
+	})
+		.then((res) => res.json())
+		.then((res: Participant[]) => {
+			const ret: cTentParticipant[] = [];
+			for (let i = 0; i < res.length; i++) {
+				ret.push(partipantInterfaceToParticipantObject(res[i]));
+			}
+
+			return ret;
+		})
+		.catch((error: Error) => {
+			console.error(error);
+			return [];
+		});
+
+	return response;
+}
+
+
+export async function apiGetTentLeader(): Promise<TentLeader[]> {
+	const response = await fetch(baseUrl + '/tentleaders')
+		.then((res) => res.json())
+		.then((res: TentLeader[]) => {
+			return res;
+		})
+		.catch((error: Error) => {
+			console.error(error);
+			return [];
+		});
+
+	return response;
 }
 
 export interface ZipCodes {
@@ -257,8 +293,7 @@ export async function apiGetTmpTodo(): Promise<TmpTodo[]> {
 	const response = await fetch(baseUrl + '/tmp')
 		.then((res) => res.json())
 		.then((res: TmpTodo[]) => {
-			return res
-
+			return res;
 		})
 		.catch((error: Error) => {
 			console.error(error);

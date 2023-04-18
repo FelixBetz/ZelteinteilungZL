@@ -7,6 +7,7 @@ class Participant:
     def __init__(
         self,
         arg_id,
+        arg_paided,
         arg_lastname,
         arg_firstname,
         arg_street,
@@ -25,6 +26,9 @@ class Participant:
         arg_tent,
     ):
         self.identifier = arg_id
+
+        self.paid = arg_paided
+
         self.lastname = arg_lastname
         self.firstname = arg_firstname
         self.birthdate = arg_birthdate

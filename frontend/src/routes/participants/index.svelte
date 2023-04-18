@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { apiGetMaps, apiGetParticipants } from '$lib/_apiParticipants';
+	import { apiGetMaps, apiGetParticipants, apiPostParticipants } from '$lib/_apiParticipants';
 
 	import type { cTentParticipant, ZipCodes } from '$lib/_apiParticipants';
 
@@ -9,6 +9,7 @@
 
 	enum IColumn {
 		id = 'id',
+		paid = 'paid',
 		firstName = 'first name',
 		lastName = 'last name',
 		zipCode = 'zip code',
@@ -19,6 +20,7 @@
 
 	let columns = [
 		IColumn.id,
+		IColumn.paid,
 		IColumn.firstName,
 		IColumn.lastName,
 		IColumn.zipCode,
@@ -70,11 +72,27 @@
 			return 1;
 		}
 	}
+
+	function boolSort(a: boolean, b: boolean) {
+		if (sortBy.ascending == true) {
+			let temp = a;
+			a = b;
+			b = temp;
+		}
+		if (a) {
+			return 0;
+		} else {
+			return 1;
+		}
+	}
+
 	function clickSortTable(column: IColumn) {
 		let sort = (a: cTentParticipant, b: cTentParticipant) => {
 			switch (column) {
 				case IColumn.id:
 					return numberSort(a.identifier, b.identifier);
+				case IColumn.paid:
+					return boolSort(a.paid, b.paid);
 				case IColumn.zipCode:
 					return numberSort(a.zipcode, b.zipcode);
 				case IColumn.age:
@@ -117,6 +135,10 @@
 		filterdParticipants = participants.filter((p: cTentParticipant) => searchParticipant(p));
 	}
 
+	async function saveParticipants() {
+		participants = await apiPostParticipants(participants);
+	}
+
 	async function getMaps() {
 		let zipCodes: ZipCodes[] = [];
 
@@ -129,10 +151,6 @@
 
 		await apiGetMaps(zipCodes);
 	}
-
-	function reviewParticipants() {
-		console.log('todo reviewParticipants');
-	}
 </script>
 
 <svelte:head>
@@ -143,9 +161,9 @@
 
 <Row style="padding: 10px;">
 	<Col sm="3">
-		<Button on:click={reviewParticipants} color="warning" on:click={getParticipants}>Refresh</Button
-		>
-		<Button color="primary">Review participants</Button>
+		<Button color="warning" on:click={getParticipants}>Refresh</Button>
+		<Button color="primary" on:click={saveParticipants}>Save</Button>
+
 		<Button on:click={getMaps} color="primary">generate Maps</Button>
 	</Col>
 	<Col sm="3">average age: {avgAge}</Col>
@@ -176,6 +194,7 @@
 						{participant.identifier}
 					</a>
 				</th>
+				<td><Input type="checkbox" bind:checked={participant.paid} /></td>
 				<td>{participant.firstname}</td>
 				<td>{participant.lastname}</td>
 				<td>{participant.zipcode}</td>

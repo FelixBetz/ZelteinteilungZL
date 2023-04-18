@@ -1,5 +1,6 @@
 """main file of ZelteinteilungZL"""
 
+
 import time
 import csv
 import os
@@ -10,11 +11,16 @@ from flask import Flask, abort, jsonify, request, send_from_directory
 from flask_cors import CORS
 from maps import generate_maps
 from participant import Participant
+from tent_leader import TentLeader
 
 INPUT_FILE_PATH = r"..\\"
 INPUT_FILE_NAME = "input.csv"
+INPUT_TENT_LEADER_FILE_NAME = "2022_leitungsteam_anfrage.csv"
 
 input_file = INPUT_FILE_PATH + INPUT_FILE_NAME
+input_tent_leader_file = INPUT_FILE_PATH + INPUT_TENT_LEADER_FILE_NAME
+
+tent_leaders = []
 
 participants = []
 csv_revison_num = -1
@@ -40,7 +46,7 @@ def bool_to_tex_yes_no(arg_bool):
     return "nein"
 
 
-def bool_to_tex_zugestimmt(arg_bool):
+def bool_to_text_zugestimmt(arg_bool):
     """parse bool to 'zugestimmt' or 'nein' nicht zugestimmt"""
     if arg_bool:
         return "zugestimmt"
@@ -94,7 +100,11 @@ def save_participants_to_csv():
 
         loc_row = ""
         loc_row += ";"  # Lfd-Nr
-        loc_row += ";"  # Eingegangen
+        # paid
+        if part.paid:
+            loc_row += "True;"
+        else:
+            loc_row += "False;"
         loc_row += str(part.tent) + ";"  # Zelt
         loc_row += part.lastname + ";"
         loc_row += part.firstname + ";"
@@ -119,7 +129,7 @@ def save_participants_to_csv():
 
         loc_row += "Zugestimmt;"  # Schadensfreisspruch
 
-        loc_row += bool_to_tex_zugestimmt(part.is_photo_allowed) + ";"
+        loc_row += bool_to_text_zugestimmt(part.is_photo_allowed) + ";"
         loc_row += "Zugestimmt;"  # Teilnahmebeitrag mit Überweisung wirksam
         loc_row += "Zugestimmt;"  # Personenbezogene Daten
         loc_row += "Zugestimmt"  # Gesundheitsamt
@@ -133,7 +143,13 @@ def save_participants_to_csv():
         outfile.writelines(loc_row_str)
 
 
-def parse_input_csv():
+def isPaided(arg_paided):
+    if arg_paided in ["true", "True"]:
+        return True
+    return False
+
+
+def parse_participants():
     """parses zeltlager participants from input csv file"""
     global input_file, csv_revison_num, participants
 
@@ -167,6 +183,8 @@ def parse_input_csv():
         for i, row in enumerate(spamreader):
 
             if i >= 1:
+
+                loc_paided = isPaided(row[1].strip())
 
                 # parse tent number
                 if row[2] == "":
@@ -235,6 +253,7 @@ def parse_input_csv():
 
                 loc_participant = Participant(
                     loc_id,
+                    loc_paided,
                     loc_lastname,
                     loc_firstname,
                     loc_street,
@@ -285,6 +304,82 @@ def parse_input_csv():
         print("parsed input file: ", input_file)
 
 
+def parse_tent_leader():
+    """parses zeltlager tent leader from input csv file"""
+    global input_tent_leader_file, tent_leaders
+
+    tent_leaders = []
+
+    with open(input_tent_leader_file, newline="") as csvfile:
+        spamreader = csv.reader(csvfile, delimiter=";", quotechar="|")
+        loc_id = 0
+        for i, row in enumerate(spamreader):
+
+            if i >= 1:
+
+                loc_job = row[0].strip()
+                loc_lastname = row[1].strip()
+                loc_firstname = row[2].strip()
+                loc_street = row[3].strip()
+
+                # parse zip code
+                try:
+                    loc_zipcode = int(row[4].strip())
+                except:
+                    print(
+                        "ERROR: failed to parse zip coce: i: ",
+                        i,
+                        loc_firstname,
+                        " ",
+                        loc_lastname,
+                    )
+                    raise
+                loc_village = row[5].strip()
+
+                loc_phone = row[6].strip()
+                loc_handy = row[7].strip()
+                loc_mail = row[8].strip()
+
+                loc_birthdate = row[9].strip()
+
+                # parse tent number
+                if row[10] == "":
+                    loc_tent = 9999
+                else:
+                    try:
+                        loc_tent = int(row[10].strip())
+                    except:
+                        print(
+                            "ERROR: failed to parse tent number: ", row[10], "row: ", row
+                        )
+                        raise
+
+                loc_team = row[11].strip()
+                loc_comment = row[12].strip()
+
+                loc_tent_leader = TentLeader(
+                    loc_id,
+                    loc_job,
+                    loc_lastname,
+                    loc_firstname,
+                    loc_street,
+                    loc_zipcode,
+                    loc_village,
+                    loc_phone,
+                    loc_handy,
+                    loc_mail,
+                    loc_birthdate,
+                    loc_tent,
+                    loc_team,
+                    loc_comment
+                )
+                loc_id += 1
+
+                tent_leaders.append(loc_tent_leader)
+
+        print("parsed input file: ", input_file)
+
+
 def props(obj):
     """converts class object into an dictonary"""
     props_dict = {}
@@ -295,9 +390,43 @@ def props(obj):
     return props_dict
 
 
-@app.route("/api/participants", methods=["GET"])
+def particpant_object_to_class(arg_participant, arg_id):
+    """converts dict object to participant object"""
+    participants[arg_id].identifier = arg_participant["identifier"]
+    participants[arg_id].paid = arg_participant["paid"]
+    participants[arg_id].lastname = arg_participant["lastname"]
+    participants[arg_id].firstname = arg_participant["firstname"]
+    participants[arg_id].birthdate = arg_participant["birthdate"]
+    participants[arg_id].street = arg_participant["street"]
+    participants[arg_id].zipcode = arg_participant["zipcode"]
+    participants[arg_id].village = arg_participant["village"]
+    participants[arg_id].phone = arg_participant["phone"]
+    participants[arg_id].mail = arg_participant["mail"]
+    participants[arg_id].emergency_contact = arg_participant["emergency_contact"]
+    participants[arg_id].emergency_phone = arg_participant["emergency_phone"]
+    participants[arg_id].is_afe = arg_participant["is_afe"]
+    participants[arg_id].is_reduced = arg_participant["is_reduced"]
+    participants[arg_id].is_event_mail = arg_participant["is_event_mail"]
+    participants[arg_id].friends = arg_participant["friends"]
+    participants[arg_id].is_photo_allowed = arg_participant["is_photo_allowed"]
+    participants[arg_id].other = arg_participant["other"]
+    participants[arg_id].tent = arg_participant["tent"]
+
+
+@app.route("/api/participants", methods=["GET", "POST"])
 def get_participants():
     """returns all participants as json"""
+    if request.method == "POST":
+
+        req = request.form.get("participants")
+        req = json.loads(req)
+
+        for loc_particpant in req:
+            loc_id = loc_particpant["identifier"]
+            particpant_object_to_class(loc_particpant, loc_id)
+
+        save_participants_to_csv()
+        parse_participants()
 
     ret = []
     for loc_participant in participants:
@@ -314,30 +443,11 @@ def get_participant():
 
             req = request.form.get("participant")
             req = json.loads(req)
-
             loc_id = req["identifier"]
-
-            participants[loc_id].identifier = req["identifier"]
-            participants[loc_id].lastname = req["lastname"]
-            participants[loc_id].firstname = req["firstname"]
-            participants[loc_id].birthdate = req["birthdate"]
-            participants[loc_id].street = req["street"]
-            participants[loc_id].zipcode = req["zipcode"]
-            participants[loc_id].village = req["village"]
-            participants[loc_id].phone = req["phone"]
-            participants[loc_id].mail = req["mail"]
-            participants[loc_id].emergency_contact = req["emergency_contact"]
-            participants[loc_id].emergency_phone = req["emergency_phone"]
-            participants[loc_id].is_afe = req["is_afe"]
-            participants[loc_id].is_reduced = req["is_reduced"]
-            participants[loc_id].is_event_mail = req["is_event_mail"]
-            participants[loc_id].friends = req["friends"]
-            participants[loc_id].is_photo_allowed = req["is_photo_allowed"]
-            participants[loc_id].other = req["other"]
-            participants[loc_id].tent = req["tent"]
+            particpant_object_to_class(req, loc_id)
 
             save_participants_to_csv()
-            parse_input_csv()
+            parse_participants()
 
             ret = props(participants[loc_id])
         else:
@@ -348,6 +458,15 @@ def get_participant():
         print("ERROR: could not parse id")
         abort(404)
 
+    return jsonify(ret)
+
+
+@app.route("/api/tentleaders", methods=["GET"])
+def get_tent_leaders():
+    """returns all tent_leaders as json"""
+    ret = []
+    for loc_tent_leader in tent_leaders:
+        ret.append(props(loc_tent_leader))
     return jsonify(ret)
 
 
@@ -382,7 +501,8 @@ def getTemp():
 
 if __name__ == "__main__":
 
-    parse_input_csv()
+    parse_participants()
+    parse_tent_leader()
     for index, participant in enumerate(participants):
         pass
         # print("[", index, "] ", participant)

@@ -1,11 +1,8 @@
 <script lang="ts">
-	import type { IData, ILink, INode } from '$lib/_apiParticipants';
+	import type { IData } from '$lib/_apiParticipants';
 	import NetworkChart from '$lib/chart/NetworkChart.svelte';
 	import { apiGetTmpTodo, type TmpTodo } from '$lib/_apiParticipants';
 	import { onMount } from 'svelte';
-	import { group, utcFormat } from 'd3';
-	import { Col, Row, CardBody, CardHeader, CardTitle, Button } from 'sveltestrap/src';
-	import { dataset_dev } from 'svelte/internal';
 
 	function hasIntersection(setA: Set<string>, setB: Set<string>): boolean {
 		for (let elem of setB) {
@@ -21,16 +18,6 @@
 	let chartData: IData[] = [];
 
 	let groups: Set<string>[] = [];
-
-	function getGroupIndex(name: string): number {
-		for (let i = 0; i < groups.length; i++) {
-			if (groups[i].has(name)) {
-				return i;
-			}
-		}
-
-		return -1;
-	}
 
 	function getByName(name: string, array: TmpTodo[]) {
 		for (let i = 0; i < array.length; i++) {
@@ -94,7 +81,6 @@
 				}
 			}
 		}
-		for (let k = 0; k < groups.length; k++) {}
 
 		chartData = chartData;
 	}
