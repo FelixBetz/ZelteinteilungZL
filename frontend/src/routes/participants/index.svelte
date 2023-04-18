@@ -166,7 +166,8 @@
 
 		<Button on:click={getMaps} color="primary">generate Maps</Button>
 	</Col>
-	<Col sm="3">average age: {avgAge}</Col>
+	<Col sm="auto"><strong>number of participants:</strong> {participants.length}</Col>
+	<Col sm="auto"><strong>average age:</strong> {avgAge}</Col>
 </Row>
 
 <Input

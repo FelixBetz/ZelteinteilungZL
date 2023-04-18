@@ -129,6 +129,7 @@
 		<Col>
 			<h1>Participants Statistics:</h1>
 			<ul>
+				<li>number of participants: {participants.length}</li>
 				<li>average age: {avgAge}</li>
 				<li>youngest participant age: {youngestParticipant}</li>
 				<li>eldest participant: {eldestParticipant}</li>
