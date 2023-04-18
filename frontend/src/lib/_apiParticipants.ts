@@ -65,7 +65,7 @@ export class cTentParticipant {
 	private calculateAge() {
 		const today = new Date();
 
-		const [day, month, year] = this.birthdate.split('.');
+		const [year, month, day] = this.birthdate.split('-');
 		const birthDate = new Date(+year, +month - 1, +day); //(0 = January to 11 = December)
 		const diffMilliseconds = today.getTime() - birthDate.getTime();
 		this.age = diffMilliseconds / 1000 / 3600 / 24 / 365;

@@ -96,10 +96,13 @@
 
 		//parse bithday
 		for (let i = 0; i < participants.length; i++) {
-			const [day, month] = participants[i].birthdate.split('.');
-			const beginZlDate = new Date(2022, 7, 5);
-			const endZlDate = new Date(2022, 7, 12);
-			const birthDate = new Date(2022, +month - 1, +day); //(0 = January to 11 = December)
+			const [year, month, day] = participants[i].birthdate.split('-');
+
+			const zlYear = 2023;
+
+			const beginZlDate = new Date(zlYear, 7, 11); //todo
+			const endZlDate = new Date(zlYear, 7, 18); //todo
+			const birthDate = new Date(zlYear, +month - 1, +day); //(0 = January to 11 = December)
 
 			if (beginZlDate <= birthDate && endZlDate >= birthDate) {
 				birthDayParticipants[birthDayParticipants.length] = participants[i];
