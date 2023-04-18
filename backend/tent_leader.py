@@ -1,7 +1,10 @@
 """implementations of the class TentLeader"""
 
 
-class TentLeader:
+from person import Person
+
+
+class TentLeader(Person):
     """represents data of a zeltlager tentLeader"""
 
     def __init__(
@@ -25,36 +28,15 @@ class TentLeader:
 
         self.job = arg_job
 
-        self.lastname = arg_lastname
-        self.firstname = arg_firstname
-        self.birthdate = arg_birthdate
+        super().__init__(arg_lastname, arg_firstname, arg_street,
+                         arg_zipcode, arg_village, arg_birthdate, arg_phone, arg_mail)
 
-        self.street = arg_street
-        self.zipcode = arg_zipcode
-        self.village = arg_village
-
-        self.phone = arg_phone
         self.handy = arg_handy
-        self.mail = arg_mail
 
         self.tent = arg_tent
         self.team = arg_team
         self.comment = arg_comment
 
     def __str__(self):
-        ret_str = (
-            self.firstname
-            + " "
-            + self.lastname
-            + ", "
-            + str(self.zipcode)
-            + " "
-            + self.village
-            + ", "
-            + str(self.birthdate)
-        )
+        ret_str = super().__str__()
         return ret_str
-
-    def get_fullname(self):
-        """return first + lastname"""
-        return self.firstname + " "+self.lastname
