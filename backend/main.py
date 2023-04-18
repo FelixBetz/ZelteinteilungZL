@@ -1,9 +1,8 @@
 """main file of ZelteinteilungZL"""
 
-
 import time
 import csv
-import os
+
 from datetime import datetime
 import inspect
 import json
@@ -13,17 +12,24 @@ from maps import generate_maps
 from participant import Participant
 from tent_leader import TentLeader
 
+from file_indices import IDX_PARP_FIRST_NAME, IDX_PARP_LAST_NAME, IDX_PARP_STREET,\
+    IDX_PARP_ZIP_CODE, IDX_PARP_VILLAGE,   IDX_PARP_MAIL, IDX_PARP_BIRTHDATE,\
+    IDX_PARP_PHONE, IDX_PARP_EMERCENCY_CONTACT, IDX_PARP_EMERCENCY_PHONE,\
+    IDX_PARP_REDUCED, IDX_PARP_VEGETARIAN, IDX_PARP_NEWSLETTER, IDX_PARP_FRIEND1,\
+    IDX_PARP_FRIEND2, IDX_PARP_OTHER, IDX_PARP_PHOTO_ALLOWED, \
+    IDX_LEAD_JOB, IDX_LEAD_LAST_NAME, IDX_LEAD_FIRST_NAME, IDX_LEAD_STREET,\
+    IDX_LEAD_ZIP_CODE, IDX_LEAD_VILLAGE, IDX_LEAD_PHONE, IDX_LEAD_HANDY,\
+    IDX_LEAD_MAIL, IDX_LEAD_BIRTHDATE, IDX_LEAD_TENT, IDX_LEAD_TEAM, IDX_LEAD_COMMENT
+
 INPUT_FILE_PATH = r"..\\input\\"
-INPUT_FILE_NAME = "input.csv"
+INPUT_FILE_NAME = "input_test.csv"
 INPUT_TENT_LEADER_FILE_NAME = "2022_leitungsteam_anfrage.csv"
 
-input_file = INPUT_FILE_PATH + INPUT_FILE_NAME
-input_tent_leader_file = INPUT_FILE_PATH + INPUT_TENT_LEADER_FILE_NAME
+INPUT_PARICIPANT_FILE = INPUT_FILE_PATH + INPUT_FILE_NAME
+INPUT_TENT_LEADER_FILE = INPUT_FILE_PATH + INPUT_TENT_LEADER_FILE_NAME
 
 tent_leaders = []
-
 participants = []
-csv_revison_num = -1
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -31,10 +37,16 @@ cors = CORS(app)
 app.config["MAPS_OUTPUT"] = "output_maps"
 
 
+def strip_row(arg_row):
+    """strip_row"""
+    for i, col in enumerate(arg_row):
+        arg_row[i] = col.replace("\"", "").strip()
+
+
 def parse_yes_no(arg_string):
     """parses formular ja/zugestimmt to boolean"""
-    arg_string = arg_string.strip()
-    if arg_string in ("ja", "Zugestimmt", "zugestimmt"):
+    arg_string = arg_string.strip().lower()
+    if arg_string in ("ja", "zugestimmt", "vegetarisch", "ermäßigt", "erlaubt"):
         return True
     return False
 
@@ -53,98 +65,6 @@ def bool_to_text_zugestimmt(arg_bool):
     return "nicht zugestimmt"
 
 
-def save_participants_to_csv():
-    """save participants back to csv file"""
-    global csv_revison_num
-    loc_row_str = []
-
-    loc_header = ""
-    loc_header += "Lfd-Nr;"
-    loc_header += "Bezahlt;"
-    loc_header += "Zelt;"
-    loc_header += "Nachname;"
-    loc_header += "Vorname;"
-    loc_header += "Straße mit Hausnummer;"
-    loc_header += "PLZ;"
-    loc_header += "Ort;"
-    loc_header += "Alter;"
-    loc_header += "Heute;"
-    loc_header += "Geburtstag;"
-    loc_header += "Telefon;"
-    loc_header += "eMail;"
-    loc_header += "Ansprechpartner für Notfälle während des Lagers (Name);"
-    loc_header += "Telefonnummer Ansprechpartner;"
-    loc_header += (
-        "Was wir sonst noch wissen sollten (tägliche Medikamente, Allergien o.ä);"
-    )
-    loc_header += (
-        "Unsere Tochter nimmt an der Ferienwoche der Mädchenjugend in Harthausen teil.;"
-    )
-    loc_header += "Ermäßigter Beitrag;"
-    loc_header += "Ich möchte auch über weitere Veranstaltungen der\
-          Schönstattjugend per Mail informiert werden;"
-
-    loc_header += "Person 1:;"
-    loc_header += "Person 2:;"
-    loc_header += "Schadensfreisspruch;"
-    loc_header += "Fotografieren;"
-    loc_header += (
-        "Die Anmeldung ist erst mit der Überweisung des Teilnahmebeitrags wirksam;"
-    )
-    loc_header += "Personenbezogene Daten;"
-    loc_header += "Ich bin damit einverstanden, dass im Falle einer Infektion\
-          meine Kontaktdaten an das Gesundheitsamt weitergegeben werden"
-    loc_header += "\n"
-
-    loc_row_str.append(loc_header)
-
-    for part in participants:
-
-        loc_row = ""
-        loc_row += ";"  # Lfd-Nr
-        # paid
-        if part.paid:
-            loc_row += "True;"
-        else:
-            loc_row += "False;"
-        loc_row += str(part.tent) + ";"  # Zelt
-        loc_row += part.lastname + ";"
-        loc_row += part.firstname + ";"
-        loc_row += part.street + ";"
-        loc_row += str(part.zipcode) + ";"
-        loc_row += part.village + ";"
-        loc_row += ";"  # Alter
-        loc_row += ";"  # Heute
-        loc_row += part.birthdate + ";"
-        loc_row += part.phone + ";"
-        loc_row += part.mail + ";"
-        loc_row += part.emergency_contact + ";"
-        loc_row += part.emergency_phone + ";"
-        loc_row += part.other + ";"
-
-        loc_row += bool_to_tex_yes_no(part.is_afe) + ";"
-        loc_row += bool_to_tex_yes_no(part.is_reduced) + ";"
-        loc_row += bool_to_tex_yes_no(part.is_event_mail) + ";"
-
-        loc_row += part.get_friend_string(0) + ";"
-        loc_row += part.get_friend_string(1) + ";"
-
-        loc_row += "Zugestimmt;"  # Schadensfreisspruch
-
-        loc_row += bool_to_text_zugestimmt(part.is_photo_allowed) + ";"
-        loc_row += "Zugestimmt;"  # Teilnahmebeitrag mit Überweisung wirksam
-        loc_row += "Zugestimmt;"  # Personenbezogene Daten
-        loc_row += "Zugestimmt"  # Gesundheitsamt
-
-        loc_row += "\n"
-        loc_row_str.append(loc_row)
-    with open(
-        INPUT_FILE_PATH + INPUT_FILE_NAME + "." +
-            str(csv_revison_num + 1).zfill(5), "w"
-    ) as outfile:
-        outfile.writelines(loc_row_str)
-
-
 def is_paided(arg_paided):
     """is paided"""
     if arg_paided in ["true", "True"]:
@@ -152,77 +72,56 @@ def is_paided(arg_paided):
     return False
 
 
-def parse_participants():
-    """parses zeltlager participants from input csv file"""
-    global input_file, csv_revison_num, participants
-
-    participants = []
-
-    # parse csv_revison_num
-
-    loc_rev_filename = ""
-    for file in os.listdir(".."):
-        if file.startswith(INPUT_FILE_NAME):
-            loc_splitted = file.split(".")
-            if loc_splitted[-1] != "csv":
-                loc_comp_num = int(loc_splitted[-1])
-                if loc_comp_num > csv_revison_num:
-                    csv_revison_num = loc_comp_num
-                    loc_rev_filename = file
-
-    if csv_revison_num >= 0:
-        input_file = INPUT_FILE_PATH + loc_rev_filename
-
+def check_if_participant_file_valid(arg_input_file):
+    """check_if_participant_file_valid"""
     # check number of semicolons
-    with open(input_file, newline="") as csvfile:
+    with open(arg_input_file, newline="", encoding="utf-8") as csvfile:
         for check_row in csvfile:
             cnt_semicolon = check_row.count(";")
-            if cnt_semicolon != 25:
-                print("ERROR at row:", check_row)
+            if cnt_semicolon != 24:
+                raise Exception("ERROR at row:" + str(check_row))
 
-    with open(input_file, newline="") as csvfile:
+
+def parse_participants(arg_file_name):
+    """parses zeltlager participants from input csv file"""
+    loc_participants = []
+
+    check_if_participant_file_valid(arg_file_name)
+
+    with open(arg_file_name, newline="", encoding="utf-8") as csvfile:
         spamreader = csv.reader(csvfile, delimiter=";", quotechar="|")
-        loc_id = 0
+
         for i, row in enumerate(spamreader):
 
             if i >= 1:
-
-                loc_paided = is_paided(row[1].strip())
+                strip_row(row)
 
                 # parse tent number
                 if row[2] == "":
                     loc_tent = 9999
                 else:
                     try:
-                        loc_tent = int(row[2].strip())
+                        loc_tent = 9999  # todo loc_tent = int(row[2].strip())
                     except:
                         print(
                             "ERROR: failed to parse tent number: ", row[2], "row: ", row
                         )
                         raise
 
-                loc_lastname = row[3].strip()
-                loc_firstname = row[4].strip()
-                loc_street = row[5].strip()
+                loc_lastname = row[IDX_PARP_LAST_NAME]
+                loc_firstname = row[IDX_PARP_FIRST_NAME]
 
                 # parse zip code
                 try:
-                    loc_zipcode = int(row[6].strip())
+                    loc_zipcode = int(row[IDX_PARP_ZIP_CODE])
                 except:
-                    print(
-                        "ERROR: failed to parse zip coce: i: ",
-                        i,
-                        loc_firstname,
-                        " ",
-                        loc_lastname,
-                    )
+                    print("ERROR: failed to parse zip coce: i: ",
+                          i, loc_firstname, " ", loc_lastname, )
                     raise
-                loc_village = row[7].strip()
 
                 try:
                     loc_time_string = datetime.strptime(
-                        row[10].strip(), "%d.%m.%Y"
-                    ).date()
+                        row[IDX_PARP_BIRTHDATE], "%Y-%m-%d").date()
                     loc_tuple = loc_time_string.timetuple()
                     timestamp = time.mktime(loc_tuple)
                     loc_birthdate = timestamp
@@ -236,151 +135,98 @@ def parse_participants():
                         loc_lastname,
                     )
                     raise
-                loc_birthdate = row[10].strip()
-
-                loc_phone = row[11].strip()
-                loc_mail = row[12].strip()
-                loc_emergency_contact = row[13].strip()
-                loc_emergency_phone = row[14].strip()
-
-                loc_other = row[15].strip()
-
-                loc_is_afe = parse_yes_no(row[16])
-                loc_is_reduced = parse_yes_no(row[17])
-                loc_is_event_mail = parse_yes_no(row[18])
-
-                # row[19] = friend1
-                # row[20] = friend2
-
-                loc_is_photo_allowed = parse_yes_no(row[22])
+                loc_birthdate = row[IDX_PARP_BIRTHDATE]
 
                 loc_participant = Participant(
-                    loc_id,
-                    loc_paided,
+                    i-1,  # todo
+                    is_paided("false"),  # todo
                     loc_lastname,
                     loc_firstname,
-                    loc_street,
+                    row[IDX_PARP_STREET],
                     loc_zipcode,
-                    loc_village,
+                    row[IDX_PARP_VILLAGE],
                     loc_birthdate,
-                    loc_phone,
-                    loc_mail,
-                    loc_emergency_contact,
-                    loc_emergency_phone,
-                    loc_is_reduced,
-                    loc_is_photo_allowed,
-                    loc_is_afe,
-                    loc_is_event_mail,
-                    loc_other,
+                    row[IDX_PARP_PHONE],
+                    row[IDX_PARP_MAIL],
+                    row[IDX_PARP_EMERCENCY_CONTACT],
+                    row[IDX_PARP_EMERCENCY_PHONE],
+                    parse_yes_no(row[IDX_PARP_REDUCED]),
+                    parse_yes_no(row[IDX_PARP_PHOTO_ALLOWED]),
+                    parse_yes_no(row[IDX_PARP_VEGETARIAN]),  # todo
+                    parse_yes_no(row[IDX_PARP_NEWSLETTER]),  # todo
+                    row[IDX_PARP_OTHER],
                     loc_tent,
                 )
-                loc_id += 1
 
-                participants.append(loc_participant)
+                loc_participant.set_friends(
+                    [row[IDX_PARP_FRIEND1],
+                     row[IDX_PARP_FRIEND2]]
+                )
 
-        # parse freinds
-        with open(input_file, newline="") as csvfile:
-            spamreader = csv.reader(csvfile, delimiter=";", quotechar="|")
+                loc_participants.append(loc_participant)
 
-            loc_names = []
-            for participant in participants:
-                loc_names.append(participant.get_fullname())
-
-            loc_id = 0
-            for i, row in enumerate(spamreader):
-                if i >= 1:
-                    loc_friends = []
-                    loc_name = participants[loc_id].get_fullname()
-                    for friend in [row[19], row[20]]:
-                        splitted = friend.split(",")
-                        for friend_str in splitted:
-                            friend_str = friend_str.strip()
-                            if friend_str != "":
-                                if friend_str in loc_names:
-                                    loc_friends.append(friend_str)
-                                else:
-                                    print("cannot find: ", friend_str,
-                                          " (", loc_name, ")")
-                        participants[loc_id].set_friends(loc_friends)
-                    loc_id += 1
-
-        print("parsed input file: ", input_file)
+        print("parsed input file: ", arg_file_name)
+    return loc_participants
 
 
-def parse_tent_leader():
+def parse_tent_leader(arg_file_name):
     """parses zeltlager tent leader from input csv file"""
-    global input_tent_leader_file, tent_leaders
 
-    tent_leaders = []
+    loc_tent_leaders = []
 
-    with open(input_tent_leader_file, newline="") as csvfile:
+    with open(arg_file_name, newline="", encoding="utf-8") as csvfile:
         spamreader = csv.reader(csvfile, delimiter=";", quotechar="|")
         loc_id = 0
         for i, row in enumerate(spamreader):
 
             if i >= 1:
 
-                loc_job = row[0].strip()
-                loc_lastname = row[1].strip()
-                loc_firstname = row[2].strip()
-                loc_street = row[3].strip()
+                strip_row(row)
+
+                loc_lastname = row[IDX_LEAD_LAST_NAME]
+                loc_firstname = row[IDX_LEAD_FIRST_NAME]
 
                 # parse zip code
                 try:
-                    loc_zipcode = int(row[4].strip())
+                    loc_zipcode = int(row[IDX_LEAD_ZIP_CODE])
                 except:
-                    print(
-                        "ERROR: failed to parse zip coce: i: ",
-                        i,
-                        loc_firstname,
-                        " ",
-                        loc_lastname,
-                    )
+                    print("ERROR: failed to parse zip code: i: ",
+                          i, loc_firstname, " ", loc_lastname,)
                     raise
-                loc_village = row[5].strip()
-
-                loc_phone = row[6].strip()
-                loc_handy = row[7].strip()
-                loc_mail = row[8].strip()
-
-                loc_birthdate = row[9].strip()
 
                 # parse tent number
-                if row[10] == "":
+                if row[IDX_LEAD_TENT] == "":
                     loc_tent = 9999
                 else:
                     try:
-                        loc_tent = int(row[10].strip())
+                        loc_tent = int(row[IDX_LEAD_TENT])
                     except:
-                        print(
-                            "ERROR: failed to parse tent number: ", row[10], "row: ", row
-                        )
+                        print("ERROR: failed to parse tent number: ",
+                              row[IDX_LEAD_TENT], "row: ", row)
                         raise
-
-                loc_team = row[11].strip()
-                loc_comment = row[12].strip()
 
                 loc_tent_leader = TentLeader(
                     loc_id,
-                    loc_job,
+                    row[IDX_LEAD_JOB],
                     loc_lastname,
                     loc_firstname,
-                    loc_street,
+                    row[IDX_LEAD_STREET],
                     loc_zipcode,
-                    loc_village,
-                    loc_phone,
-                    loc_handy,
-                    loc_mail,
-                    loc_birthdate,
+                    row[IDX_LEAD_VILLAGE],
+                    row[IDX_LEAD_PHONE],
+                    row[IDX_LEAD_HANDY],
+                    row[IDX_LEAD_MAIL],
+                    row[IDX_LEAD_BIRTHDATE],
                     loc_tent,
-                    loc_team,
-                    loc_comment
+                    row[IDX_LEAD_TEAM],
+                    row[IDX_LEAD_COMMENT]
                 )
                 loc_id += 1
 
-                tent_leaders.append(loc_tent_leader)
+                loc_tent_leaders.append(loc_tent_leader)
 
-        print("parsed input file: ", input_file)
+        print("parsed input file: ", arg_file_name)
+    return loc_tent_leaders
 
 
 def props(obj):
@@ -428,8 +274,8 @@ def get_participants():
             loc_id = loc_particpant["identifier"]
             particpant_object_to_class(loc_particpant, loc_id)
 
-        save_participants_to_csv()
-        parse_participants()
+        # todosave_participants_to_csv()
+        # todoparse_participants()
 
     ret = []
     for loc_participant in participants:
@@ -449,15 +295,15 @@ def get_participant():
             loc_id = req["identifier"]
             particpant_object_to_class(req, loc_id)
 
-            save_participants_to_csv()
-            parse_participants()
+            # todo save_participants_to_csv()
+            # todo parse_participants()
 
             ret = props(participants[loc_id])
         else:
             loc_id = int(request.args.get("id"))
             ret = props(participants[loc_id])
 
-    except:
+    except ValueError:
         print("ERROR: could not parse id")
         abort(404)
 
@@ -505,10 +351,7 @@ def get_temp():
 
 if __name__ == "__main__":
 
-    parse_participants()
-    parse_tent_leader()
-    for index, participant in enumerate(participants):
-        pass
-        # print("[", index, "] ", participant)
+    participants = parse_participants(INPUT_PARICIPANT_FILE)
+    tent_leaders = parse_tent_leader(INPUT_TENT_LEADER_FILE)
 
     app.run(host="0.0.0.0", port=8080, debug=True)

@@ -6,6 +6,8 @@ from person import Person
 
 class TentLeader(Person):
     """represents data of a zeltlager tentLeader"""
+    # pylint: disable=too-many-locals
+    # pylint: disable=too-many-arguments
 
     def __init__(
         self,

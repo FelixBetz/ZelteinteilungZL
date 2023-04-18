@@ -4,6 +4,9 @@ from person import Person
 
 class Participant(Person):
     """represents data of a zeltlager participant"""
+    # pylint: disable=too-many-instance-attributes
+    # pylint: disable=too-many-locals
+    # pylint: disable=too-many-arguments
 
     def __init__(
         self,
