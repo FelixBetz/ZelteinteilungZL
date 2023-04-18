@@ -1,6 +1,10 @@
 <script lang="ts">
-	import { apiGetParticipants } from '$lib/_apiParticipants';
-	import type { cTentParticipant } from '$lib/_apiParticipants';
+	import {
+		apiGetParticipants,
+		apiGetTentLeader,
+		type TentLeader,
+		type cTentParticipant
+	} from '$lib/_apiParticipants';
 
 	import { Row, Col } from 'sveltestrap/src';
 	import { onMount } from 'svelte';
@@ -8,6 +12,14 @@
 
 	let participants: cTentParticipant[] = [];
 	let birthDayParticipants: cTentParticipant[] = [];
+	let tentLeaders: TentLeader[] = [];
+
+	interface Team {
+		name: string;
+		persons: string[];
+	}
+
+	let teams: Team[] = [];
 
 	let avgAge = 0;
 	let youngestParticipant = '';
@@ -94,6 +106,44 @@
 	async function getParticipants() {
 		participants = await apiGetParticipants();
 
+		let mats: Team = { name: 'Mat Warts', persons: [] };
+		let sukus: Team = { name: 'Suppenkutscher', persons: [] };
+		let free: Team = { name: 'Zeltführer', persons: [] };
+		let reserver: Team = { name: 'Freie Männer', persons: [] };
+		let others: Team = { name: 'Sonstige', persons: [] };
+		tentLeaders = await apiGetTentLeader();
+
+		tentLeaders.forEach((leader) => {
+			let fullname = leader.firstname + ' ' + leader.lastname;
+			switch (leader.job.trim().toLowerCase()) {
+				case 'mat':
+				case 'matina':
+				case 'mat wart':
+					mats.persons.push(fullname);
+					break;
+				case 'suku':
+					sukus.persons.push(fullname);
+					break;
+				case 'freier mann':
+				case 'freie männer':
+					reserver.persons.push(fullname);
+					break;
+				case 'zefü':
+				case 'zeltführer':
+					free.persons.push(fullname);
+					break;
+				default:
+					others.persons.push(fullname);
+			}
+		});
+
+		teams.push(others);
+		teams.push(mats);
+		teams.push(sukus);
+		teams.push(free);
+		teams.push(reserver);
+		teams = teams;
+
 		//parse bithday
 		for (let i = 0; i < participants.length; i++) {
 			const [year, month, day] = participants[i].birthdate.split('-');
@@ -118,30 +168,51 @@
 </svelte:head>
 <div style="margin-top: 80px; margin-left: 10px;">
 	<Row>
-		<Col
-			><h1>Durchschnittsalter Zelte:</h1>
-			<ul>
-				{#each tentAvgAge as avg}
-					<li>Zelt {avg.tentNumber} ({Math.round((100 * avg.avg) / avg.num) / 100})</li>
+		<Col sm="4">
+			<h3>Leitungsteam ({tentLeaders.length})</h3>
+			<Row>
+				{#each teams as team}
+					<Col sm="4">
+						<h5>{team.name} ({team.persons.length})</h5>
+						<ul>
+							{#each team.persons as person}
+								<li>{person}</li>
+							{/each}
+						</ul>
+					</Col>
 				{/each}
-			</ul>
+			</Row>
 		</Col>
-		<Col>
-			<h1>Participants Statistics:</h1>
-			<ul>
-				<li>number of participants: {participants.length}</li>
-				<li>average age: {avgAge}</li>
-				<li>youngest participant age: {youngestParticipant}</li>
-				<li>eldest participant: {eldestParticipant}</li>
-			</ul>
+
+		<Col sm="4">
+			<Col>
+				<h3>Teilnehmer Statistik:</h3>
+				<ul>
+					<li>Anzahl Teilnehmer: {participants.length}</li>
+					<li>Durchschnittsalter: {avgAge}</li>
+					<li>jüngster Teilnehmer: {youngestParticipant}</li>
+					<li>ältester Teilnehmer: {eldestParticipant}</li>
+				</ul>
+			</Col>
+			<Col>
+				<h3>Geburtstagskinder im Lager</h3>
+				<ul>
+					{#each birthDayParticipants as participant}
+						<li>{participant.getFullname()} ({participant.birthdate})</li>
+					{/each}
+				</ul>
+			</Col>
 		</Col>
-		<Col
-			><h1>Birthday kids</h1>
-			<ul>
-				{#each birthDayParticipants as participant}
-					<li>{participant.getFullname()} ({participant.birthdate})</li>
-				{/each}
-			</ul>
+
+		<Col sm="4">
+			<Col>
+				<h3>Durchschnittsalter Zelte:</h3>
+				<ul>
+					{#each tentAvgAge as avg}
+						<li>Zelt {avg.tentNumber} ({Math.round((100 * avg.avg) / avg.num) / 100})</li>
+					{/each}
+				</ul>
+			</Col>
 		</Col>
 	</Row>
 </div>
