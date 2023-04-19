@@ -24,9 +24,13 @@ from file_indices import IDX_PARP_FIRST_NAME, IDX_PARP_LAST_NAME, IDX_PARP_STREE
 INPUT_FILE_PATH = r"..\\input\\"
 INPUT_FILE_NAME = "input_test.csv"
 INPUT_TENT_LEADER_FILE_NAME = "2022_leitungsteam_anfrage.csv"
+INPUT_REVISION_FILE_NAME = "edit.txt"
+INPUT_TENT_FILE_NAME = "tents.txt"
 
-INPUT_PARICIPANT_FILE = INPUT_FILE_PATH + INPUT_FILE_NAME
-INPUT_TENT_LEADER_FILE = INPUT_FILE_PATH + INPUT_TENT_LEADER_FILE_NAME
+INPUT_PARICIPANT_PATH = INPUT_FILE_PATH + INPUT_FILE_NAME
+INPUT_TENT_LEADER_PATH = INPUT_FILE_PATH + INPUT_TENT_LEADER_FILE_NAME
+INPUT_REVISION_PATH = INPUT_FILE_PATH + INPUT_REVISION_FILE_NAME
+INPUT_TENT_PATH = INPUT_FILE_PATH + INPUT_TENT_FILE_NAME
 
 tent_leaders = []
 participants_d = []
@@ -80,6 +84,23 @@ def check_if_participant_file_valid(arg_input_file):
             cnt_semicolon = check_row.count(";")
             if cnt_semicolon != 24:
                 raise Exception("ERROR at row:" + str(check_row))
+
+
+def parse_tent_numbers(arg_participants):
+    """parse tent numbers"""
+    with open(INPUT_TENT_PATH, encoding="utf8") as revision_file:
+        for row in revision_file:
+            splitted_row = row.split(";")
+            loc_id = int(splitted_row[0].strip())
+            loc_tent_number = int(splitted_row[1].strip())
+
+            loc_participant = get_paticipant_by_id(arg_participants, loc_id)
+            if loc_participant is None:
+                print("ERROR: participant not found")
+                # todo
+            else:
+                loc_participant.tent = loc_tent_number
+    return arg_participants
 
 
 def parse_participants(arg_file_name):
@@ -166,6 +187,7 @@ def parse_participants(arg_file_name):
                 loc_participants.append(loc_participant)
 
         print("parsed input file: ", arg_file_name)
+        loc_participants = parse_tent_numbers(loc_participants)
     return loc_participants
 
 
@@ -262,9 +284,9 @@ def particpant_object_to_class(arg_participant, arg_id):
     participants_d[arg_id].tent = arg_participant["tent"]
 
 
-def get_paticipant_by_id(arg_id):
+def get_paticipant_by_id(arg_participants, arg_id):
     """ retunrs participant by given id"""
-    for loc_participant in participants_d:
+    for loc_participant in arg_participants:
         if loc_participant.identifier == arg_id:
             return loc_participant
     return None
@@ -310,7 +332,7 @@ def get_participant():
         else:
 
             loc_id = int(request.args.get("id"))
-            loc_participant = get_paticipant_by_id(loc_id)
+            loc_participant = get_paticipant_by_id(participants_d, loc_id)
 
             if loc_participant is None:
                 raise Exception
@@ -364,7 +386,7 @@ def get_temp():
 
 if __name__ == "__main__":
 
-    participants_d = parse_participants(INPUT_PARICIPANT_FILE)
-    tent_leaders = parse_tent_leader(INPUT_TENT_LEADER_FILE)
+    participants_d = parse_participants(INPUT_PARICIPANT_PATH)
+    tent_leaders = parse_tent_leader(INPUT_TENT_LEADER_PATH)
 
     app.run(host="0.0.0.0", port=8080, debug=True)
