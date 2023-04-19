@@ -25,12 +25,14 @@ INPUT_FILE_PATH = r"..\\input\\"
 INPUT_FILE_NAME = "2023_teilnehmer_input.csv"
 INPUT_TENT_LEADER_FILE_NAME = "2022_leitungsteam_anfrage.csv"
 INPUT_REVISION_FILE_NAME = "edit.txt"
-INPUT_TENTT_NUMBERS_FILE_NAME = "tent_numbers.txt"
+INPUT_TENT_NUMBERS_FILE_NAME = "tent_numbers.txt"
+INPUT_PAID_FILE_NAME = "paid.txt"
 
 INPUT_PARICIPANT_PATH = INPUT_FILE_PATH + INPUT_FILE_NAME
 INPUT_TENT_LEADER_PATH = INPUT_FILE_PATH + INPUT_TENT_LEADER_FILE_NAME
 INPUT_REVISION_PATH = INPUT_FILE_PATH + INPUT_REVISION_FILE_NAME
-INPUT_TENT_NUMBERS_PATH = INPUT_FILE_PATH + INPUT_TENTT_NUMBERS_FILE_NAME
+INPUT_TENT_NUMBERS_PATH = INPUT_FILE_PATH + INPUT_TENT_NUMBERS_FILE_NAME
+INPUT_PAID_PATH = INPUT_FILE_PATH + INPUT_PAID_FILE_NAME
 
 tent_leaders = []
 participants_d = []
@@ -86,6 +88,32 @@ def check_if_participant_file_valid(arg_input_file):
                 raise Exception("ERROR at row:" + str(check_row))
 
 
+def save_participants():
+    """save participants tent numbers, revisions, paid"""
+    global participants_d
+    # save tent numbers
+    tent_numbers = [{"id": p.identifier, "tent": p.tent}
+                    for p in participants_d]
+    with open(INPUT_TENT_NUMBERS_PATH, "w", encoding="utf-8") as tent_number_file:
+        for number in tent_numbers:
+            if number["tent"] != 9999:
+                tent_number_file.write(
+                    str(number["id"]) + ";" + str(number["tent"]) + "\n")
+
+    # save paid
+    paid_obj = [{"id": p.identifier, "paid": p.paid}
+                for p in participants_d]
+
+    with open(INPUT_PAID_PATH, "w", encoding="utf-8") as paid_file:
+        for obj in paid_obj:
+            if obj["paid"] is True:
+                paid_file.write(str(obj["id"]) + ";" + str(obj["paid"]) + "\n")
+
+     # save revisions todo
+
+    participants_d = parse_participants(INPUT_PARICIPANT_PATH)
+
+
 def parse_tent_numbers(arg_participants):
     """parse tent numbers"""
     with open(INPUT_TENT_NUMBERS_PATH, encoding="utf8") as tent_numbers_file:
@@ -100,6 +128,23 @@ def parse_tent_numbers(arg_participants):
                 # todo
             else:
                 loc_participant.tent = loc_tent_number
+    return arg_participants
+
+
+def parse_paid(arg_participants):
+    """parse paid participants"""
+    with open(INPUT_PAID_PATH, encoding="utf8") as paid_file:
+        for row in paid_file:
+            splitted_row = row.split(";")
+            loc_id = int(splitted_row[0].strip())
+            loc_is_paid = splitted_row[1].strip()
+
+            loc_participant = get_paticipant_by_id(arg_participants, loc_id)
+            if loc_participant is None:
+                print("ERROR: participant not found")
+                # todo
+            else:
+                loc_participant.paid = is_paided(loc_is_paid)
     return arg_participants
 
 
@@ -136,19 +181,15 @@ def parse_participants(arg_file_name):
                     loc_birthdate = timestamp
 
                 except:
-                    print(
-                        "failed to parse birthdate: i: ",
-                        i,
-                        loc_firstname,
-                        " ",
-                        loc_lastname,
-                    )
+                    print("failed to parse birthdate: i: ",
+                          i, loc_firstname, " ", loc_lastname,)
                     raise
                 loc_birthdate = row[IDX_PARP_BIRTHDATE]
 
                 loc_participant = Participant(
                     int(row[IDX_PARP_ID]),
-                    is_paided("false"),  # todo
+                    # will be overwritten by parse_paid()
+                    is_paided("false"),
                     loc_lastname,
                     loc_firstname,
                     row[IDX_PARP_STREET],
@@ -176,6 +217,7 @@ def parse_participants(arg_file_name):
 
         print("parsed input file: ", arg_file_name)
         loc_participants = parse_tent_numbers(loc_participants)
+        loc_participants = parse_paid(loc_participants)
     return loc_participants
 
 
@@ -283,7 +325,6 @@ def get_paticipant_by_id(arg_participants, arg_id):
 @app.route("/api/participants", methods=["GET", "POST"])
 def get_participants():
     """returns all participants as json"""
-    global participants_d
     if request.method == "POST":
 
         req = request.form.get("participants")
@@ -294,19 +335,8 @@ def get_participants():
                 participants_d, int(loc_object["identifier"]))
             particpant_object_to_class(loc_particpant, loc_object)
 
-        # todosave_participants_to_csv()
+        save_participants()
 
-        # save tent numbers
-        tent_numbers = [{"id": p.identifier, "tent": p.tent}
-                        for p in participants_d]
-        with open(INPUT_TENT_NUMBERS_PATH, "w", encoding="utf-8") as tent_number_file:
-            for number in tent_numbers:
-                if number["tent"] != 9999:
-                    tent_number_file.write(
-                        str(number["id"]) + ";" + str(number["tent"]) + "\n")
-
-        # reparse participants
-        participants_d = parse_participants(INPUT_PARICIPANT_PATH)
     ret = []
     for loc_participant in participants_d:
         ret.append(props(loc_participant))
@@ -322,13 +352,18 @@ def get_participant():
 
             req = request.form.get("participant")
             req = json.loads(req)
-            loc_id = req["identifier"]
-            # todo particpant_object_to_class(req, loc_id)
 
-            # todo save_participants_to_csv()
-            # todo parse_participants()
+            loc_id = int(req["identifier"])
+            loc_participant = get_paticipant_by_id(participants_d, loc_id)
+            if loc_participant is None:
+                raise Exception
 
-            # todo ret = props(participants_d[loc_id])
+            particpant_object_to_class(loc_participant, req)
+
+            save_participants()
+
+            ret = props(loc_participant)
+
         else:
 
             loc_id = int(request.args.get("id"))
