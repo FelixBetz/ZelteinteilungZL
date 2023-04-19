@@ -49,7 +49,7 @@ app.config["MAPS_OUTPUT"] = "output_maps"
 def strip_row(arg_row):
     """strip_row"""
     for i, col in enumerate(arg_row):
-        arg_row[i] = col.replace("\"", "").strip()
+        arg_row[i] = col.replace('"', "").strip()
 
 
 def parse_yes_no(arg_string):
@@ -91,31 +91,32 @@ def check_if_participant_file_valid(arg_input_file):
                 raise Exception("ERROR at row:" + str(check_row))
 
 
-def save():
+def save_data(arg_participants, arg_tent_leaders):
     """save participants tent numbers, revisions, paid"""
-    global participants_d, tent_leaders
     # save tent numbers
     tent_numbers = [{"id": p.identifier, "tent": p.tent}
-                    for p in participants_d]
+                    for p in arg_participants]
     with open(INPUT_TENT_NUMBERS_PATH, "w", encoding="utf-8") as tent_number_file:
         for number in tent_numbers:
             if number["tent"] != 9999:
                 tent_number_file.write(
-                    str(number["id"]) + ";" + str(number["tent"]) + "\n")
+                    str(number["id"]) + ";" + str(number["tent"]) + "\n"
+                )
 
     # save paid
-    paid_obj = [{"id": p.identifier, "paid": p.paid}
-                for p in participants_d]
+    paid_obj = [{"id": p.identifier, "paid": p.paid} for p in arg_participants]
 
     with open(INPUT_PAID_PATH, "w", encoding="utf-8") as paid_file:
         for obj in paid_obj:
             if obj["paid"] is True:
                 paid_file.write(str(obj["id"]) + ";" + str(obj["paid"]) + "\n")
 
-     # save revisions todo
+    # save revisions todo
 
-    participants_d = parse_participants(INPUT_PARICIPANT_PATH)
-    tent_leaders = parse_tent_leader(INPUT_TENT_LEADER_PATH)
+    arg_participants = parse_participants(INPUT_PARICIPANT_PATH)
+    arg_tent_leaders = parse_tent_leader(INPUT_TENT_LEADER_PATH)
+
+    return arg_participants, arg_tent_leaders
 
 
 def parse_tent_numbers(arg_participants):
@@ -132,9 +133,13 @@ def parse_tent_numbers(arg_participants):
             loc_participant = get_paticipant_by_id(arg_participants, loc_id)
             if loc_participant is None:
                 print("ERROR parse tent number: participant not found")
-                error_logs.append("Teilnehmer mit Id \""+str(loc_id) +
-                                  "\" wurde nicht gefunden. Zeltnummer \""
-                                  + str(loc_tent_number)+"\" konnte nicht zugewiesen werden!")
+                error_logs.append(
+                    'Teilnehmer mit Id "'
+                    + str(loc_id)
+                    + '" wurde nicht gefunden. Zeltnummer "'
+                    + str(loc_tent_number)
+                    + '" konnte nicht zugewiesen werden!'
+                )
             else:
                 loc_participant.tent = loc_tent_number
     return arg_participants
@@ -154,8 +159,11 @@ def parse_paid(arg_participants):
             loc_participant = get_paticipant_by_id(arg_participants, loc_id)
             if loc_participant is None:
                 print("ERROR parse paid: participant not found")
-                error_logs.append("Teilnehmer mit Id \""+str(loc_id) +
-                                  "\" wurde nicht gefunden. Bezahlt konnte nicht angehackt werden!")
+                error_logs.append(
+                    'Teilnehmer mit Id "'
+                    + str(loc_id)
+                    + '" wurde nicht gefunden. Bezahlt konnte nicht angehackt werden!'
+                )
             else:
                 loc_participant.paid = is_paided(loc_is_paid)
     return arg_participants
@@ -169,9 +177,8 @@ def parse_participants(arg_file_name):
     loc_participants = []
 
     if not os.path.isfile(arg_file_name):
-        error_logs.append(
-            "ERROR: "+arg_file_name + " existiert nicht")
-        print("ERROR: "+arg_file_name + " existiert nicht")
+        error_logs.append("ERROR: " + arg_file_name + " existiert nicht")
+        print("ERROR: " + arg_file_name + " existiert nicht")
         return loc_participants
 
     check_if_participant_file_valid(arg_file_name)
@@ -180,7 +187,6 @@ def parse_participants(arg_file_name):
         spamreader = csv.reader(csvfile, delimiter=";", quotechar="|")
 
         for i, row in enumerate(spamreader):
-
             if i >= 1:
                 strip_row(row)
 
@@ -191,20 +197,31 @@ def parse_participants(arg_file_name):
                 try:
                     loc_zipcode = int(row[IDX_PARP_ZIP_CODE])
                 except:
-                    print("ERROR: failed to parse zip coce: i: ",
-                          i, loc_firstname, " ", loc_lastname, )
+                    print(
+                        "ERROR: failed to parse zip coce: i: ",
+                        i,
+                        loc_firstname,
+                        " ",
+                        loc_lastname,
+                    )
                     raise
 
                 try:
                     loc_time_string = datetime.strptime(
-                        row[IDX_PARP_BIRTHDATE], "%Y-%m-%d").date()
+                        row[IDX_PARP_BIRTHDATE], "%Y-%m-%d"
+                    ).date()
                     loc_tuple = loc_time_string.timetuple()
                     timestamp = time.mktime(loc_tuple)
                     loc_birthdate = timestamp
 
                 except:
-                    print("failed to parse birthdate: i: ",
-                          i, loc_firstname, " ", loc_lastname,)
+                    print(
+                        "failed to parse birthdate: i: ",
+                        i,
+                        loc_firstname,
+                        " ",
+                        loc_lastname,
+                    )
                     raise
                 loc_birthdate = row[IDX_PARP_BIRTHDATE]
 
@@ -231,15 +248,16 @@ def parse_participants(arg_file_name):
                 )
 
                 loc_participant.set_friends(
-                    [row[IDX_PARP_FRIEND1],
-                     row[IDX_PARP_FRIEND2]]
+                    [row[IDX_PARP_FRIEND1], row[IDX_PARP_FRIEND2]]
                 )
 
                 loc_participants.append(loc_participant)
 
         print("parsed input file: ", arg_file_name)
+        loc_participants = apply_participants_revisons(loc_participants)
         loc_participants = parse_tent_numbers(loc_participants)
         loc_participants = parse_paid(loc_participants)
+
     return loc_participants
 
 
@@ -250,17 +268,15 @@ def parse_tent_leader(arg_file_name):
 
     if not os.path.isfile(INPUT_TENT_LEADER_PATH):
         error_logs.append(
-            "ERROR: "+INPUT_TENT_LEADER_PATH + " existiert nicht")
-        print("ERROR: "+INPUT_TENT_LEADER_PATH + " existiert nicht")
+            "ERROR: " + INPUT_TENT_LEADER_PATH + " existiert nicht")
+        print("ERROR: " + INPUT_TENT_LEADER_PATH + " existiert nicht")
         return loc_tent_leaders
 
     with open(arg_file_name, newline="", encoding="utf-8") as csvfile:
         spamreader = csv.reader(csvfile, delimiter=";", quotechar="|")
         loc_id = 0
         for i, row in enumerate(spamreader):
-
             if i >= 1:
-
                 strip_row(row)
 
                 loc_lastname = row[IDX_LEAD_LAST_NAME]
@@ -270,8 +286,13 @@ def parse_tent_leader(arg_file_name):
                 try:
                     loc_zipcode = int(row[IDX_LEAD_ZIP_CODE])
                 except:
-                    print("ERROR: failed to parse zip code: i: ",
-                          i, loc_firstname, " ", loc_lastname,)
+                    print(
+                        "ERROR: failed to parse zip code: i: ",
+                        i,
+                        loc_firstname,
+                        " ",
+                        loc_lastname,
+                    )
                     raise
 
                 # parse tent number
@@ -281,8 +302,12 @@ def parse_tent_leader(arg_file_name):
                     try:
                         loc_tent = int(row[IDX_LEAD_TENT])
                     except:
-                        print("ERROR: failed to parse tent number: ",
-                              row[IDX_LEAD_TENT], "row: ", row)
+                        print(
+                            "ERROR: failed to parse tent number: ",
+                            row[IDX_LEAD_TENT],
+                            "row: ",
+                            row,
+                        )
                         raise
 
                 loc_tent_leader = TentLeader(
@@ -299,7 +324,7 @@ def parse_tent_leader(arg_file_name):
                     row[IDX_LEAD_BIRTHDATE],
                     loc_tent,
                     row[IDX_LEAD_TEAM],
-                    row[IDX_LEAD_COMMENT]
+                    row[IDX_LEAD_COMMENT],
                 )
                 loc_id += 1
 
@@ -343,7 +368,7 @@ def particpant_object_to_class(arg_participant, arg_object):
 
 
 def get_paticipant_by_id(arg_participants, arg_id):
-    """ retunrs participant by given id"""
+    """returns participant by given id"""
     for loc_participant in arg_participants:
         if loc_participant.identifier == arg_id:
             return loc_participant
@@ -353,17 +378,18 @@ def get_paticipant_by_id(arg_participants, arg_id):
 @app.route("/api/participants", methods=["GET", "POST"])
 def get_participants():
     """returns all participants as json"""
+    global participants_d, tent_leaders
     if request.method == "POST":
-
         req = request.form.get("participants")
         req = json.loads(req)
 
         for loc_object in req:
             loc_particpant = get_paticipant_by_id(
-                participants_d, int(loc_object["identifier"]))
+                participants_d, int(loc_object["identifier"])
+            )
             particpant_object_to_class(loc_particpant, loc_object)
 
-        save()
+        participants_d, tent_leaders = save_data(participants_d, tent_leaders)
 
     ret = []
     for loc_participant in participants_d:
@@ -374,10 +400,10 @@ def get_participants():
 @app.route("/api/participant", methods=["GET", "POST"])
 def get_participant():
     """returns participant by given id as json"""
+    global participants_d, tent_leaders
     ret = {}
     try:
         if request.method == "POST":
-
             req = request.form.get("participant")
             req = json.loads(req)
 
@@ -388,12 +414,12 @@ def get_participant():
 
             particpant_object_to_class(loc_participant, req)
 
-            save()
-
+            participants_d, tent_leaders = save_data(
+                participants_d, tent_leaders)
+            loc_participant = get_paticipant_by_id(participants_d, loc_id)
             ret = props(loc_participant)
 
         else:
-
             loc_id = int(request.args.get("id"))
             loc_participant = get_paticipant_by_id(participants_d, loc_id)
 
@@ -466,7 +492,6 @@ def get_logs():
 
 
 if __name__ == "__main__":
-
     participants_d = parse_participants(INPUT_PARICIPANT_PATH)
     tent_leaders = parse_tent_leader(INPUT_TENT_LEADER_PATH)
 
