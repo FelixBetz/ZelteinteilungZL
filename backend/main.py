@@ -37,6 +37,8 @@ INPUT_PAID_PATH = INPUT_FILE_PATH + INPUT_PAID_FILE_NAME
 tent_leaders = []
 participants_d = []
 
+error_logs = []
+
 app = Flask(__name__)
 cors = CORS(app)
 
@@ -124,8 +126,10 @@ def parse_tent_numbers(arg_participants):
 
             loc_participant = get_paticipant_by_id(arg_participants, loc_id)
             if loc_participant is None:
-                print("ERROR: participant not found")
-                # todo
+                print("ERROR parse tent number: participant not found")
+                error_logs.append("Teilnehmer mit Id \""+str(loc_id) +
+                                  "\" wurde nicht gefunden. Zeltnummer \""
+                                  + str(loc_tent_number)+"\" konnte nicht zugewiesen werden!")
             else:
                 loc_participant.tent = loc_tent_number
     return arg_participants
@@ -141,8 +145,9 @@ def parse_paid(arg_participants):
 
             loc_participant = get_paticipant_by_id(arg_participants, loc_id)
             if loc_participant is None:
-                print("ERROR: participant not found")
-                # todo
+                print("ERROR parse paid: participant not found")
+                error_logs.append("Teilnehmer mit Id \""+str(loc_id) +
+                                  "\" wurde nicht gefunden. Bezahlt konnte nicht angehackt werden!")
             else:
                 loc_participant.paid = is_paided(loc_is_paid)
     return arg_participants
@@ -150,6 +155,9 @@ def parse_paid(arg_participants):
 
 def parse_participants(arg_file_name):
     """parses zeltlager participants from input csv file"""
+    global error_logs
+
+    error_logs = []
     loc_participants = []
 
     check_if_participant_file_valid(arg_file_name)
@@ -417,6 +425,15 @@ def get_temp():
             {"name": participant.get_fullname(), "friends": participant.friends})
 
     return jsonify(loc_stuebis)
+
+
+@app.route("/api/logs", methods=["GET"])
+def get_logs():
+    """returns logs"""
+    ret = {}
+    ret["errors"] = error_logs
+    ret["revisions"] = []  # todo
+    return jsonify(ret)
 
 
 if __name__ == "__main__":

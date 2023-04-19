@@ -18,7 +18,8 @@
 		{ label: 'Home', route: '/' },
 		{ label: 'Stübis', route: '/participants' },
 		{ label: 'Zelteinteilung', route: '/tentAllocation' },
-		{ label: 'Graph', route: '/test_graph' }
+		{ label: 'Graph', route: '/test_graph' },
+		{ label: 'Logs', route: '/logs' }
 	];
 
 	let isOpen = false;

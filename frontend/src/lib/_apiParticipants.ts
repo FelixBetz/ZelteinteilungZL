@@ -247,6 +247,26 @@ export async function apiGetTentLeader(): Promise<TentLeader[]> {
 	return response;
 }
 
+export interface Logs {
+	errors: String[];
+	revisions: String[];
+}
+
+export async function apiGetLogs(): Promise<Logs> {
+	const response = await fetch(baseUrl + '/logs')
+		.then((res) => res.json())
+		.then((res: Logs) => {
+			return res;
+		})
+		.catch((error: Error) => {
+			console.error(error);
+			let ret: Logs = { errors: [], revisions: [] };
+			return ret;
+		});
+
+	return response;
+}
+
 export interface ZipCodes {
 	zipCode: number;
 	location: string;
