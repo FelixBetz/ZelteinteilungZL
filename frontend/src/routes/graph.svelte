@@ -26,7 +26,7 @@
 		console.log(name, ' not find');
 	}
 
-	async function getTmpTodo() {
+	async function getGraph() {
 		let tmpDodos = await apiGetGraph();
 
 		for (let i = 0; i < tmpDodos.length; i++) {
@@ -83,7 +83,7 @@
 		chartData = chartData;
 	}
 	onMount(() => {
-		getTmpTodo();
+		getGraph();
 	});
 </script>
 
