@@ -6,7 +6,7 @@ interface Participant {
 	firstname: string;
 	friends: string[];
 	identifier: number;
-	is_afe: boolean;
+	is_vegetarian: boolean;
 	is_event_mail: boolean;
 	is_photo_allowed: boolean;
 	is_reduced: boolean;
@@ -51,7 +51,7 @@ export class cTentParticipant {
 		public mail: string,
 		public emergency_contact: string,
 		public emergency_phone: string,
-		public is_afe: boolean,
+		public is_vegetarian: boolean,
 		public is_event_mail: boolean,
 		public is_photo_allowed: boolean,
 		public is_reduced: boolean,
@@ -133,7 +133,7 @@ function partipantInterfaceToParticipantObject(p: Participant): cTentParticipant
 		p.mail,
 		p.emergency_contact,
 		p.emergency_phone,
-		p.is_afe,
+		p.is_vegetarian,
 		p.is_event_mail,
 		p.is_photo_allowed,
 		p.is_reduced,
@@ -153,7 +153,7 @@ function participantObjectToParticipantInterface(p: cTentParticipant): Participa
 		firstname: p.firstname,
 		friends: p.friends,
 		identifier: p.identifier,
-		is_afe: p.is_afe,
+		is_vegetarian: p.is_vegetarian,
 		is_event_mail: p.is_event_mail,
 		is_photo_allowed: p.is_photo_allowed,
 		is_reduced: p.is_reduced,

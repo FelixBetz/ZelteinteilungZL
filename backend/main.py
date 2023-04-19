@@ -224,8 +224,8 @@ def parse_participants(arg_file_name):
                     row[IDX_PARP_EMERCENCY_PHONE],
                     parse_yes_no(row[IDX_PARP_REDUCED]),
                     parse_yes_no(row[IDX_PARP_PHOTO_ALLOWED]),
-                    parse_yes_no(row[IDX_PARP_VEGETARIAN]),  # todo
-                    parse_yes_no(row[IDX_PARP_NEWSLETTER]),  # todo
+                    parse_yes_no(row[IDX_PARP_VEGETARIAN]),
+                    parse_yes_no(row[IDX_PARP_NEWSLETTER]),
                     row[IDX_PARP_OTHER],
                     9999,  # will be overwritten by parse_tent_numbers()
                 )
@@ -333,7 +333,7 @@ def particpant_object_to_class(arg_participant, arg_object):
     arg_participant.mail = arg_object["mail"]
     arg_participant.emergency_contact = arg_object["emergency_contact"]
     arg_participant.emergency_phone = arg_object["emergency_phone"]
-    arg_participant.is_afe = arg_object["is_afe"]
+    arg_participant.is_vegetarian = arg_object["is_vegetarian"]
     arg_participant.is_reduced = arg_object["is_reduced"]
     arg_participant.is_event_mail = arg_object["is_event_mail"]
     arg_participant.friends = arg_object["friends"]

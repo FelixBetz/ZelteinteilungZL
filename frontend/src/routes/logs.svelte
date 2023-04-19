@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { apiGetLogs, type Logs } from '$lib/_apiParticipants';
 	import { onMount } from 'svelte';
-	import { Row, Col, Toast, ToastBody, ToastHeader, Container, Badge } from 'sveltestrap/src';
+	import { Row, Col, Toast, ToastBody, ToastHeader, Badge } from 'sveltestrap/src';
 	let logs: Logs = { errors: [], revisions: [] };
 
 	async function getErrorLogs() {

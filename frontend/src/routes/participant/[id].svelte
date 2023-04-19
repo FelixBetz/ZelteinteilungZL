@@ -192,7 +192,11 @@
 						</Col>
 						<Col>
 							<FormGroup floating>
-								<Input type="checkbox" label="Tochter Afe" bind:checked={participant.is_afe} />
+								<Input
+									type="checkbox"
+									label="Vegetarisch"
+									bind:checked={participant.is_vegetarian}
+								/>
 							</FormGroup>
 						</Col>
 						<Col>

@@ -24,7 +24,7 @@ class Participant(Person):
         arg_emergency_phone,
         arg_is_reduced,
         arg_is_photo_allowed,
-        arg_is_afe,
+        arg_is_vegetarian,
         arg_is_event_mail,
         arg_other,
         arg_tent,
@@ -39,7 +39,7 @@ class Participant(Person):
         self.emergency_contact = arg_emergency_contact
         self.emergency_phone = arg_emergency_phone
 
-        self.is_afe = arg_is_afe
+        self.is_vegetarian = arg_is_vegetarian
         self.is_reduced = arg_is_reduced
         self.is_event_mail = arg_is_event_mail
 
