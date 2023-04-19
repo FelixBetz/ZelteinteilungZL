@@ -16,7 +16,7 @@ from file_indices import IDX_PARP_FIRST_NAME, IDX_PARP_LAST_NAME, IDX_PARP_STREE
     IDX_PARP_ZIP_CODE, IDX_PARP_VILLAGE,   IDX_PARP_MAIL, IDX_PARP_BIRTHDATE,\
     IDX_PARP_PHONE, IDX_PARP_EMERCENCY_CONTACT, IDX_PARP_EMERCENCY_PHONE,\
     IDX_PARP_REDUCED, IDX_PARP_VEGETARIAN, IDX_PARP_NEWSLETTER, IDX_PARP_FRIEND1,\
-    IDX_PARP_FRIEND2, IDX_PARP_OTHER, IDX_PARP_PHOTO_ALLOWED, \
+    IDX_PARP_FRIEND2, IDX_PARP_OTHER, IDX_PARP_PHOTO_ALLOWED, IDX_PARP_ID, \
     IDX_LEAD_JOB, IDX_LEAD_LAST_NAME, IDX_LEAD_FIRST_NAME, IDX_LEAD_STREET,\
     IDX_LEAD_ZIP_CODE, IDX_LEAD_VILLAGE, IDX_LEAD_PHONE, IDX_LEAD_HANDY,\
     IDX_LEAD_MAIL, IDX_LEAD_BIRTHDATE, IDX_LEAD_TENT, IDX_LEAD_TEAM, IDX_LEAD_COMMENT
@@ -29,7 +29,7 @@ INPUT_PARICIPANT_FILE = INPUT_FILE_PATH + INPUT_FILE_NAME
 INPUT_TENT_LEADER_FILE = INPUT_FILE_PATH + INPUT_TENT_LEADER_FILE_NAME
 
 tent_leaders = []
-participants = []
+participants_d = []
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -138,7 +138,7 @@ def parse_participants(arg_file_name):
                 loc_birthdate = row[IDX_PARP_BIRTHDATE]
 
                 loc_participant = Participant(
-                    i-1,  # todo
+                    int(row[IDX_PARP_ID]),
                     is_paided("false"),  # todo
                     loc_lastname,
                     loc_firstname,
@@ -241,25 +241,33 @@ def props(obj):
 
 def particpant_object_to_class(arg_participant, arg_id):
     """converts dict object to participant object"""
-    participants[arg_id].identifier = arg_participant["identifier"]
-    participants[arg_id].paid = arg_participant["paid"]
-    participants[arg_id].lastname = arg_participant["lastname"]
-    participants[arg_id].firstname = arg_participant["firstname"]
-    participants[arg_id].birthdate = arg_participant["birthdate"]
-    participants[arg_id].street = arg_participant["street"]
-    participants[arg_id].zipcode = arg_participant["zipcode"]
-    participants[arg_id].village = arg_participant["village"]
-    participants[arg_id].phone = arg_participant["phone"]
-    participants[arg_id].mail = arg_participant["mail"]
-    participants[arg_id].emergency_contact = arg_participant["emergency_contact"]
-    participants[arg_id].emergency_phone = arg_participant["emergency_phone"]
-    participants[arg_id].is_afe = arg_participant["is_afe"]
-    participants[arg_id].is_reduced = arg_participant["is_reduced"]
-    participants[arg_id].is_event_mail = arg_participant["is_event_mail"]
-    participants[arg_id].friends = arg_participant["friends"]
-    participants[arg_id].is_photo_allowed = arg_participant["is_photo_allowed"]
-    participants[arg_id].other = arg_participant["other"]
-    participants[arg_id].tent = arg_participant["tent"]
+    participants_d[arg_id].identifier = arg_participant["identifier"]
+    participants_d[arg_id].paid = arg_participant["paid"]
+    participants_d[arg_id].lastname = arg_participant["lastname"]
+    participants_d[arg_id].firstname = arg_participant["firstname"]
+    participants_d[arg_id].birthdate = arg_participant["birthdate"]
+    participants_d[arg_id].street = arg_participant["street"]
+    participants_d[arg_id].zipcode = arg_participant["zipcode"]
+    participants_d[arg_id].village = arg_participant["village"]
+    participants_d[arg_id].phone = arg_participant["phone"]
+    participants_d[arg_id].mail = arg_participant["mail"]
+    participants_d[arg_id].emergency_contact = arg_participant["emergency_contact"]
+    participants_d[arg_id].emergency_phone = arg_participant["emergency_phone"]
+    participants_d[arg_id].is_afe = arg_participant["is_afe"]
+    participants_d[arg_id].is_reduced = arg_participant["is_reduced"]
+    participants_d[arg_id].is_event_mail = arg_participant["is_event_mail"]
+    participants_d[arg_id].friends = arg_participant["friends"]
+    participants_d[arg_id].is_photo_allowed = arg_participant["is_photo_allowed"]
+    participants_d[arg_id].other = arg_participant["other"]
+    participants_d[arg_id].tent = arg_participant["tent"]
+
+
+def get_paticipant_by_id(arg_id):
+    """ retunrs participant by given id"""
+    for loc_participant in participants_d:
+        if loc_participant.identifier == arg_id:
+            return loc_participant
+    return None
 
 
 @app.route("/api/participants", methods=["GET", "POST"])
@@ -278,7 +286,7 @@ def get_participants():
         # todoparse_participants()
 
     ret = []
-    for loc_participant in participants:
+    for loc_participant in participants_d:
         ret.append(props(loc_participant))
     return jsonify(ret)
 
@@ -293,15 +301,20 @@ def get_participant():
             req = request.form.get("participant")
             req = json.loads(req)
             loc_id = req["identifier"]
-            particpant_object_to_class(req, loc_id)
+            # todo particpant_object_to_class(req, loc_id)
 
             # todo save_participants_to_csv()
             # todo parse_participants()
 
-            ret = props(participants[loc_id])
+            # todo ret = props(participants_d[loc_id])
         else:
+
             loc_id = int(request.args.get("id"))
-            ret = props(participants[loc_id])
+            loc_participant = get_paticipant_by_id(loc_id)
+
+            if loc_participant is None:
+                raise Exception
+            ret = props(loc_participant)
 
     except ValueError:
         print("ERROR: could not parse id")
@@ -342,7 +355,7 @@ def get_temp():
     """get_temp"""
     loc_stuebis = []
 
-    for participant in participants:
+    for participant in participants_d:  # todo
         loc_stuebis.append(
             {"name": participant.get_fullname(), "friends": participant.friends})
 
@@ -351,7 +364,7 @@ def get_temp():
 
 if __name__ == "__main__":
 
-    participants = parse_participants(INPUT_PARICIPANT_FILE)
+    participants_d = parse_participants(INPUT_PARICIPANT_FILE)
     tent_leaders = parse_tent_leader(INPUT_TENT_LEADER_FILE)
 
     app.run(host="0.0.0.0", port=8080, debug=True)
