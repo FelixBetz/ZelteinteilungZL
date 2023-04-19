@@ -2,6 +2,7 @@
 
 import time
 import csv
+import os
 
 from datetime import datetime
 import inspect
@@ -90,9 +91,9 @@ def check_if_participant_file_valid(arg_input_file):
                 raise Exception("ERROR at row:" + str(check_row))
 
 
-def save_participants():
+def save():
     """save participants tent numbers, revisions, paid"""
-    global participants_d
+    global participants_d, tent_leaders
     # save tent numbers
     tent_numbers = [{"id": p.identifier, "tent": p.tent}
                     for p in participants_d]
@@ -114,10 +115,14 @@ def save_participants():
      # save revisions todo
 
     participants_d = parse_participants(INPUT_PARICIPANT_PATH)
+    tent_leaders = parse_tent_leader(INPUT_TENT_LEADER_PATH)
 
 
 def parse_tent_numbers(arg_participants):
     """parse tent numbers"""
+    if not os.path.isfile(INPUT_TENT_NUMBERS_PATH):
+        return arg_participants
+
     with open(INPUT_TENT_NUMBERS_PATH, encoding="utf8") as tent_numbers_file:
         for row in tent_numbers_file:
             splitted_row = row.split(";")
@@ -137,6 +142,9 @@ def parse_tent_numbers(arg_participants):
 
 def parse_paid(arg_participants):
     """parse paid participants"""
+    if not os.path.isfile(INPUT_PAID_PATH):
+        return arg_participants
+
     with open(INPUT_PAID_PATH, encoding="utf8") as paid_file:
         for row in paid_file:
             splitted_row = row.split(";")
@@ -159,6 +167,12 @@ def parse_participants(arg_file_name):
 
     error_logs = []
     loc_participants = []
+
+    if not os.path.isfile(arg_file_name):
+        error_logs.append(
+            "ERROR: "+arg_file_name + " existiert nicht")
+        print("ERROR: "+arg_file_name + " existiert nicht")
+        return loc_participants
 
     check_if_participant_file_valid(arg_file_name)
 
@@ -233,6 +247,12 @@ def parse_tent_leader(arg_file_name):
     """parses zeltlager tent leader from input csv file"""
 
     loc_tent_leaders = []
+
+    if not os.path.isfile(INPUT_TENT_LEADER_PATH):
+        error_logs.append(
+            "ERROR: "+INPUT_TENT_LEADER_PATH + " existiert nicht")
+        print("ERROR: "+INPUT_TENT_LEADER_PATH + " existiert nicht")
+        return loc_tent_leaders
 
     with open(arg_file_name, newline="", encoding="utf-8") as csvfile:
         spamreader = csv.reader(csvfile, delimiter=";", quotechar="|")
@@ -343,7 +363,7 @@ def get_participants():
                 participants_d, int(loc_object["identifier"]))
             particpant_object_to_class(loc_particpant, loc_object)
 
-        save_participants()
+        save()
 
     ret = []
     for loc_participant in participants_d:
@@ -368,7 +388,7 @@ def get_participant():
 
             particpant_object_to_class(loc_participant, req)
 
-            save_participants()
+            save()
 
             ret = props(loc_participant)
 
@@ -404,8 +424,8 @@ def get_maps():
     req = request.form.get("zipCodes")
     for zip_code in json.loads(req):
         zip_codes.append((zip_code["zipCode"], zip_code["location"]))
-
-    generate_maps(zip_codes)
+    if len(zip_codes) > 0:
+        generate_maps(zip_codes)
     return jsonify("ok")
 
 

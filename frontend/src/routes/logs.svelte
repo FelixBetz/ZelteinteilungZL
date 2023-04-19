@@ -13,10 +13,10 @@
 	});
 </script>
 
-<h1>Logs</h1>
-<Container>
+<div class="m-5">
+	<h1>Logs</h1>
 	<Row>
-		<Col sm="3">
+		<Col sm="6">
 			<h3>Error Logs <Badge color="danger">{logs.errors.length}</Badge></h3>
 
 			{#if logs.errors.length == 0}
@@ -29,7 +29,7 @@
 				</Toast>
 			{/each}
 		</Col>
-		<Col sm="3">
+		<Col sm="6">
 			<h3>Revisions <Badge color="info">{logs.revisions.length}</Badge></h3>
 
 			{#if logs.revisions.length == 0}
@@ -43,4 +43,4 @@
 			{/each}
 		</Col>
 	</Row>
-</Container>
+</div>
