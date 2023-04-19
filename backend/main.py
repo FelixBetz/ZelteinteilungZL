@@ -22,15 +22,15 @@ from file_indices import IDX_PARP_FIRST_NAME, IDX_PARP_LAST_NAME, IDX_PARP_STREE
     IDX_LEAD_MAIL, IDX_LEAD_BIRTHDATE, IDX_LEAD_TENT, IDX_LEAD_TEAM, IDX_LEAD_COMMENT
 
 INPUT_FILE_PATH = r"..\\input\\"
-INPUT_FILE_NAME = "input_test.csv"
+INPUT_FILE_NAME = "2023_teilnehmer_input.csv"
 INPUT_TENT_LEADER_FILE_NAME = "2022_leitungsteam_anfrage.csv"
 INPUT_REVISION_FILE_NAME = "edit.txt"
-INPUT_TENT_FILE_NAME = "tents.txt"
+INPUT_TENTT_NUMBERS_FILE_NAME = "tent_numbers.txt"
 
 INPUT_PARICIPANT_PATH = INPUT_FILE_PATH + INPUT_FILE_NAME
 INPUT_TENT_LEADER_PATH = INPUT_FILE_PATH + INPUT_TENT_LEADER_FILE_NAME
 INPUT_REVISION_PATH = INPUT_FILE_PATH + INPUT_REVISION_FILE_NAME
-INPUT_TENT_PATH = INPUT_FILE_PATH + INPUT_TENT_FILE_NAME
+INPUT_TENT_NUMBERS_PATH = INPUT_FILE_PATH + INPUT_TENTT_NUMBERS_FILE_NAME
 
 tent_leaders = []
 participants_d = []
@@ -88,8 +88,8 @@ def check_if_participant_file_valid(arg_input_file):
 
 def parse_tent_numbers(arg_participants):
     """parse tent numbers"""
-    with open(INPUT_TENT_PATH, encoding="utf8") as revision_file:
-        for row in revision_file:
+    with open(INPUT_TENT_NUMBERS_PATH, encoding="utf8") as tent_numbers_file:
+        for row in tent_numbers_file:
             splitted_row = row.split(";")
             loc_id = int(splitted_row[0].strip())
             loc_tent_number = int(splitted_row[1].strip())
@@ -116,18 +116,6 @@ def parse_participants(arg_file_name):
 
             if i >= 1:
                 strip_row(row)
-
-                # parse tent number
-                if row[2] == "":
-                    loc_tent = 9999
-                else:
-                    try:
-                        loc_tent = 9999  # todo loc_tent = int(row[2].strip())
-                    except:
-                        print(
-                            "ERROR: failed to parse tent number: ", row[2], "row: ", row
-                        )
-                        raise
 
                 loc_lastname = row[IDX_PARP_LAST_NAME]
                 loc_firstname = row[IDX_PARP_FIRST_NAME]
@@ -176,7 +164,7 @@ def parse_participants(arg_file_name):
                     parse_yes_no(row[IDX_PARP_VEGETARIAN]),  # todo
                     parse_yes_no(row[IDX_PARP_NEWSLETTER]),  # todo
                     row[IDX_PARP_OTHER],
-                    loc_tent,
+                    9999,  # will be overwritten by parse_tent_numbers()
                 )
 
                 loc_participant.set_friends(
@@ -261,27 +249,27 @@ def props(obj):
     return props_dict
 
 
-def particpant_object_to_class(arg_participant, arg_id):
+def particpant_object_to_class(arg_participant, arg_object):
     """converts dict object to participant object"""
-    participants_d[arg_id].identifier = arg_participant["identifier"]
-    participants_d[arg_id].paid = arg_participant["paid"]
-    participants_d[arg_id].lastname = arg_participant["lastname"]
-    participants_d[arg_id].firstname = arg_participant["firstname"]
-    participants_d[arg_id].birthdate = arg_participant["birthdate"]
-    participants_d[arg_id].street = arg_participant["street"]
-    participants_d[arg_id].zipcode = arg_participant["zipcode"]
-    participants_d[arg_id].village = arg_participant["village"]
-    participants_d[arg_id].phone = arg_participant["phone"]
-    participants_d[arg_id].mail = arg_participant["mail"]
-    participants_d[arg_id].emergency_contact = arg_participant["emergency_contact"]
-    participants_d[arg_id].emergency_phone = arg_participant["emergency_phone"]
-    participants_d[arg_id].is_afe = arg_participant["is_afe"]
-    participants_d[arg_id].is_reduced = arg_participant["is_reduced"]
-    participants_d[arg_id].is_event_mail = arg_participant["is_event_mail"]
-    participants_d[arg_id].friends = arg_participant["friends"]
-    participants_d[arg_id].is_photo_allowed = arg_participant["is_photo_allowed"]
-    participants_d[arg_id].other = arg_participant["other"]
-    participants_d[arg_id].tent = arg_participant["tent"]
+    arg_participant.identifier = arg_object["identifier"]
+    arg_participant.paid = arg_object["paid"]
+    arg_participant.lastname = arg_object["lastname"]
+    arg_participant.firstname = arg_object["firstname"]
+    arg_participant.birthdate = arg_object["birthdate"]
+    arg_participant.street = arg_object["street"]
+    arg_participant.zipcode = arg_object["zipcode"]
+    arg_participant.village = arg_object["village"]
+    arg_participant.phone = arg_object["phone"]
+    arg_participant.mail = arg_object["mail"]
+    arg_participant.emergency_contact = arg_object["emergency_contact"]
+    arg_participant.emergency_phone = arg_object["emergency_phone"]
+    arg_participant.is_afe = arg_object["is_afe"]
+    arg_participant.is_reduced = arg_object["is_reduced"]
+    arg_participant.is_event_mail = arg_object["is_event_mail"]
+    arg_participant.friends = arg_object["friends"]
+    arg_participant.is_photo_allowed = arg_object["is_photo_allowed"]
+    arg_participant.other = arg_object["other"]
+    arg_participant.tent = arg_object["tent"]
 
 
 def get_paticipant_by_id(arg_participants, arg_id):
@@ -295,18 +283,30 @@ def get_paticipant_by_id(arg_participants, arg_id):
 @app.route("/api/participants", methods=["GET", "POST"])
 def get_participants():
     """returns all participants as json"""
+    global participants_d
     if request.method == "POST":
 
         req = request.form.get("participants")
         req = json.loads(req)
 
-        for loc_particpant in req:
-            loc_id = loc_particpant["identifier"]
-            particpant_object_to_class(loc_particpant, loc_id)
+        for loc_object in req:
+            loc_particpant = get_paticipant_by_id(
+                participants_d, int(loc_object["identifier"]))
+            particpant_object_to_class(loc_particpant, loc_object)
 
         # todosave_participants_to_csv()
-        # todoparse_participants()
 
+        # save tent numbers
+        tent_numbers = [{"id": p.identifier, "tent": p.tent}
+                        for p in participants_d]
+        with open(INPUT_TENT_NUMBERS_PATH, "w", encoding="utf-8") as tent_number_file:
+            for number in tent_numbers:
+                if number["tent"] != 9999:
+                    tent_number_file.write(
+                        str(number["id"]) + ";" + str(number["tent"]) + "\n")
+
+        # reparse participants
+        participants_d = parse_participants(INPUT_PARICIPANT_PATH)
     ret = []
     for loc_participant in participants_d:
         ret.append(props(loc_participant))
