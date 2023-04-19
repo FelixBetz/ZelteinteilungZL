@@ -247,8 +247,8 @@ export async function apiGetTentLeader(): Promise<TentLeader[]> {
 }
 
 export interface Logs {
-	errors: String[];
-	revisions: String[];
+	errors: string[];
+	revisions: string[];
 }
 
 export async function apiGetLogs(): Promise<Logs> {
@@ -259,7 +259,7 @@ export async function apiGetLogs(): Promise<Logs> {
 		})
 		.catch((error: Error) => {
 			console.error(error);
-			let ret: Logs = { errors: [], revisions: [] };
+			const ret: Logs = { errors: [], revisions: [] };
 			return ret;
 		});
 

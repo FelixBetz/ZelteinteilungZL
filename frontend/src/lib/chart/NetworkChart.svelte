@@ -107,6 +107,7 @@
 	}
 
 	function dragstarted(currentEvent: {
+		/* eslint-disable  @typescript-eslint/no-explicit-any */
 		active: any;
 		subject: { fx: number; x: number; fy: number; y: number };
 	}) {

@@ -165,7 +165,8 @@
 
 		//parse bithday
 		for (let i = 0; i < participants.length; i++) {
-			const [year, month, day] = participants[i].birthdate.split('-');
+			/* eslint-disable  @typescript-eslint/no-unused-vars */
+			const [_, month, day] = participants[i].birthdate.split('-');
 
 			const zlYear = 2023;
 
