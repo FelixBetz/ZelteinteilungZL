@@ -232,7 +232,6 @@ export async function apiPostParticipants(
 	return response;
 }
 
-
 export async function apiGetTentLeader(): Promise<TentLeader[]> {
 	const response = await fetch(baseUrl + '/tentleaders')
 		.then((res) => res.json())
@@ -290,7 +289,7 @@ export async function apiGetMaps(zipCodes: ZipCodes[]): Promise<string> {
 
 	return response;
 }
-export interface TmpTodo {
+export interface GraphInput {
 	friends: string[];
 	name: string;
 }
@@ -309,10 +308,10 @@ export interface IData {
 	nodes: INode[];
 	links: ILink[];
 }
-export async function apiGetTmpTodo(): Promise<TmpTodo[]> {
-	const response = await fetch(baseUrl + '/tmp')
+export async function apiGetGraph(): Promise<GraphInput[]> {
+	const response = await fetch(baseUrl + '/graph')
 		.then((res) => res.json())
-		.then((res: TmpTodo[]) => {
+		.then((res: GraphInput[]) => {
 			return res;
 		})
 		.catch((error: Error) => {

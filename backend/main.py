@@ -435,14 +435,23 @@ def download_file(filename):
     return send_from_directory(app.config["MAPS_OUTPUT"], filename)
 
 
-@app.route("/api/tmp", methods=["GET"])
-def get_temp():
-    """get_temp"""
+@app.route("/api/graph", methods=["GET"])
+def get_graph():
+    """get_graph"""
     loc_stuebis = []
+    compare_friends = [p.get_fullname() for p in participants_d]
 
-    for participant in participants_d:  # todo
+    for participant in participants_d:
+        loc_friends = []
+
+        for loc_friend in participant.friends:
+            if loc_friend in compare_friends:
+                loc_friends.append(loc_friend)
+            else:
+                pass  # todo nicht angemeldet
+
         loc_stuebis.append(
-            {"name": participant.get_fullname(), "friends": participant.friends})
+            {"name": participant.get_fullname(), "friends": loc_friends})
 
     return jsonify(loc_stuebis)
 
@@ -452,7 +461,7 @@ def get_logs():
     """returns logs"""
     ret = {}
     ret["errors"] = error_logs
-    ret["revisions"] = []  # todo
+    ret["revisions"] = []  # todo parse revision
     return jsonify(ret)
 
 
