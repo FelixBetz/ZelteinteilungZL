@@ -8,7 +8,7 @@
 		type Logs
 	} from '$lib/_apiParticipants';
 
-	import { Row, Col, Badge } from 'sveltestrap/src';
+	import { Row, Col, Badge, Progress } from 'sveltestrap/src';
 	import { onMount } from 'svelte';
 	import { NUM_TENTS } from '$lib/constants';
 
@@ -27,15 +27,29 @@
 	let avgAge = 0;
 	let youngestParticipant = '';
 	let eldestParticipant = '';
+	let assignedParticipants = 0;
 
 	$: avgAge = calculateAvgAge(participants);
 	$: youngestParticipant = calculateYoungestParticipant(participants);
 	$: eldestParticipant = calculateEldestParticipant(participants);
+	$: assignedParticipants = caluclateAssignedParticipants(participants);
 
 	onMount(() => {
 		getParticipants();
 	});
 
+	function caluclateAssignedParticipants(arg_participants: cTentParticipant[]): number {
+		if (arg_participants.length == 0) {
+			return 0;
+		}
+		let loc_assigned = 0;
+		for (let i = 0; i < arg_participants.length; i++) {
+			if (arg_participants[i].tent != 9999) {
+				loc_assigned++;
+			}
+		}
+		return loc_assigned;
+	}
 	function calculateYoungestParticipant(arg_participants: cTentParticipant[]): string {
 		if (arg_participants.length == 0) {
 			return '';
@@ -171,6 +185,7 @@
 <svelte:head>
 	<title>Home</title>
 </svelte:head>
+
 <div style="margin-top: 80px; margin-left: 10px;">
 	<Row>
 		<Col sm="6">
@@ -197,6 +212,12 @@
 					<li>Durchschnittsalter: {avgAge}</li>
 					<li>jüngster Teilnehmer: {youngestParticipant}</li>
 					<li>ältester Teilnehmer: {eldestParticipant}</li>
+					<li>
+						<div>zu einem Zelt zugeteilt: {assignedParticipants}/{participants.length}</div>
+						<Progress color="info" value={(100 * assignedParticipants) / participants.length}>
+							{(100 * assignedParticipants) / participants.length}%
+						</Progress>
+					</li>
 				</ul>
 			</Col>
 			<Col>
