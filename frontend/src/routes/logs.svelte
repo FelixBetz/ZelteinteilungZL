@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { apiGetLogs, type Logs } from '$lib/_apiParticipants';
 	import { onMount } from 'svelte';
-	import { Row, Col } from 'sveltestrap/src';
+	import { Row, Col, Toast, ToastBody, ToastHeader, Container, Badge } from 'sveltestrap/src';
 	let logs: Logs = { errors: [], revisions: [] };
 
 	async function getErrorLogs() {
@@ -14,27 +14,33 @@
 </script>
 
 <h1>Logs</h1>
-<Row>
-	<Col sm="3">
-		<h3>Error Logs</h3>
-		<ul>
+<Container>
+	<Row>
+		<Col sm="3">
+			<h3>Error Logs <Badge color="danger">{logs.errors.length}</Badge></h3>
+
 			{#if logs.errors.length == 0}
-				<li>keine Einträge</li>
+				<i>keine Einträge</i>
 			{/if}
 			{#each logs.errors as log, logIndex}
-				<li><strong>{logIndex}: </strong> {log}</li>
+				<Toast class="mb-2">
+					<ToastHeader icon="danger">Error {logIndex}</ToastHeader>
+					<ToastBody>{log}</ToastBody>
+				</Toast>
 			{/each}
-		</ul>
-	</Col>
-	<Col sm="3">
-		<h3>Revisions</h3>
-		<ul>
+		</Col>
+		<Col sm="3">
+			<h3>Revisions <Badge color="info">{logs.revisions.length}</Badge></h3>
+
 			{#if logs.revisions.length == 0}
-				<li>keine Einträge</li>
+				<i>keine Einträge</i>
 			{/if}
 			{#each logs.revisions as log, logIndex}
-				<li><strong>{logIndex}: </strong> {log}</li>
+				<Toast class="mb-2">
+					<ToastHeader icon="info">Error {logIndex}</ToastHeader>
+					<ToastBody>{log}</ToastBody>
+				</Toast>
 			{/each}
-		</ul>
-	</Col>
-</Row>
+		</Col>
+	</Row>
+</Container>

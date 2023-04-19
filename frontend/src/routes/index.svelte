@@ -2,17 +2,20 @@
 	import {
 		apiGetParticipants,
 		apiGetTentLeader,
+		apiGetLogs,
 		type TentLeader,
-		type cTentParticipant
+		type cTentParticipant,
+		type Logs
 	} from '$lib/_apiParticipants';
 
-	import { Row, Col } from 'sveltestrap/src';
+	import { Row, Col, Badge } from 'sveltestrap/src';
 	import { onMount } from 'svelte';
 	import { NUM_TENTS } from '$lib/constants';
 
 	let participants: cTentParticipant[] = [];
 	let birthDayParticipants: cTentParticipant[] = [];
 	let tentLeaders: TentLeader[] = [];
+	let logs: Logs = { errors: [], revisions: [] };
 
 	interface Team {
 		name: string;
@@ -52,6 +55,7 @@
 			')'
 		);
 	}
+
 	function calculateEldestParticipant(arg_participants: cTentParticipant[]): string {
 		if (arg_participants.length == 0) {
 			return '';
@@ -105,6 +109,7 @@
 
 	async function getParticipants() {
 		participants = await apiGetParticipants();
+		logs = await apiGetLogs();
 
 		let mats: Team = { name: 'Mat Warts', persons: [] };
 		let sukus: Team = { name: 'Suppenkutscher', persons: [] };
@@ -168,7 +173,7 @@
 </svelte:head>
 <div style="margin-top: 80px; margin-left: 10px;">
 	<Row>
-		<Col sm="4">
+		<Col sm="6">
 			<h3>Leitungsteam ({tentLeaders.length})</h3>
 			<Row>
 				{#each teams as team}
@@ -184,7 +189,7 @@
 			</Row>
 		</Col>
 
-		<Col sm="4">
+		<Col sm="3">
 			<Col>
 				<h3>Teilnehmer Statistik:</h3>
 				<ul>
@@ -202,9 +207,6 @@
 					{/each}
 				</ul>
 			</Col>
-		</Col>
-
-		<Col sm="4">
 			<Col>
 				<h3>Durchschnittsalter Zelte:</h3>
 				<ul>
@@ -213,6 +215,18 @@
 					{/each}
 				</ul>
 			</Col>
+		</Col>
+
+		<Col sm="3">
+			<h3>Logs:</h3>
+			<ul>
+				<a href="/logs">
+					<li>Error Logs: <Badge color="danger">{logs.errors.length}</Badge></li>
+				</a>
+				<a href="/logs"
+					><li>Revision Logs: <Badge color="info">{logs.revisions.length}</Badge></li>
+				</a>
+			</ul>
 		</Col>
 	</Row>
 </div>
