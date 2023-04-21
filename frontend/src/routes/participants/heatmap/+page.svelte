@@ -9,6 +9,9 @@
 	});
 </script>
 
+<svelte:head>
+	<title>Heatmap</title>
+</svelte:head>
 <NavbarParticipants />
 <!--add radnom number to iframe src, to prevent browser from caching the iframe-->
 <iframe
