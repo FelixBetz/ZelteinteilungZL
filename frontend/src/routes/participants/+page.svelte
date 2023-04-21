@@ -7,6 +7,8 @@
 	import { onMount } from 'svelte';
 	import NavbarParticipants from '$lib/NavbarParticipants.svelte';
 
+	import { boolSort, textSort, numberSort } from '$lib/sort';
+
 	enum IColumn {
 		id = 'id',
 		paid = 'paid',
@@ -47,62 +49,23 @@
 		return Math.round((ageSum / arg_participants.length) * 100) / 100;
 	}
 
-	function numberSort(a: number, b: number) {
-		if (sortBy.ascending == true) {
-			let temp = a;
-			a = b;
-			b = temp;
-		}
-		if (a >= b) {
-			return 0;
-		} else {
-			return 1;
-		}
-	}
-
-	function textSort(a: string, b: string) {
-		if (sortBy.ascending == true) {
-			let temp = a;
-			a = b;
-			b = temp;
-		}
-		if (a >= b) {
-			return 0;
-		} else {
-			return 1;
-		}
-	}
-
-	function boolSort(a: boolean, b: boolean) {
-		if (sortBy.ascending == true) {
-			let temp = a;
-			a = b;
-			b = temp;
-		}
-		if (a) {
-			return 0;
-		} else {
-			return 1;
-		}
-	}
-
 	function clickSortTable(column: IColumn) {
 		let sort = (a: cTentParticipant, b: cTentParticipant) => {
 			switch (column) {
 				case IColumn.id:
-					return numberSort(a.identifier, b.identifier);
+					return numberSort(a.identifier, b.identifier, sortBy.ascending);
 				case IColumn.paid:
-					return boolSort(a.paid, b.paid);
+					return boolSort(a.paid, b.paid, sortBy.ascending);
 				case IColumn.zipCode:
-					return numberSort(a.zipcode, b.zipcode);
+					return numberSort(a.zipcode, b.zipcode, sortBy.ascending);
 				case IColumn.age:
-					return numberSort(a.age, b.age);
+					return numberSort(a.age, b.age, sortBy.ascending);
 				case IColumn.firstName:
-					return textSort(a.firstname, b.firstname);
+					return textSort(a.firstname, b.firstname, sortBy.ascending);
 				case IColumn.lastName:
-					return textSort(a.lastname, b.lastname);
+					return textSort(a.lastname, b.lastname, sortBy.ascending);
 				case IColumn.village:
-					return textSort(a.village, b.village);
+					return textSort(a.village, b.village, sortBy.ascending);
 				default:
 					return 0;
 			}
