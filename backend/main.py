@@ -375,6 +375,24 @@ def get_paticipant_by_id(arg_participants, arg_id):
     return None
 
 
+def apply_participants_revisons(arg_participants):
+    """apply_participants_revisons"""
+    if not os.path.isfile(INPUT_REVISION_PATH):
+        error_logs.append("ERROR: " + INPUT_REVISION_PATH + " existiert nicht")
+        print("ERROR: " + INPUT_REVISION_PATH + " existiert nicht")
+        return arg_participants
+
+    with open(INPUT_REVISION_PATH, encoding="utf8") as revision_file:
+        for row in revision_file:
+            splitted_row = row.split(";")
+            loc_id = splitted_row[0].strip()
+            loc_property = splitted_row[1].strip()
+            loc_value = splitted_row[2].strip()
+            print(loc_id, loc_property, loc_value)
+
+    return arg_participants
+
+
 @app.route("/api/participants", methods=["GET", "POST"])
 def get_participants():
     """returns all participants as json"""
