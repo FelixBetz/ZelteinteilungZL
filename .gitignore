@@ -1,4 +1,2 @@
-input.csv
-*.csv*
+input/
 backend/output_maps/
-*csv

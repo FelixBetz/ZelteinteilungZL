@@ -10,12 +10,12 @@
 	enum IColumn {
 		id = 'id',
 		paid = 'paid',
-		firstName = 'first name',
-		lastName = 'last name',
-		zipCode = 'zip code',
-		village = 'village',
-		age = 'age',
-		friends = ' friends'
+		firstName = 'Vorname',
+		lastName = 'Nachname',
+		zipCode = 'PLZ',
+		village = 'Ort',
+		age = 'Alter',
+		friends = ' Freunde'
 	}
 
 	let columns = [
@@ -166,7 +166,8 @@
 
 		<Button on:click={getMaps} color="primary">generate Maps</Button>
 	</Col>
-	<Col sm="3">average age: {avgAge}</Col>
+	<Col sm="auto"><strong>Anzahl Teilnehmer:</strong> {participants.length}</Col>
+	<Col sm="auto"><strong>Durchschnittsalter: </strong> {avgAge}</Col>
 </Row>
 
 <Input

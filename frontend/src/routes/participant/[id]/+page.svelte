@@ -14,10 +14,10 @@
 		if (argParticipant == null) {
 			return '';
 		}
-		let splittedBitdateStr = argParticipant.birthdate.split('.');
-		let y = splittedBitdateStr[2];
+		let splittedBitdateStr = argParticipant.birthdate.split('-');
+		let y = splittedBitdateStr[0];
 		let m = splittedBitdateStr[1];
-		let d = splittedBitdateStr[0];
+		let d = splittedBitdateStr[2];
 		inputBirthdateValue = y + '-' + m + '-' + d;
 		return inputBirthdateValue;
 	}
@@ -81,7 +81,7 @@
 								let m = splittedBitdateStr[1];
 								let d = splittedBitdateStr[2];
 								if (participant != undefined) {
-									participant.birthdate = d + '.' + m + '.' + y;
+									participant.birthdate = y + '-' + m + '-' + d;
 								}
 							}}
 						/>
@@ -192,7 +192,11 @@
 						</Col>
 						<Col>
 							<FormGroup floating>
-								<Input type="checkbox" label="Tochter Afe" bind:checked={participant.is_afe} />
+								<Input
+									type="checkbox"
+									label="Vegetarisch"
+									bind:checked={participant.is_vegetarian}
+								/>
 							</FormGroup>
 						</Col>
 						<Col>

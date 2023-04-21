@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { IData } from '$lib/_apiParticipants';
 	import NetworkChart from '$lib/chart/NetworkChart.svelte';
-	import { apiGetTmpTodo, type TmpTodo } from '$lib/_apiParticipants';
+	import { apiGetGraph, type GraphInput } from '$lib/_apiParticipants';
 	import { onMount } from 'svelte';
 
 	function hasIntersection(setA: Set<string>, setB: Set<string>): boolean {
@@ -14,12 +14,10 @@
 	}
 
 	let chart: NetworkChart;
-
 	let chartData: IData[] = [];
-
 	let groups: Set<string>[] = [];
 
-	function getByName(name: string, array: TmpTodo[]) {
+	function getByName(name: string, array: GraphInput[]) {
 		for (let i = 0; i < array.length; i++) {
 			if (array[i].name == name) {
 				return array[i];
@@ -28,8 +26,8 @@
 		console.log(name, ' not find');
 	}
 
-	async function getTmpTodo() {
-		let tmpDodos = await apiGetTmpTodo();
+	async function getGraph() {
+		let tmpDodos = await apiGetGraph();
 
 		for (let i = 0; i < tmpDodos.length; i++) {
 			let name = tmpDodos[i].name;
@@ -85,7 +83,7 @@
 		chartData = chartData;
 	}
 	onMount(() => {
-		getTmpTodo();
+		getGraph();
 	});
 </script>
 

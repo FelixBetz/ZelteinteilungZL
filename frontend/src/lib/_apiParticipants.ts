@@ -6,7 +6,7 @@ interface Participant {
 	firstname: string;
 	friends: string[];
 	identifier: number;
-	is_afe: boolean;
+	is_vegetarian: boolean;
 	is_event_mail: boolean;
 	is_photo_allowed: boolean;
 	is_reduced: boolean;
@@ -51,7 +51,7 @@ export class cTentParticipant {
 		public mail: string,
 		public emergency_contact: string,
 		public emergency_phone: string,
-		public is_afe: boolean,
+		public is_vegetarian: boolean,
 		public is_event_mail: boolean,
 		public is_photo_allowed: boolean,
 		public is_reduced: boolean,
@@ -65,7 +65,7 @@ export class cTentParticipant {
 	private calculateAge() {
 		const today = new Date();
 
-		const [day, month, year] = this.birthdate.split('.');
+		const [year, month, day] = this.birthdate.split('-');
 		const birthDate = new Date(+year, +month - 1, +day); //(0 = January to 11 = December)
 		const diffMilliseconds = today.getTime() - birthDate.getTime();
 		this.age = diffMilliseconds / 1000 / 3600 / 24 / 365;
@@ -133,7 +133,7 @@ function partipantInterfaceToParticipantObject(p: Participant): cTentParticipant
 		p.mail,
 		p.emergency_contact,
 		p.emergency_phone,
-		p.is_afe,
+		p.is_vegetarian,
 		p.is_event_mail,
 		p.is_photo_allowed,
 		p.is_reduced,
@@ -153,7 +153,7 @@ function participantObjectToParticipantInterface(p: cTentParticipant): Participa
 		firstname: p.firstname,
 		friends: p.friends,
 		identifier: p.identifier,
-		is_afe: p.is_afe,
+		is_vegetarian: p.is_vegetarian,
 		is_event_mail: p.is_event_mail,
 		is_photo_allowed: p.is_photo_allowed,
 		is_reduced: p.is_reduced,
@@ -232,7 +232,6 @@ export async function apiPostParticipants(
 	return response;
 }
 
-
 export async function apiGetTentLeader(): Promise<TentLeader[]> {
 	const response = await fetch(baseUrl + '/tentleaders')
 		.then((res) => res.json())
@@ -242,6 +241,26 @@ export async function apiGetTentLeader(): Promise<TentLeader[]> {
 		.catch((error: Error) => {
 			console.error(error);
 			return [];
+		});
+
+	return response;
+}
+
+export interface Logs {
+	errors: string[];
+	revisions: string[];
+}
+
+export async function apiGetLogs(): Promise<Logs> {
+	const response = await fetch(baseUrl + '/logs')
+		.then((res) => res.json())
+		.then((res: Logs) => {
+			return res;
+		})
+		.catch((error: Error) => {
+			console.error(error);
+			const ret: Logs = { errors: [], revisions: [] };
+			return ret;
 		});
 
 	return response;
@@ -270,7 +289,7 @@ export async function apiGetMaps(zipCodes: ZipCodes[]): Promise<string> {
 
 	return response;
 }
-export interface TmpTodo {
+export interface GraphInput {
 	friends: string[];
 	name: string;
 }
@@ -289,10 +308,10 @@ export interface IData {
 	nodes: INode[];
 	links: ILink[];
 }
-export async function apiGetTmpTodo(): Promise<TmpTodo[]> {
-	const response = await fetch(baseUrl + '/tmp')
+export async function apiGetGraph(): Promise<GraphInput[]> {
+	const response = await fetch(baseUrl + '/graph')
 		.then((res) => res.json())
-		.then((res: TmpTodo[]) => {
+		.then((res: GraphInput[]) => {
 			return res;
 		})
 		.catch((error: Error) => {

@@ -1,1 +1,1 @@
-export const NUM_TENTS = 13;
+export const NUM_TENTS = 15;

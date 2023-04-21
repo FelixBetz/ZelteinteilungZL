@@ -20,7 +20,8 @@
   - Dashboard mit
     - Anmeldezahl....
     - Anzahl Zeltführer, Suku, Mat,...
-    -
+    - nicht zugewiesne Zefü
+	- nicht zugewiesene Stübis
 - Leiter Reiter einbauen
 - Todo Reiter einbauen
 - config reiter

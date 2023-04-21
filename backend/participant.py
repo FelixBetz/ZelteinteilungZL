@@ -1,8 +1,12 @@
 """implementations of the class Participant"""
+from person import Person
 
 
-class Participant:
+class Participant(Person):
     """represents data of a zeltlager participant"""
+    # pylint: disable=too-many-instance-attributes
+    # pylint: disable=too-many-locals
+    # pylint: disable=too-many-arguments
 
     def __init__(
         self,
@@ -20,7 +24,7 @@ class Participant:
         arg_emergency_phone,
         arg_is_reduced,
         arg_is_photo_allowed,
-        arg_is_afe,
+        arg_is_vegetarian,
         arg_is_event_mail,
         arg_other,
         arg_tent,
@@ -29,21 +33,13 @@ class Participant:
 
         self.paid = arg_paided
 
-        self.lastname = arg_lastname
-        self.firstname = arg_firstname
-        self.birthdate = arg_birthdate
-
-        self.street = arg_street
-        self.zipcode = arg_zipcode
-        self.village = arg_village
-
-        self.phone = arg_phone
-        self.mail = arg_mail
+        super().__init__(arg_lastname, arg_firstname, arg_street,
+                         arg_zipcode, arg_village, arg_birthdate, arg_phone, arg_mail)
 
         self.emergency_contact = arg_emergency_contact
         self.emergency_phone = arg_emergency_phone
 
-        self.is_afe = arg_is_afe
+        self.is_vegetarian = arg_is_vegetarian
         self.is_reduced = arg_is_reduced
         self.is_event_mail = arg_is_event_mail
 
@@ -59,18 +55,7 @@ class Participant:
         for friend in self.friends:
             friends_str += friend + ", "
 
-        ret_str = (
-            self.firstname
-            + " "
-            + self.lastname
-            + ", "
-            + str(self.zipcode)
-            + " "
-            + self.village
-            + ", "
-            + str(self.birthdate)
-        )
-
+        ret_str = super().__str__()
         if friends_str != "":
             ret_str += ", Zelt: " + friends_str
         return ret_str
@@ -78,14 +63,6 @@ class Participant:
     def set_friends(self, arg_friends):
         """set the frieds of the participant"""
         self.friends = arg_friends
-
-    def get_name(self):
-        """returns lastname and firstname"""
-        return self.lastname, self.firstname
-
-    def get_fullname(self):
-        """return first + lastname"""
-        return self.firstname + " "+self.lastname
 
     def get_friend_string(self, index):
         """return friend string by index"""

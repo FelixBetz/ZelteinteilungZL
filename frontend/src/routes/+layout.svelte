@@ -1,12 +1,14 @@
 <script lang="ts">
 	import Navbar from '$lib/Navbar.svelte';
+	import { Styles } from 'sveltestrap';
 
 	import '../app.css';
 </script>
 
+<Styles />
 <Navbar />
 
-<main style="margin-top: 50px;">
+<main style="margin-top: 50px">
 	<slot />
 </main>
 
