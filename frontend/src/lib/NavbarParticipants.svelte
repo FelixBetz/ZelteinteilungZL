@@ -1,9 +1,11 @@
-<script lang="ts">
-	import { Nav, NavLink } from 'sveltestrap/src';
-</script>
-
-<Nav>
-	<NavLink href="/participants">Tabelle</NavLink>
-	<NavLink href="/participants/heatmap">Heatmap</NavLink>
-	<NavLink href="/participants/markermap">Markermap</NavLink>
-</Nav>
+<ul class="nav">
+	<li class="nav-item">
+		<a class="nav-link active" aria-current="page" href="/participants">Tabelle</a>
+	</li>
+	<li class="nav-item">
+		<a class="nav-link active" aria-current="page" href="/participants/heatmap">Heatmap</a>
+	</li>
+	<li class="nav-item">
+		<a class="nav-link active" aria-current="page" href="/participants/markermap">Markermap</a>
+	</li>
+</ul>
