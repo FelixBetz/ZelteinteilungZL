@@ -8,7 +8,6 @@
 		type Logs
 	} from '$lib/_apiParticipants';
 
-	import { Badge, Progress } from 'sveltestrap/src';
 	import { onMount } from 'svelte';
 	import { NUM_TENTS } from '$lib/constants';
 
@@ -215,9 +214,15 @@
 					<li>ältester Teilnehmer: {eldestParticipant}</li>
 					<li>
 						<div>zu einem Zelt zugeteilt: {assignedParticipants}/{participants.length}</div>
-						<Progress color="info" value={(100 * assignedParticipants) / participants.length}>
-							{(100 * assignedParticipants) / participants.length}%
-						</Progress>
+						<div class="progress">
+							<div
+								class="progress-bar bg-info"
+								role="progressbar"
+								style="width: {(100 * assignedParticipants) / participants.length}%;"
+							>
+								{(100 * assignedParticipants) / participants.length}%
+							</div>
+						</div>
 					</li>
 				</ul>
 			</div>
@@ -243,10 +248,10 @@
 			<h3>Logs:</h3>
 			<ul>
 				<a href="/logs">
-					<li>Error Logs: <Badge color="danger">{logs.errors.length}</Badge></li>
+					<li>Error Logs: <span class="badge bg-danger">{logs.errors.length}</span></li>
 				</a>
-				<a href="/logs"
-					><li>Revision Logs: <Badge color="info">{logs.revisions.length}</Badge></li>
+				<a href="/logs">
+					<li>Revision Logs: <span class="badge bg-info">{logs.revisions.length}</span></li>
 				</a>
 			</ul>
 		</div>
