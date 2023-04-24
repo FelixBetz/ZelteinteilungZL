@@ -1,0 +1,137 @@
+<script lang="ts">
+	import { apiGetTentLeader, type TentLeader } from '$lib/_apiParticipants';
+
+	import { Row, Col } from 'sveltestrap/src';
+	import { onMount } from 'svelte';
+	import SortTable from '$lib/SortTable.svelte';
+	import type { IColumn } from '$lib/sort';
+
+	let tentLeaders: TentLeader[] = [];
+	let filterdTentLeaders: TentLeader[] = [];
+
+	const columns: IColumn[] = [
+		{ label: 'id', key: 'identifier', ascending: true },
+		{ label: 'firstName', key: 'firstname', ascending: true },
+		{ label: 'lastName', key: 'lastname', ascending: true },
+		{ label: 'job', key: 'job', ascending: true },
+		{ label: 'team', key: 'team', ascending: true },
+		{ label: 'tent', key: 'tent', ascending: true },
+		/*{ label: 'street', key: 'street', ascending: true },
+		{ label: 'zipCode', key: 'zipcode', ascending: true },
+		{ label: 'village', key: 'village', ascending: true },*/
+		{ label: 'mail', key: 'mail', ascending: true },
+		{ label: 'handy', key: 'handy', ascending: true },
+		{ label: 'age', key: 'birthdate', ascending: true },
+		{ label: 'comment', key: 'comment', ascending: true }
+	];
+
+	const searchColumns: string[] = ['firstname', 'lastname'];
+
+	interface Job {
+		name: string;
+		indices: number[];
+	}
+
+	let jobs: Job[] = [];
+
+	interface Team {
+		indices: number[];
+		name: string;
+	}
+	let teams: Team[] = [];
+
+	function parseJobs() {
+		let mats: Job = { name: 'Mat Warts', indices: [] };
+		let sukus: Job = { name: 'Suppenkutscher', indices: [] };
+		let free: Job = { name: 'Zeltführer', indices: [] };
+		let reserver: Job = { name: 'Freie Männer', indices: [] };
+		let others: Job = { name: 'Sonstige', indices: [] };
+		tentLeaders.forEach((leader, index) => {
+			switch (leader.job.trim().toLowerCase()) {
+				case 'mat':
+				case 'matina':
+				case 'mat wart':
+					mats.indices.push(index);
+					break;
+				case 'suku':
+					sukus.indices.push(index);
+					break;
+				case 'freier mann':
+				case 'freie männer':
+					reserver.indices.push(index);
+					break;
+				case 'zefü':
+				case 'zeltführer':
+					free.indices.push(index);
+					break;
+				default:
+					others.indices.push(index);
+			}
+		});
+
+		jobs.push(others);
+		jobs.push(mats);
+		jobs.push(sukus);
+		jobs.push(free);
+		jobs.push(reserver);
+		jobs = jobs;
+	}
+
+	function parseTeams() {
+		let teamNames = new Set<string>();
+		//parse all Teams
+		tentLeaders.forEach((leader) => {
+			teamNames.add(leader.team);
+		});
+		//create  all teams
+		teamNames.forEach((name) => {
+			teams.push({ name: name, indices: [] });
+		});
+
+		//add tent leaders to team
+		tentLeaders.forEach((leader) => {
+			teamNames.add(leader.team);
+		});
+		teams = teams;
+	}
+
+	onMount(() => {
+		getParticipants();
+	});
+
+	async function getParticipants() {
+		tentLeaders = await apiGetTentLeader();
+		parseJobs();
+		parseTeams();
+	}
+</script>
+
+<svelte:head>
+	<title>Team</title>
+</svelte:head>
+
+<div style="margin-top: 80px; margin-left: 10px;">
+	<Row>
+		<Col sm="6">
+			<h3>Leitungsteam</h3>
+			<ul>
+				<li><strong>Gesamt: {tentLeaders.length}</strong></li>
+				{#each jobs as job}
+					<li>{job.name}: {job.indices.length}</li>
+				{/each}
+			</ul>
+		</Col>
+	</Row>
+	<Row>
+		{#each teams as team}
+			<h1>{team.name}</h1>
+			<ul>
+				{#each team.indices as idx}
+					<li>{idx}</li>
+				{/each}
+			</ul>
+		{/each}
+	</Row>
+
+	<SortTable data={tentLeaders} bind:filterdData={filterdTentLeaders} {columns} {searchColumns} />
+</div>
