@@ -3,7 +3,7 @@
 		apiGetParticipants,
 		apiGetTentLeader,
 		apiPostParticipants,
-		type TentLeader
+		type cTentLeader
 	} from '$lib/_apiParticipants';
 	import type { cTentParticipant } from '$lib/_apiParticipants';
 	import { onMount } from 'svelte';
@@ -55,7 +55,7 @@
 
 	function distributePartiscipantsToBaskets(
 		arg_participants: cTentParticipant[],
-		arg_tentLeaders: TentLeader[]
+		arg_tentLeaders: cTentLeader[]
 	) {
 		clearBaskets();
 		participants = arg_participants.sort(compareByAge);

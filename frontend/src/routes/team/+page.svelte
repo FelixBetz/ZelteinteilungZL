@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { apiGetTentLeader, type TentLeader } from '$lib/_apiParticipants';
+	import { apiGetTentLeader, type cTentLeader } from '$lib/_apiParticipants';
 
 	import { Row, Col } from 'sveltestrap/src';
 	import { onMount } from 'svelte';
 	import SortTable from '$lib/SortTable.svelte';
-	import type { IColumn } from '$lib/sort';
+	import { getAgeTwoDecimal, type IColumn } from '$lib/sort';
 
-	let tentLeaders: TentLeader[] = [];
-	let filterdTentLeaders: TentLeader[] = [];
+	let tentLeaders: cTentLeader[] = [];
+	let filterdTentLeaders: cTentLeader[] = [];
 
 	const columns: IColumn[] = [
 		{ label: 'id', key: 'identifier', ascending: true },
@@ -21,7 +21,7 @@
 		{ label: 'village', key: 'village', ascending: true },*/
 		{ label: 'mail', key: 'mail', ascending: true },
 		{ label: 'handy', key: 'handy', ascending: true },
-		{ label: 'age', key: 'birthdate', ascending: true },
+		{ label: 'age', key: 'age', ascending: true, displayCallback: getAgeTwoDecimal },
 		{ label: 'comment', key: 'comment', ascending: true }
 	];
 
