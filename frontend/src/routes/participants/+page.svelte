@@ -3,7 +3,6 @@
 
 	import type { cTentParticipant, ZipCodes } from '$lib/_apiParticipants';
 
-	import { Button, Row, Col } from 'sveltestrap/src';
 	import { onMount } from 'svelte';
 	import NavbarParticipants from '$lib/NavbarParticipants.svelte';
 
@@ -73,15 +72,20 @@
 
 <NavbarParticipants />
 
-<Row style="padding: 10px;">
-	<Col sm="3">
-		<Button color="warning" on:click={getParticipants}>Refresh</Button>
-		<Button color="primary" on:click={saveParticipants}>Save</Button>
+<div class="row" style="padding: 10px;">
+	<div class="col-sm-3">
+		<div class="btn btn-warning" on:click={getParticipants} on:keydown={getParticipants}>
+			Refresh
+		</div>
 
-		<Button on:click={getMaps} color="primary">generate Maps</Button>
-	</Col>
-	<Col sm="auto"><strong>Anzahl Teilnehmer:</strong> {participants.length}</Col>
-	<Col sm="auto"><strong>Durchschnittsalter: </strong> {avgAge}</Col>
-</Row>
+		<div class="btn btn-primary" on:click={saveParticipants} on:keydown={saveParticipants}>
+			Save
+		</div>
+
+		<div class="btn btn-primary" on:click={getMaps} on:keydown={getMaps}>generate Maps</div>
+	</div>
+	<div class="col-sm-auto"><strong>Anzahl Teilnehmer:</strong> {participants.length}</div>
+	<div class="col-sm-auto"><strong>Durchschnittsalter: </strong> {avgAge}</div>
+</div>
 
 <SortTable data={participants} bind:filterdData={filterdParticipants} {columns} {searchColumns} />

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { apiGetLogs, type Logs } from '$lib/_apiParticipants';
 	import { onMount } from 'svelte';
-	import { Row, Col, Toast, ToastBody, ToastHeader, Badge } from 'sveltestrap/src';
+
 	let logs: Logs = { errors: [], revisions: [] };
 
 	async function getErrorLogs() {
@@ -19,32 +19,40 @@
 
 <div class="m-5">
 	<h1>Logs</h1>
-	<Row>
-		<Col sm="6">
-			<h3>Error Logs <Badge color="danger">{logs.errors.length}</Badge></h3>
+	<div class="row">
+		<div class="col-sm-6">
+			<h3>Error Logs <span class="badge bg-danger">{logs.errors.length}</span></h3>
 
 			{#if logs.errors.length == 0}
 				<i>keine Einträge</i>
 			{/if}
 			{#each logs.errors as log, logIndex}
-				<Toast class="mb-2">
-					<ToastHeader icon="danger">Error {logIndex}</ToastHeader>
-					<ToastBody>{log}</ToastBody>
-				</Toast>
+				<div class="card border-secondary mb-3" style="max-width: 30rem;">
+					<div class="card-header bg-danger">
+						<h5 class="card-title text-white">Error {logIndex}</h5>
+					</div>
+					<div class="card-body text-white bg-danger">
+						<p class="card-text">{log}</p>
+					</div>
+				</div>
 			{/each}
-		</Col>
-		<Col sm="6">
-			<h3>Revisions <Badge color="info">{logs.revisions.length}</Badge></h3>
+		</div>
+		<div class="col-sm-6">
+			<h3>Revisions <span class="badge bg-info">{logs.revisions.length}</span></h3>
 
 			{#if logs.revisions.length == 0}
 				<i>keine Einträge</i>
 			{/if}
 			{#each logs.revisions as log, logIndex}
-				<Toast class="mb-2">
-					<ToastHeader icon="info">Error {logIndex}</ToastHeader>
-					<ToastBody>{log}</ToastBody>
-				</Toast>
+				<div class="card border-secondary mb-3" style="max-width: 30rem;">
+					<div class="card-header bg-info">
+						<h5 class="card-title text-white">Error {logIndex}</h5>
+					</div>
+					<div class="card-body text-white bg-info">
+						<p class="card-text">{log}</p>
+					</div>
+				</div>
 			{/each}
-		</Col>
-	</Row>
+		</div>
+	</div>
 </div>
