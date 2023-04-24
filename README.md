@@ -2,8 +2,6 @@
 
 - docu
 - tent allocation:
-
-  - Leiter für Zelt
   - csv liste generieren
   - map für jedes Zelt generiren
   - Voreinteilung der Stübis
@@ -18,11 +16,7 @@
 
 - Startseite
   - Dashboard mit
-    - Anmeldezahl....
-    - Anzahl Zeltführer, Suku, Mat,...
     - nicht zugewiesne Zefü
-	- nicht zugewiesene Stübis
-- Leiter Reiter einbauen
 - Todo Reiter einbauen
 - config reiter
   - anzahl zelte
