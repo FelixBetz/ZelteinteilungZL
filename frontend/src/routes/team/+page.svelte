@@ -1,7 +1,5 @@
 <script lang="ts">
 	import { apiGetTentLeader, type cTentLeader } from '$lib/_apiParticipants';
-
-	import { Row, Col } from 'sveltestrap/src';
 	import { onMount } from 'svelte';
 	import SortTable from '$lib/SortTable.svelte';
 	import { getAgeTwoDecimal, type IColumn } from '$lib/sort';
@@ -127,8 +125,8 @@
 </svelte:head>
 
 <div style="margin-top: 80px; margin-left: 10px;">
-	<Row>
-		<Col>
+	<div class="row">
+		<div class="col">
 			<h3>Leitungsteam</h3>
 			<ul>
 				<li><strong>Gesamt: {tentLeaders.length}</strong></li>
@@ -136,19 +134,19 @@
 					<li>{job.name}: {job.indices.length}</li>
 				{/each}
 			</ul>
-		</Col>
+		</div>
 
 		{#each teams as team}
-			<Col>
+			<div class="col">
 				<h3>{team.name} ({team.indices.length})</h3>
 				<ul>
 					{#each team.indices as idx}
 						<li>{tentLeaders[idx].firstname} {tentLeaders[idx].lastname}</li>
 					{/each}
 				</ul>
-			</Col>
+			</div>
 		{/each}
-	</Row>
+	</div>
 
 	<SortTable data={tentLeaders} bind:filterdData={filterdTentLeaders} {columns} {searchColumns} />
 </div>

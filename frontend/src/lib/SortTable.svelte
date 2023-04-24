@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Table, Input } from 'sveltestrap/src';
 	import { boolSort, numberSort, type IColumn, stringSort } from '$lib/sort';
 
 	let serachString = '';
@@ -13,7 +12,9 @@
 
 	function search(p: { [x: string]: { toString: () => string } }): boolean {
 		for (let idx = 0; idx < searchColumns.length; idx++) {
-			if (p[searchColumns[idx]].toString().toLowerCase().includes(serachString.toLowerCase())) {
+			if (
+				p[searchColumns[idx]].toString().toLowerCase().includes(serachString.trim().toLowerCase())
+			) {
 				return true;
 			}
 		}
@@ -43,16 +44,16 @@
 	}
 </script>
 
-<Input
+<input
 	bind:value={serachString}
 	on:keyup={onSearch}
 	type="search"
 	placeholder="Search"
-	class="ms-auto w-auto"
+	class="ms-auto w-auto form-control bg-dark text-white"
 	style="margin-right: 20px"
 />
 
-<Table striped={true} dark>
+<table class="table table-striped table-dark">
 	<thead>
 		<tr>
 			{#each columns as column}
@@ -67,7 +68,7 @@
 					<td>
 						<!--Checkbox of boolean-->
 						{#if typeof d[col.key] == 'boolean'}
-							<Input type="checkbox" bind:checked={d[col.key]} />
+							<input type="checkbox" class="form-check-input" bind:checked={d[col.key]} />
 
 							<!--column has link-->
 						{:else if col.link != undefined}
@@ -84,4 +85,4 @@
 			</tr>
 		{/each}
 	</tbody>
-</Table>
+</table>

@@ -1,18 +1,9 @@
 <script lang="ts">
-	import {
-		Collapse,
-		Navbar,
-		NavbarToggler,
-		NavbarBrand,
-		Nav,
-		NavItem,
-		NavLink
-	} from 'sveltestrap/src';
-
 	interface NavEntry {
 		label: string;
 		route: string;
 	}
+	let activeIdx = 0;
 
 	let navEntries: NavEntry[] = [
 		{ label: 'Home', route: '/' },
@@ -24,22 +15,49 @@
 	];
 
 	let isOpen = false;
-
-	function handleUpdate(event: CustomEvent) {
-		isOpen = event.detail.isOpen;
-	}
 </script>
 
-<Navbar color="dark" dark expand="md" fixed="top" height="50px">
-	<NavbarBrand href="/">LaleControl</NavbarBrand>
-	<NavbarToggler on:click={() => (isOpen = !isOpen)} />
-	<Collapse {isOpen} navbar expand="md" on:update={handleUpdate}>
-		<Nav class="ms-auto" navbar>
-			{#each navEntries as entry}
-				<NavItem>
-					<NavLink href={entry.route}>{entry.label}</NavLink>
-				</NavItem>
-			{/each}
-		</Nav>
-	</Collapse>
-</Navbar>
+<nav class="navbar navbar-dark navbar-expand-md bg-dark fixed-top">
+	<div class="container-fluid">
+		<a class="navbar-brand" href="/">LaleControl</a>
+
+		<button
+			class="navbar-toggler"
+			type="button"
+			data-bs-toggle="offcanvas"
+			data-bs-target="#offcanvasDarkNavbar"
+			aria-controls="offcanvasDarkNavbar"
+			on:click={() => (isOpen = !isOpen)}
+		>
+			<span class="navbar-toggler-icon" />
+		</button>
+
+		<div class="{isOpen ? ' ' : 'collapse '} navbar-collapse navbar-expand-md">
+			<ul class="navbar-nav ms-auto">
+				{#each navEntries as entry, i}
+					<li class="nav-item">
+						<a
+							class="nav-link {i == activeIdx ? ' active' : ''}"
+							href={entry.route}
+							on:click={() => (activeIdx = i)}
+						>
+							{entry.label}
+						</a>
+					</li>
+				{/each}
+			</ul>
+		</div>
+	</div>
+</nav>
+
+<ul class="nav">
+	<li class="nav-item">
+		<a class="nav-link active" aria-current="page" href="/participants">Tabelle</a>
+	</li>
+	<li class="nav-item">
+		<a class="nav-link active" aria-current="page" href="/participants/heatmap">Heatmap</a>
+	</li>
+	<li class="nav-item">
+		<a class="nav-link active" aria-current="page" href="/participants/markermap">Markermap</a>
+	</li>
+</ul>

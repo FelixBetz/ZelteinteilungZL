@@ -7,7 +7,6 @@
 	} from '$lib/_apiParticipants';
 	import type { cTentParticipant } from '$lib/_apiParticipants';
 	import { onMount } from 'svelte';
-	import { Col, Row, CardBody, CardHeader, CardTitle, Button } from 'sveltestrap/src';
 	import Tent from '$lib/TentParticipant.svelte';
 	import TentParticipant from '$lib/TentParticipant.svelte';
 	import { NUM_TENTS } from '$lib/constants';
@@ -140,15 +139,22 @@
 <svelte:head>
 	<title>Zelteinteilung</title>
 </svelte:head>
-<Row style="padding: 20px">
-	<Col><Button class="w-100" color="primary" on:click={saveParticipants}>Save</Button></Col>
-</Row>
-<Row>
-	<Col sm="8">
-		<Row>
+<div class="row" style="padding: 20px">
+	<div
+		class="btn btn-primary w-100"
+		color="primary"
+		on:click={saveParticipants}
+		on:keydown={saveParticipants}
+	>
+		Save
+	</div>
+</div>
+<div class="row">
+	<div class="col-sm-8">
+		<div class="row">
 			{#each baskets as b, basketIndex}
 				{#if basketIndex > 0}
-					<Col sm="6">
+					<div class="col-sm-6">
 						<div
 							class="card"
 							class:hovering={hoveringOverBasket === b.name}
@@ -162,36 +168,36 @@
 							}}
 							style="margin: 10px; border: 1px solid black; "
 						>
-							<CardHeader>
-								<CardTitle
-									>Zelt {basketIndex} (
+							<div class="card-header">
+								<h5 class="card-title">
+									Zelt {basketIndex} (
 									{#each b.tentLeaders as leader}
 										{leader}
 									{/each})
-								</CardTitle>
-							</CardHeader>
+								</h5>
+							</div>
 							<div
 								class="card-body"
 								class:tent_alert={b.items.length >= 7}
 								class:tent_warning={b.items.length <= 5}
 							>
-								<Row>
+								<div class="row">
 									{#each b.items as item, itemIndex}
 										<Tent
 											participant={participants[item]}
 											on:dragstart={(event) => dragStart(event, basketIndex, itemIndex)}
 										/>
 									{/each}
-								</Row>
+								</div>
 							</div>
 						</div>
-					</Col>
+					</div>
 				{/if}
 			{/each}
-		</Row>
-	</Col>
+		</div>
+	</div>
 
-	<Col sm="4" style="overflow-y: scroll;">
+	<div class="col-sm-4" style="overflow-y: scroll;">
 		<div
 			class="card"
 			class:hovering={hoveringOverBasket === baskets[0].name}
@@ -201,22 +207,23 @@
 			on:dragover={(event) => event.preventDefault()}
 			style="margin: 10px"
 		>
-			<CardHeader>
-				<CardTitle>Backlog</CardTitle>
-			</CardHeader>
-			<CardBody>
-				<Row>
+			<div class="card-header">
+				<h5 class="card-title">Backlog</h5>
+			</div>
+
+			<div class="card-body">
+				<div class="row">
 					{#each baskets[0].items as item, itemIndex}
 						<TentParticipant
 							participant={participants[item]}
 							on:dragstart={(event) => dragStart(event, 0, itemIndex)}
 						/>
 					{/each}
-				</Row>
-			</CardBody>
+				</div>
+			</div>
 		</div>
-	</Col>
-</Row>
+	</div>
+</div>
 
 <style>
 	.tent_alert {
