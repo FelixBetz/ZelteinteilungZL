@@ -310,6 +310,28 @@ def parse_tent_leader(arg_file_name):
                         )
                         raise
 
+                try:
+                    loc_time_string = datetime.strptime(
+                        row[IDX_LEAD_BIRTHDATE], "%d.%m.%Y"
+                    ).date()
+                    _ = loc_time_string.timetuple()
+                    print(loc_firstname, loc_lastname,
+                          loc_time_string, )
+
+                    loc_birthdate = loc_time_string
+
+                except:
+                    print(
+                        "failed to parse birthdate: i: ",
+                        i,
+                        loc_firstname,
+                        " ",
+                        loc_lastname,
+                        loc_birthdate
+                    )
+                    raise
+                loc_birthdate = row[IDX_LEAD_BIRTHDATE]
+
                 loc_tent_leader = TentLeader(
                     loc_id,
                     row[IDX_LEAD_JOB],
@@ -321,7 +343,7 @@ def parse_tent_leader(arg_file_name):
                     row[IDX_LEAD_PHONE],
                     row[IDX_LEAD_HANDY],
                     row[IDX_LEAD_MAIL],
-                    row[IDX_LEAD_BIRTHDATE],
+                    loc_birthdate,
                     loc_tent,
                     row[IDX_LEAD_TEAM],
                     row[IDX_LEAD_COMMENT],
