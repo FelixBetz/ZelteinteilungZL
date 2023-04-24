@@ -363,7 +363,9 @@ export interface GraphInput {
 
 export interface INode {
 	id: string;
-	group: number;
+	group: string;
+	x?: number;
+	y?: number;
 }
 export interface ILink {
 	source: string;

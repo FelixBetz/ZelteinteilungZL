@@ -7,11 +7,9 @@
   - Voreinteilung der Stübis
 
 - Stübis
-
+  - Speicherung von Daten wieder einbauen
   - tabelle auswählbar mit Checkbox machen
-  - auswählen wer bezahlt hat
   - wer ist als Freund angegeben aber nicht angemeldet?
-  - Stübi Seite mit allen Info über Stübis => editbar
   - alter im Zeltlager
 
 - Startseite

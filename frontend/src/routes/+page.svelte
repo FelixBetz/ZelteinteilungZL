@@ -3,7 +3,7 @@
 		apiGetParticipants,
 		apiGetTentLeader,
 		apiGetLogs,
-		type TentLeader,
+		type cTentLeader,
 		type cTentParticipant,
 		type Logs
 	} from '$lib/_apiParticipants';
@@ -14,7 +14,7 @@
 
 	let participants: cTentParticipant[] = [];
 	let birthDayParticipants: cTentParticipant[] = [];
-	let tentLeaders: TentLeader[] = [];
+	let tentLeaders: cTentLeader[] = [];
 	let logs: Logs = { errors: [], revisions: [] };
 
 	interface Team {

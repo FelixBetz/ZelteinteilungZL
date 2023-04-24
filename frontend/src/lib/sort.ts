@@ -3,7 +3,7 @@ export interface IColumn {
 	ascending: boolean;
 	key: string;
 	link?: string;
-	displayCallback?: <Type>(a: Type) => Type;
+	displayCallback?: ((arg0: any) => void) | undefined;
 }
 
 export function numberSort(a: number, b: number, sortby: boolean) {

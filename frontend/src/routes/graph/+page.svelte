@@ -67,7 +67,7 @@
 			for (let name of Array.from(groups[i].values())) {
 				let loc_element = getByName(name, tmpDodos);
 				if (loc_element !== undefined) {
-					chartData[loc_index].nodes.push({ id: loc_element.name, group: i });
+					chartData[loc_index].nodes.push({ id: loc_element.name, group: i.toString() });
 
 					for (let k = 0; k < loc_element.friends.length; k++) {
 						chartData[loc_index].links.push({

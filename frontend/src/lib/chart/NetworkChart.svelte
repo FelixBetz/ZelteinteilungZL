@@ -8,8 +8,16 @@
 	import { drag } from 'd3-drag';
 	import { transition } from 'd3-transition';
 
-	import { forceSimulation, forceLink, forceManyBody, forceCenter, forceX, forceY } from 'd3-force';
-	import type { INode, IData, ILink } from '$lib/_apiParticipants';
+	import {
+		forceSimulation,
+		forceLink,
+		forceManyBody,
+		forceCenter,
+		forceX,
+		forceY,
+		type Simulation
+	} from 'd3-force';
+	import type { INode, IData } from '$lib/_apiParticipants';
 
 	let d3 = {
 		zoom,
@@ -36,8 +44,8 @@
 	export let height = 750;
 	const nodeRadius = 10;
 
-	$: links = graph.links.map((d: ILink) => {
-		const ret: ILink = { target: d.target, source: d.source, value: d.value };
+	$: links = graph.links.map((d) => {
+		const ret = { target: d.target, source: d.source, value: d.value };
 		return ret;
 	});
 	$: nodes = graph.nodes.map((d: INode) => {
@@ -48,7 +56,7 @@
 	const colourScale = d3.scaleOrdinal(d3.schemeCategory10);
 
 	let transform = d3.zoomIdentity;
-	let simulation;
+	let simulation: Simulation<INode, undefined>;
 	onMount(() => {
 		simulation = d3
 			.forceSimulation(nodes)
@@ -98,7 +106,8 @@
 			transform.invertY(currentEvent.y),
 			nodeRadius
 		);
-		if (node) {
+		if (node && node.x != undefined && node.y != undefined) {
+			console.log(node);
 			node.x = transform.applyX(node.x);
 			node.y = transform.applyY(node.y);
 		}
@@ -163,14 +172,16 @@
 		</circle>
 
 		<!-- svelte-ignore component-name-lowercase -->
-		<text
-			x={point.x - 15}
-			y={point.y + 2}
-			font-size="7"
-			transform="translate({transform.x} {transform.y}) scale({transform.k} {transform.k})"
-		>
-			{point.id}
-		</text>
+		{#if point.x != undefined && point.y != undefined}
+			<text
+				x={point.x - 15}
+				y={point.y + 2}
+				font-size="7"
+				transform="translate({transform.x} {transform.y}) scale({transform.k} {transform.k})"
+			>
+				{point.id}
+			</text>
+		{/if}
 	{/each}
 </svg>
 
@@ -179,8 +190,8 @@
 		float: left;
 	}
 
-	/*	circle {
-		stroke: #fff;
-		stroke-width: 1.5;
+	/*circle {
+		stroke: #c00de0;
+		stroke-width: 10.5;
 	}*/
 </style>

@@ -4,14 +4,14 @@
 
 	let serachString = '';
 
-	export let data = [];
-	export let filterdData = [];
+	export let data: any[] = [];
+	export let filterdData: any[] = [];
 	export let columns: IColumn[] = [];
 	export let searchColumns: string[] = [];
 
 	$: filterdData = data.filter((p) => search(p));
 
-	function search(p): boolean {
+	function search(p: { [x: string]: { toString: () => string } }): boolean {
 		for (let idx = 0; idx < searchColumns.length; idx++) {
 			if (p[searchColumns[idx]].toString().toLowerCase().includes(serachString.toLowerCase())) {
 				return true;
@@ -25,12 +25,12 @@
 	}
 
 	function clickSortTable(column: IColumn) {
-		let sortFunc = (a, b) => {
+		let sortFunc = (a: { [x: string]: string }, b: { [x: string]: string }) => {
 			switch (typeof a[column.key]) {
 				case 'boolean':
-					return boolSort(a[column.key], b[column.key], column.ascending);
+					return boolSort(Boolean(a[column.key]), Boolean(b[column.key]), column.ascending);
 				case 'number':
-					return numberSort(a[column.key], b[column.key], column.ascending);
+					return numberSort(Number(a[column.key]), Number(b[column.key]), column.ascending);
 				case 'string':
 					return stringSort(a[column.key], b[column.key], column.ascending);
 				default:
