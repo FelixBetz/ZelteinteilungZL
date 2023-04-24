@@ -44,7 +44,6 @@ export class cTentParticipant {
 		public tent: number
 	) {
 		this.calculateAge();
-		console.log(this.birthdate, this.age);
 	}
 
 	private calculateAge() {
@@ -104,7 +103,6 @@ export class cTentLeader {
 		public comment: string
 	) {
 		this.calculateAge();
-		console.log(this.birthdate, this.age);
 	}
 
 	private calculateAge() {

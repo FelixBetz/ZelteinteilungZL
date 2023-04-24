@@ -23,7 +23,7 @@
 				return array[i];
 			}
 		}
-		console.log(name, ' not find');
+		console.log(name, ' not found');
 	}
 
 	async function getGraph() {
