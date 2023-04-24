@@ -25,7 +25,15 @@
 		{ label: 'comment', key: 'comment', ascending: true }
 	];
 
-	const searchColumns: string[] = ['firstname', 'lastname'];
+	const searchColumns: string[] = [
+		'firstname',
+		'lastname',
+		'job',
+		'team',
+		'tent',
+		'mail',
+		'comment'
+	];
 
 	interface Job {
 		name: string;
@@ -77,6 +85,14 @@
 		jobs = jobs;
 	}
 
+	function addLeaderToTeam(pTeamName: string, pIdx: number) {
+		for (let i = 0; i < teams.length; i++) {
+			if (teams[i].name == pTeamName) {
+				teams[i].indices.push(pIdx);
+			}
+		}
+	}
+
 	function parseTeams() {
 		let teamNames = new Set<string>();
 		//parse all Teams
@@ -89,8 +105,8 @@
 		});
 
 		//add tent leaders to team
-		tentLeaders.forEach((leader) => {
-			teamNames.add(leader.team);
+		tentLeaders.forEach((leader, index) => {
+			addLeaderToTeam(leader.team, index);
 		});
 		teams = teams;
 	}
@@ -112,7 +128,7 @@
 
 <div style="margin-top: 80px; margin-left: 10px;">
 	<Row>
-		<Col sm="6">
+		<Col>
 			<h3>Leitungsteam</h3>
 			<ul>
 				<li><strong>Gesamt: {tentLeaders.length}</strong></li>
@@ -121,15 +137,16 @@
 				{/each}
 			</ul>
 		</Col>
-	</Row>
-	<Row>
+
 		{#each teams as team}
-			<h1>{team.name}</h1>
-			<ul>
-				{#each team.indices as idx}
-					<li>{idx}</li>
-				{/each}
-			</ul>
+			<Col>
+				<h3>{team.name} ({team.indices.length})</h3>
+				<ul>
+					{#each team.indices as idx}
+						<li>{tentLeaders[idx].firstname} {tentLeaders[idx].lastname}</li>
+					{/each}
+				</ul>
+			</Col>
 		{/each}
 	</Row>
 
