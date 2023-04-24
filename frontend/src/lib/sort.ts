@@ -1,6 +1,14 @@
-export function numberSort(a: number, b: number, sortby: Boolean) {
+export interface IColumn {
+	label: string;
+	ascending: boolean;
+	key: string;
+	link?: string;
+	displayCallback?: <Type>(a: Type) => Type;
+}
+
+export function numberSort(a: number, b: number, sortby: boolean) {
 	if (sortby == true) {
-		let temp = a;
+		const temp = a;
 		a = b;
 		b = temp;
 	}
@@ -11,9 +19,9 @@ export function numberSort(a: number, b: number, sortby: Boolean) {
 	}
 }
 
-export function textSort(a: string, b: string, sortby: Boolean) {
+export function stringSort(a: string, b: string, sortby: boolean) {
 	if (sortby == true) {
-		let temp = a;
+		const temp = a;
 		a = b;
 		b = temp;
 	}
@@ -24,9 +32,9 @@ export function textSort(a: string, b: string, sortby: Boolean) {
 	}
 }
 
-export function boolSort(a: boolean, b: boolean, sortby: Boolean) {
+export function boolSort(a: boolean, b: boolean, sortby: boolean) {
 	if (sortby == true) {
-		let temp = a;
+		const temp = a;
 		a = b;
 		b = temp;
 	}
@@ -35,4 +43,8 @@ export function boolSort(a: boolean, b: boolean, sortby: Boolean) {
 	} else {
 		return 1;
 	}
+}
+
+export function getAgeTwoDecimal(age: number): number {
+	return Math.round(age * 100) / 100;
 }

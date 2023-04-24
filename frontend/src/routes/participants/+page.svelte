@@ -3,15 +3,28 @@
 
 	import type { cTentParticipant, ZipCodes } from '$lib/_apiParticipants';
 
-	import { Table, Button, Input, Row, Col } from 'sveltestrap/src';
+	import { Button, Row, Col } from 'sveltestrap/src';
 	import { onMount } from 'svelte';
 	import NavbarParticipants from '$lib/NavbarParticipants.svelte';
 
-	import { boolSort, textSort, numberSort } from '$lib/sort';
 	import SortTable from '$lib/SortTable.svelte';
+
+	import { getAgeTwoDecimal, type IColumn } from '$lib/sort';
 
 	let participants: cTentParticipant[] = [];
 	let filterdParticipants: cTentParticipant[] = [];
+
+	const columns: IColumn[] = [
+		{ label: 'id', key: 'identifier', ascending: true, link: '/participant/' },
+		{ label: 'paid', key: 'paid', ascending: true },
+		{ label: 'firstName', key: 'firstname', ascending: true },
+		{ label: 'lastName', key: 'lastname', ascending: true },
+		{ label: 'zipCode', key: 'zipcode', ascending: true },
+		{ label: 'village', key: 'village', ascending: true },
+		{ label: 'age', key: 'age', ascending: true, displayCallback: getAgeTwoDecimal },
+		{ label: 'friends', key: 'friends', ascending: true }
+	];
+	const searchColumns: string[] = ['firstname', 'lastname', 'zipcode', 'village'];
 
 	let avgAge = 0;
 	$: avgAge = calculateAvgAge(participants);
@@ -71,4 +84,4 @@
 	<Col sm="auto"><strong>Durchschnittsalter: </strong> {avgAge}</Col>
 </Row>
 
-<SortTable data={participants} bind:filterdData={filterdParticipants} />
+<SortTable data={participants} bind:filterdData={filterdParticipants} {columns} {searchColumns} />
