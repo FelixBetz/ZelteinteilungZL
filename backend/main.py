@@ -315,10 +315,7 @@ def parse_tent_leader(arg_file_name):
                         row[IDX_LEAD_BIRTHDATE], "%d.%m.%Y"
                     ).date()
                     _ = loc_time_string.timetuple()
-                    print(loc_firstname, loc_lastname,
-                          loc_time_string, )
-
-                    loc_birthdate = loc_time_string
+                    loc_birthdate = str(loc_time_string)
 
                 except:
                     print(
@@ -330,7 +327,6 @@ def parse_tent_leader(arg_file_name):
                         loc_birthdate
                     )
                     raise
-                loc_birthdate = row[IDX_LEAD_BIRTHDATE]
 
                 loc_tent_leader = TentLeader(
                     loc_id,
