@@ -8,7 +8,7 @@
 		type Logs
 	} from '$lib/_apiParticipants';
 
-	import { Row, Col, Badge, Progress } from 'sveltestrap/src';
+	import { Badge, Progress } from 'sveltestrap/src';
 	import { onMount } from 'svelte';
 	import { NUM_TENTS } from '$lib/constants';
 
@@ -188,25 +188,25 @@
 </svelte:head>
 
 <div style="margin-top: 80px; margin-left: 10px;">
-	<Row>
-		<Col sm="6">
+	<div class="row">
+		<div class="col col-sm-6">
 			<h3>Leitungsteam ({tentLeaders.length})</h3>
-			<Row>
+			<div class="row">
 				{#each teams as team}
-					<Col sm="4">
+					<div class="col col-sm-4">
 						<h5>{team.name} ({team.persons.length})</h5>
 						<ul>
 							{#each team.persons as person}
 								<li>{person}</li>
 							{/each}
 						</ul>
-					</Col>
+					</div>
 				{/each}
-			</Row>
-		</Col>
+			</div>
+		</div>
 
-		<Col sm="3">
-			<Col>
+		<div class="col col-sm-3">
+			<div class="col">
 				<h3>Teilnehmer Statistik:</h3>
 				<ul>
 					<li>Anzahl Teilnehmer: {participants.length}</li>
@@ -220,26 +220,26 @@
 						</Progress>
 					</li>
 				</ul>
-			</Col>
-			<Col>
+			</div>
+			<div class="col">
 				<h3>Geburtstagskinder im Lager</h3>
 				<ul>
 					{#each birthDayParticipants as participant}
 						<li>{participant.getFullname()} ({participant.birthdate})</li>
 					{/each}
 				</ul>
-			</Col>
-			<Col>
+			</div>
+			<div class="col">
 				<h3>Durchschnittsalter Zelte:</h3>
 				<ul>
 					{#each tentAvgAge as avg}
 						<li>Zelt {avg.tentNumber} ({Math.round((100 * avg.avg) / avg.num) / 100})</li>
 					{/each}
 				</ul>
-			</Col>
-		</Col>
+			</div>
+		</div>
 
-		<Col sm="3">
+		<div class="col col-sm-3">
 			<h3>Logs:</h3>
 			<ul>
 				<a href="/logs">
@@ -249,6 +249,6 @@
 					><li>Revision Logs: <Badge color="info">{logs.revisions.length}</Badge></li>
 				</a>
 			</ul>
-		</Col>
-	</Row>
+		</div>
+	</div>
 </div>
