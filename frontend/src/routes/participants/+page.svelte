@@ -3,35 +3,28 @@
 
 	import type { cTentParticipant, ZipCodes } from '$lib/_apiParticipants';
 
-	import { Table, Button, Input, Row, Col } from 'sveltestrap/src';
+	import { Button, Row, Col } from 'sveltestrap/src';
 	import { onMount } from 'svelte';
 	import NavbarParticipants from '$lib/NavbarParticipants.svelte';
 
-	enum IColumn {
-		id = 'id',
-		paid = 'paid',
-		firstName = 'Vorname',
-		lastName = 'Nachname',
-		zipCode = 'PLZ',
-		village = 'Ort',
-		age = 'Alter',
-		friends = ' Freunde'
-	}
+	import SortTable from '$lib/SortTable.svelte';
 
-	let columns = [
-		IColumn.id,
-		IColumn.paid,
-		IColumn.firstName,
-		IColumn.lastName,
-		IColumn.zipCode,
-		IColumn.village,
-		IColumn.age,
-		IColumn.friends
-	];
+	import { getAgeTwoDecimal, type IColumn } from '$lib/sort';
+
 	let participants: cTentParticipant[] = [];
 	let filterdParticipants: cTentParticipant[] = [];
-	let serachString = '';
-	let sortBy = { col: IColumn, ascending: true };
+
+	const columns: IColumn[] = [
+		{ label: 'id', key: 'identifier', ascending: true, link: '/participant/' },
+		{ label: 'paid', key: 'paid', ascending: true },
+		{ label: 'firstName', key: 'firstname', ascending: true },
+		{ label: 'lastName', key: 'lastname', ascending: true },
+		{ label: 'zipCode', key: 'zipcode', ascending: true },
+		{ label: 'village', key: 'village', ascending: true },
+		{ label: 'age', key: 'age', ascending: true, displayCallback: getAgeTwoDecimal },
+		{ label: 'friends', key: 'friends', ascending: true }
+	];
+	const searchColumns: string[] = ['firstname', 'lastname', 'zipcode', 'village'];
 
 	let avgAge = 0;
 	$: avgAge = calculateAvgAge(participants);
@@ -47,92 +40,13 @@
 		return Math.round((ageSum / arg_participants.length) * 100) / 100;
 	}
 
-	function numberSort(a: number, b: number) {
-		if (sortBy.ascending == true) {
-			let temp = a;
-			a = b;
-			b = temp;
-		}
-		if (a >= b) {
-			return 0;
-		} else {
-			return 1;
-		}
-	}
-
-	function textSort(a: string, b: string) {
-		if (sortBy.ascending == true) {
-			let temp = a;
-			a = b;
-			b = temp;
-		}
-		if (a >= b) {
-			return 0;
-		} else {
-			return 1;
-		}
-	}
-
-	function boolSort(a: boolean, b: boolean) {
-		if (sortBy.ascending == true) {
-			let temp = a;
-			a = b;
-			b = temp;
-		}
-		if (a) {
-			return 0;
-		} else {
-			return 1;
-		}
-	}
-
-	function clickSortTable(column: IColumn) {
-		let sort = (a: cTentParticipant, b: cTentParticipant) => {
-			switch (column) {
-				case IColumn.id:
-					return numberSort(a.identifier, b.identifier);
-				case IColumn.paid:
-					return boolSort(a.paid, b.paid);
-				case IColumn.zipCode:
-					return numberSort(a.zipcode, b.zipcode);
-				case IColumn.age:
-					return numberSort(a.age, b.age);
-				case IColumn.firstName:
-					return textSort(a.firstname, b.firstname);
-				case IColumn.lastName:
-					return textSort(a.lastname, b.lastname);
-				case IColumn.village:
-					return textSort(a.village, b.village);
-				default:
-					return 0;
-			}
-		};
-
-		filterdParticipants = filterdParticipants.sort(sort);
-		sortBy.ascending = !sortBy.ascending;
-	}
-
 	onMount(() => {
 		getParticipants();
 	});
 
-	function searchParticipant(p: cTentParticipant) {
-		return (
-			p.firstname.toLowerCase().includes(serachString.toLowerCase()) ||
-			p.lastname.toLowerCase().includes(serachString.toLowerCase()) ||
-			p.zipcode.toString().toLowerCase().includes(serachString.toLowerCase()) ||
-			p.village.toLowerCase().includes(serachString.toLowerCase())
-		);
-	}
-
-	function onSearchParticipant() {
-		filterdParticipants = participants.filter((p: cTentParticipant) => searchParticipant(p));
-	}
-
 	async function getParticipants() {
 		participants = await apiGetParticipants();
 		filterdParticipants = participants;
-		filterdParticipants = participants.filter((p: cTentParticipant) => searchParticipant(p));
 	}
 
 	async function saveParticipants() {
@@ -170,39 +84,4 @@
 	<Col sm="auto"><strong>Durchschnittsalter: </strong> {avgAge}</Col>
 </Row>
 
-<Input
-	bind:value={serachString}
-	on:keyup={onSearchParticipant}
-	type="search"
-	placeholder="Search"
-	class="ms-auto w-auto"
-	style="margin-right: 20px"
-/>
-
-<Table striped data-toggle="table" data-search="true" data-strict-search="true">
-	<thead>
-		<tr>
-			{#each columns as column}
-				<th on:click={() => clickSortTable(column)}>{column}</th>
-			{/each}
-		</tr>
-	</thead>
-	<tbody>
-		{#each filterdParticipants as participant}
-			<tr>
-				<th scope="row">
-					<a target="_blank" href={'/participant/' + participant.identifier}>
-						{participant.identifier}
-					</a>
-				</th>
-				<td><Input type="checkbox" bind:checked={participant.paid} /></td>
-				<td>{participant.firstname}</td>
-				<td>{participant.lastname}</td>
-				<td>{participant.zipcode}</td>
-				<td>{participant.village}</td>
-				<td>{participant.getAgeTwoDecimal()}</td>
-				<td>{participant.friends}</td>
-			</tr>
-		{/each}
-	</tbody>
-</Table>
+<SortTable data={participants} bind:filterdData={filterdParticipants} {columns} {searchColumns} />

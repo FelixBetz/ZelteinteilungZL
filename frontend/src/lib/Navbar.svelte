@@ -17,6 +17,7 @@
 	let navEntries: NavEntry[] = [
 		{ label: 'Home', route: '/' },
 		{ label: 'Stübis', route: '/participants' },
+		{ label: 'Team', route: '/team' },
 		{ label: 'Zelteinteilung', route: '/tentAllocation' },
 		{ label: 'Graph', route: '/graph' },
 		{ label: 'Logs', route: '/logs' }

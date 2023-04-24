@@ -13,6 +13,10 @@
 	});
 </script>
 
+<svelte:head>
+	<title>Logs</title>
+</svelte:head>
+
 <div class="m-5">
 	<h1>Logs</h1>
 	<Row>

@@ -20,22 +20,6 @@ interface Participant {
 	paid: boolean;
 }
 
-export interface TentLeader {
-	birthdate: string;
-	comment: string;
-	firstname: string;
-	handy: string;
-	identifier: number;
-	job: string;
-	lastname: string;
-	mail: string;
-	phone: string;
-	street: string;
-	team: string;
-	tent: number;
-	village: string;
-	zipcode: number;
-}
 export class cTentParticipant {
 	public age = 0;
 	constructor(
@@ -60,6 +44,67 @@ export class cTentParticipant {
 		public tent: number
 	) {
 		this.calculateAge();
+		console.log(this.birthdate, this.age);
+	}
+
+	private calculateAge() {
+		const today = new Date();
+
+		const [year, month, day] = this.birthdate.split('-');
+		const birthDate = new Date(+year, +month - 1, +day); //(0 = January to 11 = December)
+		const diffMilliseconds = today.getTime() - birthDate.getTime();
+		this.age = diffMilliseconds / 1000 / 3600 / 24 / 365;
+	}
+
+	public getAgeOneDecimal() {
+		return Math.round(this.age * 10) / 10;
+	}
+	public getAgeTwoDecimal() {
+		return Math.round(this.age * 100) / 100;
+	}
+
+	public getFullname() {
+		return this.firstname + ' ' + this.lastname;
+	}
+}
+
+interface TentLeader {
+	identifier: number;
+	firstname: string;
+	lastname: string;
+	birthdate: string;
+	street: string;
+	zipcode: number;
+	village: string;
+	mail: string;
+	phone: string;
+	handy: string;
+	job: string;
+	team: string;
+	tent: number;
+	comment: string;
+}
+
+export class cTentLeader {
+	public age = 0;
+	constructor(
+		public identifier: number,
+		public firstname: string,
+		public lastname: string,
+		public birthdate: string,
+		public street: string,
+		public zipcode: number,
+		public village: string,
+		public mail: string,
+		public phone: string,
+		public handy: string,
+		public job: string,
+		public team: string,
+		public tent: number,
+		public comment: string
+	) {
+		this.calculateAge();
+		console.log(this.birthdate, this.age);
 	}
 
 	private calculateAge() {
@@ -169,6 +214,26 @@ function participantObjectToParticipantInterface(p: cTentParticipant): Participa
 	return participant;
 }
 
+function tentleaderInterfaceToParticipantObject(p: TentLeader): cTentLeader {
+	const tentParticipant: cTentLeader = new cTentLeader(
+		p.identifier,
+		p.firstname,
+		p.lastname,
+		p.birthdate,
+		p.street,
+		p.zipcode,
+		p.village,
+		p.mail,
+		p.phone,
+		p.handy,
+		p.job,
+		p.team,
+		p.tent,
+		p.comment
+	);
+	return tentParticipant;
+}
+
 export async function apiPostParticipant(
 	arg_participant: cTentParticipant | null
 ): Promise<cTentParticipant | null> {
@@ -232,11 +297,15 @@ export async function apiPostParticipants(
 	return response;
 }
 
-export async function apiGetTentLeader(): Promise<TentLeader[]> {
+export async function apiGetTentLeader(): Promise<cTentLeader[]> {
 	const response = await fetch(baseUrl + '/tentleaders')
 		.then((res) => res.json())
 		.then((res: TentLeader[]) => {
-			return res;
+			const ret: cTentLeader[] = [];
+			for (let i = 0; i < res.length; i++) {
+				ret.push(tentleaderInterfaceToParticipantObject(res[i]));
+			}
+			return ret;
 		})
 		.catch((error: Error) => {
 			console.error(error);

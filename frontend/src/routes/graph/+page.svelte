@@ -87,6 +87,10 @@
 	});
 </script>
 
+<svelte:head>
+	<title>Graph</title>
+</svelte:head>
+
 <!--
 <Row>
 	{#each chartData as data}

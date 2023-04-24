@@ -24,7 +24,7 @@ from file_indices import IDX_PARP_FIRST_NAME, IDX_PARP_LAST_NAME, IDX_PARP_STREE
 
 INPUT_FILE_PATH = r"..\\input\\"
 INPUT_FILE_NAME = "2023_teilnehmer_input.csv"
-INPUT_TENT_LEADER_FILE_NAME = "2022_leitungsteam_anfrage.csv"
+INPUT_TENT_LEADER_FILE_NAME = "2023_leitungsteam_anfrage.csv"
 INPUT_REVISION_FILE_NAME = "edit.txt"
 INPUT_TENT_NUMBERS_FILE_NAME = "tent_numbers.txt"
 INPUT_PAID_FILE_NAME = "paid.txt"
@@ -310,6 +310,24 @@ def parse_tent_leader(arg_file_name):
                         )
                         raise
 
+                try:
+                    loc_time_string = datetime.strptime(
+                        row[IDX_LEAD_BIRTHDATE], "%d.%m.%Y"
+                    ).date()
+                    _ = loc_time_string.timetuple()
+                    loc_birthdate = str(loc_time_string)
+
+                except:
+                    print(
+                        "failed to parse birthdate: i: ",
+                        i,
+                        loc_firstname,
+                        " ",
+                        loc_lastname,
+                        loc_birthdate
+                    )
+                    raise
+
                 loc_tent_leader = TentLeader(
                     loc_id,
                     row[IDX_LEAD_JOB],
@@ -321,7 +339,7 @@ def parse_tent_leader(arg_file_name):
                     row[IDX_LEAD_PHONE],
                     row[IDX_LEAD_HANDY],
                     row[IDX_LEAD_MAIL],
-                    row[IDX_LEAD_BIRTHDATE],
+                    loc_birthdate,
                     loc_tent,
                     row[IDX_LEAD_TEAM],
                     row[IDX_LEAD_COMMENT],
@@ -393,7 +411,7 @@ def apply_participants_revisons(arg_participants):
     return arg_participants
 
 
-@app.route("/api/participants", methods=["GET", "POST"])
+@ app.route("/api/participants", methods=["GET", "POST"])
 def get_participants():
     """returns all participants as json"""
     global participants_d, tent_leaders
@@ -415,7 +433,7 @@ def get_participants():
     return jsonify(ret)
 
 
-@app.route("/api/participant", methods=["GET", "POST"])
+@ app.route("/api/participant", methods=["GET", "POST"])
 def get_participant():
     """returns participant by given id as json"""
     global participants_d, tent_leaders
@@ -452,7 +470,7 @@ def get_participant():
     return jsonify(ret)
 
 
-@app.route("/api/tentleaders", methods=["GET"])
+@ app.route("/api/tentleaders", methods=["GET"])
 def get_tent_leaders():
     """returns all tent_leaders as json"""
     ret = []
@@ -461,7 +479,7 @@ def get_tent_leaders():
     return jsonify(ret)
 
 
-@app.route("/api/maps", methods=["POST"])
+@ app.route("/api/maps", methods=["POST"])
 def get_maps():
     """generate maps by given zipcode an location"""
     zip_codes = []
@@ -473,13 +491,13 @@ def get_maps():
     return jsonify("ok")
 
 
-@app.route("/api/maps/<path:filename>")
+@ app.route("/api/maps/<path:filename>")
 def download_file(filename):
     """returns map file by filename"""
     return send_from_directory(app.config["MAPS_OUTPUT"], filename)
 
 
-@app.route("/api/graph", methods=["GET"])
+@ app.route("/api/graph", methods=["GET"])
 def get_graph():
     """get_graph"""
     loc_stuebis = []
@@ -500,7 +518,7 @@ def get_graph():
     return jsonify(loc_stuebis)
 
 
-@app.route("/api/logs", methods=["GET"])
+@ app.route("/api/logs", methods=["GET"])
 def get_logs():
     """returns logs"""
     ret = {}
