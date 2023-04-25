@@ -7,6 +7,43 @@
 	let tentLeaders: cTentLeader[] = [];
 	let filterdTentLeaders: cTentLeader[] = [];
 
+	let isIncludePriest = false;
+
+	let avgAge = 0;
+
+	function calcAverageAge(pTeam: cTentLeader[], pIsIncludePriest: boolean) {
+		let ageSum = 0;
+		let num = 0;
+		pTeam.forEach((leader) => {
+			if (pIsIncludePriest || leader.job.toLowerCase() != 'lagerpfarrer') {
+				ageSum += leader.age;
+				num += 1;
+			}
+		});
+
+		return ageSum / num;
+	}
+
+	$: avgAge = calcAverageAge(filterdTentLeaders, isIncludePriest);
+	$: calcTeamAvg(isIncludePriest);
+
+	function calcTeamAvg(pIsIncludePriest: boolean) {
+		teams.forEach((team) => {
+			let ageSum = 0;
+			let num = 0;
+			team.indices.forEach((idx) => {
+				if (pIsIncludePriest || tentLeaders[idx].job.toLowerCase() != 'lagerpfarrer') {
+					ageSum += tentLeaders[idx].age;
+					num += 1;
+				}
+			});
+
+			team.avg = ageSum / num;
+		});
+
+		teams = teams;
+	}
+
 	const columns: IColumn[] = [
 		{ label: 'id', key: 'identifier', ascending: true },
 		{ label: 'firstName', key: 'firstname', ascending: true },
@@ -43,6 +80,7 @@
 	interface Team {
 		indices: number[];
 		name: string;
+		avg: number;
 	}
 	let teams: Team[] = [];
 
@@ -99,13 +137,14 @@
 		});
 		//create  all teams
 		teamNames.forEach((name) => {
-			teams.push({ name: name, indices: [] });
+			teams.push({ name: name, indices: [], avg: 0 });
 		});
 
 		//add tent leaders to team
 		tentLeaders.forEach((leader, index) => {
 			addLeaderToTeam(leader.team, index);
 		});
+		calcTeamAvg(isIncludePriest);
 		teams = teams;
 	}
 
@@ -133,6 +172,20 @@
 				{#each jobs as job}
 					<li>{job.name}: {job.indices.length}</li>
 				{/each}
+				<br />
+				<li>
+					<i>
+						Durchschnittsalter: {getAgeTwoDecimal(avgAge)} <br />
+						(
+						<input
+							type="checkbox"
+							class="form-check-input"
+							id="avg"
+							bind:checked={isIncludePriest}
+						/>
+						<label for="avg">Lagerpfarrer mitrechnen</label>)
+					</i>
+				</li>
 			</ul>
 		</div>
 
@@ -162,6 +215,8 @@
 							<li>{tentLeaders[idx].firstname} {tentLeaders[idx].lastname}</li>
 						{/if}
 					{/each}
+					<br />
+					<li><i>Durchschnittsalter: {getAgeTwoDecimal(team.avg)}</i></li>
 				</ul>
 			</div>
 		{/each}
