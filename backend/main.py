@@ -92,7 +92,7 @@ def check_if_participant_file_valid(arg_input_file):
                 raise Exception("ERROR at row:" + str(check_row))
 
 
-def save_data(arg_participants, arg_tent_leaders):
+def save_data(arg_participants, arg_tent_leaders, arg_revisions):
     """save participants tent numbers, revisions, paid"""
     # save tent numbers
     tent_numbers = [{"id": p.identifier, "tent": p.tent}
@@ -113,6 +113,10 @@ def save_data(arg_participants, arg_tent_leaders):
                 paid_file.write(str(obj["id"]) + ";" + str(obj["paid"]) + "\n")
 
     # save revisions todo
+
+    with open(INPUT_REVISION_PATH, "a", encoding="utf-8") as revision_file:
+        for revision in arg_revisions:
+            revision_file.write(revision + "\n")
 
     arg_participants = parse_participants(INPUT_PARICIPANT_PATH)
     arg_tent_leaders = parse_tent_leader(INPUT_TENT_LEADER_PATH)
@@ -362,27 +366,33 @@ def props(obj):
     return props_dict
 
 
-def particpant_object_to_class(arg_participant, arg_object):
+def particpant_object_to_class(arg_p, arg_o):
     """converts dict object to participant object"""
-    arg_participant.identifier = arg_object["identifier"]
-    arg_participant.paid = arg_object["paid"]
-    arg_participant.lastname = arg_object["lastname"]
-    arg_participant.firstname = arg_object["firstname"]
-    arg_participant.birthdate = arg_object["birthdate"]
-    arg_participant.street = arg_object["street"]
-    arg_participant.zipcode = arg_object["zipcode"]
-    arg_participant.village = arg_object["village"]
-    arg_participant.phone = arg_object["phone"]
-    arg_participant.mail = arg_object["mail"]
-    arg_participant.emergency_contact = arg_object["emergency_contact"]
-    arg_participant.emergency_phone = arg_object["emergency_phone"]
-    arg_participant.is_vegetarian = arg_object["is_vegetarian"]
-    arg_participant.is_reduced = arg_object["is_reduced"]
-    arg_participant.is_event_mail = arg_object["is_event_mail"]
-    arg_participant.friends = arg_object["friends"]
-    arg_participant.is_photo_allowed = arg_object["is_photo_allowed"]
-    arg_participant.other = arg_object["other"]
-    arg_participant.tent = arg_object["tent"]
+
+    revisions = []
+
+    revisions.append(arg_p.set_firstname(arg_o["firstname"]))
+    arg_p.paid = arg_o["paid"]
+    revisions.append(arg_p.set_lastname(arg_o["lastname"]))
+    revisions.append(arg_p.set_birthdate(arg_o["birthdate"]))
+    revisions.append(arg_p.set_street(arg_o["street"]))
+    revisions.append(arg_p.set_zipcode(arg_o["zipcode"]))
+    revisions.append(arg_p.set_village(arg_o["village"]))
+    revisions.append(arg_p.set_phone(arg_o["phone"]))
+    revisions.append(arg_p.set_mail(arg_o["mail"]))
+    revisions.append(arg_p.set_emergency_contact(arg_o["emergency_contact"]))
+    revisions.append(arg_p.set_emergency_phone(arg_o["emergency_phone"]))
+    revisions.append(arg_p.set_is_vegetarian(arg_o["is_vegetarian"]))
+    revisions.append(arg_p.set_is_reduced(arg_o["is_reduced"]))
+    revisions.append(arg_p.set_is_event_mail(arg_o["is_event_mail"]))
+    revisions.append(arg_p.set_friend1(arg_o["friends"][0]))
+    revisions.append(arg_p.set_friend2(arg_o["friends"][1]))
+    revisions.append(arg_p.set_is_photo_allowed(arg_o["is_photo_allowed"]))
+    revisions.append(arg_p.set_other(arg_o["other"]))
+    arg_p.tent = arg_o["tent"]
+
+    revisions = list(filter(lambda x: x != "", revisions))
+    return revisions
 
 
 def get_paticipant_by_id(arg_participants, arg_id):
@@ -423,7 +433,6 @@ def apply_participants_revisons(arg_participants):
             # participant not found
             if loc_participant is None:
                 # cereate log string
-
                 loc_revision["isError"] = True
                 loc_revision["fullname"] = ""
                 loc_revision["oldValue"] = ""
@@ -435,7 +444,6 @@ def apply_participants_revisons(arg_participants):
 
                 loc_old_value = loc_participant.set_by_string_prop(
                     loc_property, loc_value)
-
                 # failed to find property
                 if loc_old_value is None:
                     loc_revision["isError"] = True
@@ -444,14 +452,13 @@ def apply_participants_revisons(arg_participants):
                     loc_revision["errorMessage"] = "Eigenschaft \"" + \
                         loc_property + "\"existiert nicht"
                 # failed to parse property
-                elif loc_old_value is False:
+                elif loc_old_value == "ERROR":
                     loc_revision["isError"] = True
                     loc_revision["fullname"] = loc_participant.get_fullname()
                     loc_revision["oldValue"] = ""
                     loc_revision["errorMessage"] = "Wert \"" + \
                         loc_value + "\"konnte nicht geparsed werden"
-                    print(loc_participant.get_fullname(),
-                          loc_property, loc_value, loc_old_value)
+
                  # revision was sucessfull
                 else:
                     loc_revision["isError"] = False
@@ -472,13 +479,16 @@ def get_participants():
         req = request.form.get("participants")
         req = json.loads(req)
 
+        loc_revisions = []
         for loc_object in req:
             loc_particpant = get_paticipant_by_id(
                 participants_d, int(loc_object["identifier"])
             )
-            particpant_object_to_class(loc_particpant, loc_object)
+            loc_revisions += particpant_object_to_class(
+                loc_particpant, loc_object)
 
-        participants_d, tent_leaders = save_data(participants_d, tent_leaders)
+        participants_d, tent_leaders = save_data(
+            participants_d, tent_leaders, loc_revisions)
 
     ret = []
     for loc_participant in participants_d:
@@ -501,10 +511,10 @@ def get_participant():
             if loc_participant is None:
                 raise Exception
 
-            particpant_object_to_class(loc_participant, req)
+            loc_revisions = particpant_object_to_class(loc_participant, req)
 
             participants_d, tent_leaders = save_data(
-                participants_d, tent_leaders)
+                participants_d, tent_leaders, loc_revisions)
             loc_participant = get_paticipant_by_id(participants_d, loc_id)
             ret = props(loc_participant)
 

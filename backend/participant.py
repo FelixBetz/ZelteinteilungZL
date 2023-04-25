@@ -96,11 +96,15 @@ class Participant(Person):
             try:
                 self.zipcode = int(arg_val)
             except ValueError:
-                old_value = False
+                old_value = "ERROR"
         elif arg_prop == "village":
             old_value = self.village
             self.village = arg_val
 
+        # birthdate
+        elif arg_prop == "birthdate":
+            old_value = self.birthdate
+            self.birthdate = arg_val
         # phone
         elif arg_prop == "phone":
             old_value = self.phone
@@ -148,4 +152,123 @@ class Participant(Person):
         else:
             old_value = None
 
-        return str(old_value)
+        return old_value
+
+    def set_firstname(self, arg_val):
+        """set firstname and return revision string"""
+        if self.firstname != arg_val:
+            self.firstname = arg_val
+            return str(self.identifier) + ";firstname;"+str(self.firstname)
+        return ""
+
+    def set_lastname(self, arg_val):
+        """set lastname and return revision string"""
+        if self.lastname != arg_val:
+            self.lastname = arg_val
+            return str(self.identifier) + ";lastname;"+str(self.lastname)
+        return ""
+
+    def set_birthdate(self, arg_val):
+        """set birthdate and return revision string"""
+        if self.birthdate != arg_val:
+            self.birthdate = arg_val
+            return str(self.identifier) + ";birthdate;"+str(self.birthdate)
+        return ""
+
+    def set_street(self, arg_val):
+        """set street and return revision string"""
+        if self.street != arg_val:
+            self.street = arg_val
+            return str(self.identifier) + ";street;"+str(self.street)
+        return ""
+
+    def set_zipcode(self, arg_val):
+        """set zipcode and return revision string"""
+        if self.zipcode != arg_val:
+            self.zipcode = arg_val
+            return str(self.identifier) + ";zipcode;"+str(self.zipcode)
+        return ""
+
+    def set_village(self, arg_val):
+        """set village and return revision string"""
+        if self.village != arg_val:
+            self.village = arg_val
+            return str(self.identifier) + ";village;"+str(self.village)
+        return ""
+
+    def set_phone(self, arg_val):
+        """set phone and return revision string"""
+        if self.phone != arg_val:
+            self.phone = arg_val
+            return str(self.identifier) + ";phone;"+str(self.phone)
+        return ""
+
+    def set_mail(self, arg_val):
+        """set mail and return revision string"""
+        if self.mail != arg_val:
+            self.mail = arg_val
+            return str(self.identifier) + ";mail;"+str(self.mail)
+        return ""
+
+    def set_emergency_contact(self, arg_val):
+        """set emergency_contact and return revision string"""
+        if self.emergency_contact != arg_val:
+            self.emergency_contact = arg_val
+            return str(self.identifier) + ";emergency_contact;"+str(self.emergency_contact)
+        return ""
+
+    def set_emergency_phone(self, arg_val):
+        """set emergency_phone and return revision string"""
+        if self.emergency_phone != arg_val:
+            self.emergency_phone = arg_val
+            return str(self.identifier) + ";emergency_phone;"+str(self.emergency_phone)
+        return ""
+
+    def set_is_vegetarian(self, arg_val):
+        """set is_vegetarian and return revision string"""
+        if self.is_vegetarian != arg_val:
+            self.is_vegetarian = arg_val
+            return str(self.identifier) + ";is_vegetarian;"+str(self.is_vegetarian)
+        return ""
+
+    def set_is_reduced(self, arg_val):
+        """set is_reduced and return revision string"""
+        if self.is_reduced != arg_val:
+            self.is_reduced = arg_val
+            return str(self.identifier) + ";is_reduced;"+str(self.is_reduced)
+        return ""
+
+    def set_is_event_mail(self, arg_val):
+        """set is_event_mail and return revision string"""
+        if self.is_event_mail != arg_val:
+            self.is_event_mail = arg_val
+            return str(self.identifier) + ";is_event_mail;"+str(self.is_event_mail)
+        return ""
+
+    def set_friend1(self, arg_val):
+        """set friend1 and return revision string"""
+        if self.friends[0] != arg_val:
+            self.friends[0] = arg_val
+            return str(self.identifier) + ";friend1;"+str(self.friends[0])
+        return ""
+
+    def set_friend2(self, arg_val):
+        """set friend2 and return revision string"""
+        if self.friends[1] != arg_val:
+            self.friends[1] = arg_val
+            return str(self.identifier) + ";friend2;"+str(self.friends[1])
+        return ""
+
+    def set_is_photo_allowed(self, arg_val):
+        """set is_photo_allowed and return revision string"""
+        if self.is_photo_allowed != arg_val:
+            self.is_photo_allowed = arg_val
+            return str(self.identifier) + ";is_photo_allowed;"+str(self.is_photo_allowed)
+        return ""
+
+    def set_other(self, arg_val):
+        """set other and return revision string"""
+        if self.other != arg_val:
+            self.other = arg_val
+            return str(self.identifier) + ";other;"+str(self.other)
+        return ""
