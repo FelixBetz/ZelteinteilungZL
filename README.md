@@ -7,7 +7,6 @@
   - Voreinteilung der Stübis
 
 - Stübis
-  - Speicherung von Daten wieder einbauen
   - tabelle auswählbar mit Checkbox machen
   - wer ist als Freund angegeben aber nicht angemeldet?
   - alter im Zeltlager

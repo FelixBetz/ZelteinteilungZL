@@ -13,6 +13,10 @@
 	let participants: cTentParticipant[] = [];
 	let filterdParticipants: cTentParticipant[] = [];
 
+	function getFriendsString(friends: string[]) {
+		return friends.filter((friend) => friend != '').join(', ');
+	}
+
 	const columns: IColumn[] = [
 		{ label: 'id', key: 'identifier', ascending: true, link: '/participant/' },
 		{ label: 'paid', key: 'paid', ascending: true },
@@ -21,7 +25,7 @@
 		{ label: 'zipCode', key: 'zipcode', ascending: true },
 		{ label: 'village', key: 'village', ascending: true },
 		{ label: 'age', key: 'age', ascending: true, displayCallback: getAgeTwoDecimal },
-		{ label: 'friends', key: 'friends', ascending: true }
+		{ label: 'friends', key: 'friends', ascending: true, displayCallback: getFriendsString }
 	];
 	const searchColumns: string[] = ['firstname', 'lastname', 'zipcode', 'village'];
 
