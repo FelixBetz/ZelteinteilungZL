@@ -313,9 +313,19 @@ export async function apiGetTentLeader(): Promise<cTentLeader[]> {
 	return response;
 }
 
+interface Revision {
+	fullname: string;
+	id: number;
+	isError: boolean;
+	newValue: string;
+	oldValue: string;
+	property: string;
+	errorMessage: string;
+}
+
 export interface Logs {
 	errors: string[];
-	revisions: string[];
+	revisions: Revision[];
 }
 
 export async function apiGetLogs(): Promise<Logs> {

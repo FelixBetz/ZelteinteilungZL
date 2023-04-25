@@ -25,7 +25,7 @@ from file_indices import IDX_PARP_FIRST_NAME, IDX_PARP_LAST_NAME, IDX_PARP_STREE
 INPUT_FILE_PATH = r"..\\input\\"
 INPUT_FILE_NAME = "2023_teilnehmer_input.csv"
 INPUT_TENT_LEADER_FILE_NAME = "2023_leitungsteam_anfrage.csv"
-INPUT_REVISION_FILE_NAME = "edit.txt"
+INPUT_REVISION_FILE_NAME = "revisions.txt"
 INPUT_TENT_NUMBERS_FILE_NAME = "tent_numbers.txt"
 INPUT_PAID_FILE_NAME = "paid.txt"
 
@@ -39,6 +39,7 @@ tent_leaders = []
 participants_d = []
 
 error_logs = []
+revison_logs = []
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -171,7 +172,6 @@ def parse_paid(arg_participants):
 
 def parse_participants(arg_file_name):
     """parses zeltlager participants from input csv file"""
-    global error_logs
 
     error_logs.clear()
     loc_participants = []
@@ -395,6 +395,9 @@ def get_paticipant_by_id(arg_participants, arg_id):
 
 def apply_participants_revisons(arg_participants):
     """apply_participants_revisons"""
+
+    revison_logs.clear()
+
     if not os.path.isfile(INPUT_REVISION_PATH):
         error_logs.append("ERROR: " + INPUT_REVISION_PATH + " existiert nicht")
         print("ERROR: " + INPUT_REVISION_PATH + " existiert nicht")
@@ -402,11 +405,61 @@ def apply_participants_revisons(arg_participants):
 
     with open(INPUT_REVISION_PATH, encoding="utf8") as revision_file:
         for row in revision_file:
+            if row.strip() == "":
+                continue
             splitted_row = row.split(";")
-            loc_id = splitted_row[0].strip()
+
+            loc_id = int(splitted_row[0].strip())
             loc_property = splitted_row[1].strip()
             loc_value = splitted_row[2].strip()
-            print(loc_id, loc_property, loc_value)
+
+            loc_participant = get_paticipant_by_id(arg_participants, loc_id)
+
+            loc_revision = {}
+            loc_revision["id"] = loc_id
+            loc_revision["property"] = loc_property
+            loc_revision["newValue"] = loc_value
+
+            # participant not found
+            if loc_participant is None:
+                # cereate log string
+
+                loc_revision["isError"] = True
+                loc_revision["fullname"] = ""
+                loc_revision["oldValue"] = ""
+                loc_revision["errorMessage"] = "ID not found"
+
+                revison_logs.append(loc_revision)
+
+            else:
+
+                loc_old_value = loc_participant.set_by_string_prop(
+                    loc_property, loc_value)
+
+                # failed to find property
+                if loc_old_value is None:
+                    loc_revision["isError"] = True
+                    loc_revision["fullname"] = loc_participant.get_fullname()
+                    loc_revision["oldValue"] = ""
+                    loc_revision["errorMessage"] = "Eigenschaft \"" + \
+                        loc_property + "\"existiert nicht"
+                # failed to parse property
+                elif loc_old_value is False:
+                    loc_revision["isError"] = True
+                    loc_revision["fullname"] = loc_participant.get_fullname()
+                    loc_revision["oldValue"] = ""
+                    loc_revision["errorMessage"] = "Wert \"" + \
+                        loc_value + "\"konnte nicht geparsed werden"
+                    print(loc_participant.get_fullname(),
+                          loc_property, loc_value, loc_old_value)
+                 # revision was sucessfull
+                else:
+                    loc_revision["isError"] = False
+                    loc_revision["fullname"] = loc_participant.get_fullname()
+                    loc_revision["oldValue"] = loc_old_value
+                    loc_revision["errorMessage"] = loc_value
+
+                revison_logs.append(loc_revision)
 
     return arg_participants
 
@@ -523,7 +576,7 @@ def get_logs():
     """returns logs"""
     ret = {}
     ret["errors"] = error_logs
-    ret["revisions"] = []  # todo parse revision
+    ret["revisions"] = revison_logs
     return jsonify(ret)
 
 
