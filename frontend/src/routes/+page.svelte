@@ -13,16 +13,28 @@
 	import { onMount } from 'svelte';
 	import { NUM_TENTS } from '$lib/constants';
 
-	let participants: cTentParticipant[] = [];
-	let birthDayParticipants: cTentParticipant[] = [];
-	let tentLeaders: cTentLeader[] = [];
-	let logs: Logs = { errors: [], revisions: [] };
-	let configs: Configs = { numTents: 9999, zlStart: '1970-08-12' };
+	interface TentAvg {
+		avg: number;
+		num: number;
+		tentNumber: number;
+	}
 
 	interface Team {
 		name: string;
 		persons: string[];
 	}
+	interface BirthdayKid {
+		name: string;
+		birthday: Date;
+		weekday: string;
+		tent: string;
+	}
+
+	let participants: cTentParticipant[] = [];
+	let birthDayKids: BirthdayKid[] = [];
+	let tentLeaders: cTentLeader[] = [];
+	let logs: Logs = { errors: [], revisions: [] };
+	let configs: Configs = { numTents: 9999, zlStart: '1970-08-12' };
 
 	let teams: Team[] = [];
 
@@ -31,12 +43,25 @@
 	let eldestParticipant = '';
 	let assignedParticipants = 0;
 
+	let tentAvgAge: TentAvg[] = [];
+
+	const weekdays = [
+		'Sonntag',
+		'Montag',
+		'Dienstag',
+		'Mittwoch',
+		'Donnerstag',
+		'Freitag',
+		'Samstag'
+	];
+
 	$: avgAge = calculateAvgAge(participants);
 	$: youngestParticipant = calculateYoungestParticipant(participants);
 	$: eldestParticipant = calculateEldestParticipant(participants);
 	$: assignedParticipants = caluclateAssignedParticipants(participants);
+	$: calculateBirthdayKids(participants, tentLeaders, configs.zlStart);
 
-	onMount(() => {
+	$: onMount(() => {
 		getParticipants();
 	});
 
@@ -52,6 +77,7 @@
 		}
 		return loc_assigned;
 	}
+
 	function calculateYoungestParticipant(arg_participants: cTentParticipant[]): string {
 		if (arg_participants.length == 0) {
 			return '';
@@ -91,13 +117,7 @@
 			')'
 		);
 	}
-	interface TentAvg {
-		avg: number;
-		num: number;
-		tentNumber: number;
-	}
 
-	let tentAvgAge: TentAvg[] = [];
 	function calculateTentAvgAge() {
 		tentAvgAge = [];
 		for (let i = 0; i < NUM_TENTS; i++) {
@@ -123,10 +143,62 @@
 		return Math.round((ageSum / arg_participants.length) * 100) / 100;
 	}
 
+	function getWeekdayString(pDate: Date) {
+		let weekday = weekdays[pDate.getDay()];
+		let date = pDate.toLocaleString('de-DE', { day: '2-digit', month: '2-digit' });
+		let weekdayString = weekday + ' ' + date;
+		return weekdayString;
+	}
+
+	function calculateBirthdayKids(
+		pParticipants: cTentParticipant[],
+		pTentLeader: cTentLeader[],
+		pZlStart: string
+	) {
+		const zlStartSplitted = pZlStart.split('-');
+
+		const zlYear = +zlStartSplitted[0];
+		const beginZlDate = new Date(zlYear, +zlStartSplitted[1] - 1, +zlStartSplitted[2]); //todo
+		const endZlDate = new Date(zlYear, +zlStartSplitted[1] - 1, +zlStartSplitted[2]);
+		endZlDate.setDate(beginZlDate.getDate() + 7);
+
+		birthDayKids = [];
+
+		pParticipants.forEach((p) => {
+			const [year, month, day] = p.birthdate.split('-');
+			const birthDate = new Date(zlYear, +month - 1, +day); //(0 = January to 11 = December)
+
+			if (beginZlDate <= birthDate && endZlDate >= birthDate) {
+				birthDayKids[birthDayKids.length] = {
+					name: p.getFullname(),
+					birthday: new Date(+year, +month - 1, +day),
+					weekday: getWeekdayString(birthDate),
+					tent: 'Zelt ' + p.tent
+				};
+			}
+		});
+
+		pTentLeader.forEach((p) => {
+			const [year, month, day] = p.birthdate.split('-');
+			const birthDate = new Date(zlYear, +month - 1, +day); //(0 = January to 11 = December)
+
+			if (beginZlDate <= birthDate && endZlDate >= birthDate) {
+				birthDayKids[birthDayKids.length] = {
+					name: p.getFullname(),
+					birthday: new Date(+year, +month - 1, +day),
+					weekday: getWeekdayString(birthDate),
+					tent: p.team
+				};
+			}
+		});
+
+		birthDayKids.sort((x, y) => x.birthday.getTime() - y.birthday.getTime());
+	}
+
 	async function getParticipants() {
-		participants = await apiGetParticipants();
-		logs = await apiGetLogs();
 		configs = await apiGetConfigs();
+		logs = await apiGetLogs();
+		participants = await apiGetParticipants();
 
 		let mats: Team = { name: 'Mat Warts', persons: [] };
 		let sukus: Team = { name: 'Suppenkutscher', persons: [] };
@@ -171,22 +243,6 @@
 		teams.push(notAssigend);
 		teams.push(reserver);
 		teams = teams;
-
-		//parse bithday
-		for (let i = 0; i < participants.length; i++) {
-			/* eslint-disable  @typescript-eslint/no-unused-vars */
-			const [_, month, day] = participants[i].birthdate.split('-');
-
-			const zlYear = 2023;
-
-			const beginZlDate = new Date(zlYear, 7, 11); //todo
-			const endZlDate = new Date(zlYear, 7, 18); //todo
-			const birthDate = new Date(zlYear, +month - 1, +day); //(0 = January to 11 = December)
-
-			if (beginZlDate <= birthDate && endZlDate >= birthDate) {
-				birthDayParticipants[birthDayParticipants.length] = participants[i];
-			}
-		}
 
 		calculateTentAvgAge();
 	}
@@ -237,10 +293,17 @@
 				</ul>
 			</div>
 			<div class="col">
-				<h3>Geburtstagskinder im Lager</h3>
+				<h3>Geburtstage im Lager</h3>
 				<ul>
-					{#each birthDayParticipants as participant}
-						<li>{participant.getFullname()} ({participant.birthdate})</li>
+					{#each birthDayKids as kid}
+						<li>
+							<strong>
+								{kid.name},
+								<i>{+configs.zlStart.split('-')[0] - kid.birthday.getFullYear()} Jahre</i>
+							</strong>
+							({kid.birthday.toLocaleDateString()}),<br />
+							<i>{kid.weekday} ({kid.tent})</i>
+						</li>
 					{/each}
 				</ul>
 			</div>
@@ -269,7 +332,7 @@
 			<h3>Configs:</h3>
 			<ul>
 				<li>Anzahl Zelte: {configs.numTents}</li>
-				<li>Start des Zeltalgers: {configs.numTents}</li>
+				<li>Start des Zeltlagers: {configs.zlStart}</li>
 			</ul>
 		</div>
 	</div>

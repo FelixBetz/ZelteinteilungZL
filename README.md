@@ -14,5 +14,4 @@
 
 - Todo Reiter einbauen
 - config reiter
-  - anzahl zelte
-  - datum Zeltlager Beginn
+  - Speichern einbauen
