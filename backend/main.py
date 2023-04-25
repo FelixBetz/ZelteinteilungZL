@@ -173,7 +173,7 @@ def parse_participants(arg_file_name):
     """parses zeltlager participants from input csv file"""
     global error_logs
 
-    error_logs = []
+    error_logs.clear()
     loc_participants = []
 
     if not os.path.isfile(arg_file_name):
@@ -309,7 +309,7 @@ def parse_tent_leader(arg_file_name):
                             row,
                         )
                         raise
-
+                loc_birthdate = ""
                 try:
                     loc_time_string = datetime.strptime(
                         row[IDX_LEAD_BIRTHDATE], "%d.%m.%Y"
