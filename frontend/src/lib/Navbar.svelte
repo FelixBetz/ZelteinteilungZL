@@ -11,7 +11,8 @@
 		{ label: 'Team', route: '/team' },
 		{ label: 'Zelteinteilung', route: '/tentAllocation' },
 		{ label: 'Graph', route: '/graph' },
-		{ label: 'Logs', route: '/logs' }
+		{ label: 'Logs', route: '/logs' },
+		{ label: 'Configs', route: '/configs' }
 	];
 
 	let isOpen = false;

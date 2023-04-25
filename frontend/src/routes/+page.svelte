@@ -5,7 +5,9 @@
 		apiGetLogs,
 		type cTentLeader,
 		type cTentParticipant,
-		type Logs
+		type Logs,
+		type Configs,
+		apiGetConfigs
 	} from '$lib/_apiParticipants';
 
 	import { onMount } from 'svelte';
@@ -15,6 +17,7 @@
 	let birthDayParticipants: cTentParticipant[] = [];
 	let tentLeaders: cTentLeader[] = [];
 	let logs: Logs = { errors: [], revisions: [] };
+	let configs: Configs = { numTents: 9999, zlStart: '1970-08-12' };
 
 	interface Team {
 		name: string;
@@ -123,6 +126,7 @@
 	async function getParticipants() {
 		participants = await apiGetParticipants();
 		logs = await apiGetLogs();
+		configs = await apiGetConfigs();
 
 		let mats: Team = { name: 'Mat Warts', persons: [] };
 		let sukus: Team = { name: 'Suppenkutscher', persons: [] };
@@ -259,6 +263,13 @@
 				<a href="/logs">
 					<li>Revision Logs: <span class="badge bg-info">{logs.revisions.length}</span></li>
 				</a>
+			</ul>
+		</div>
+		<div class="col col-sm-3">
+			<h3>Configs:</h3>
+			<ul>
+				<li>Anzahl Zelte: {configs.numTents}</li>
+				<li>Start des Zeltalgers: {configs.numTents}</li>
 			</ul>
 		</div>
 	</div>
