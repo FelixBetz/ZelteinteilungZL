@@ -12,9 +12,7 @@
   - wer ist als Freund angegeben aber nicht angemeldet?
   - alter im Zeltlager
 
-- Startseite
-  - Dashboard mit
-    - nicht zugewiesne Zefü
+
 - Todo Reiter einbauen
 - config reiter
   - anzahl zelte

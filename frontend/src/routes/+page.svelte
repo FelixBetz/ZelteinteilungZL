@@ -127,6 +127,7 @@
 		let mats: Team = { name: 'Mat Warts', persons: [] };
 		let sukus: Team = { name: 'Suppenkutscher', persons: [] };
 		let free: Team = { name: 'Zeltführer', persons: [] };
+		let notAssigend: Team = { name: 'Zeltführer (kein Zelt)', persons: [] };
 		let reserver: Team = { name: 'Freie Männer', persons: [] };
 		let others: Team = { name: 'Sonstige', persons: [] };
 		tentLeaders = await apiGetTentLeader();
@@ -148,7 +149,11 @@
 					break;
 				case 'zefü':
 				case 'zeltführer':
-					free.persons.push(fullname);
+					if (leader.tent == 9999) {
+						notAssigend.persons.push(fullname);
+					} else {
+						free.persons.push(fullname);
+					}
 					break;
 				default:
 					others.persons.push(fullname);
@@ -159,6 +164,7 @@
 		teams.push(mats);
 		teams.push(sukus);
 		teams.push(free);
+		teams.push(notAssigend);
 		teams.push(reserver);
 		teams = teams;
 

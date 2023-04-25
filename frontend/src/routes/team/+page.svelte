@@ -141,7 +141,26 @@
 				<h3>{team.name} ({team.indices.length})</h3>
 				<ul>
 					{#each team.indices as idx}
-						<li>{tentLeaders[idx].firstname} {tentLeaders[idx].lastname}</li>
+						{#if tentLeaders[idx].job.toLowerCase() == 'zefü'}
+							{#if tentLeaders[idx].tent == 9999}
+								<li>
+									<i>
+										<strong>
+											{tentLeaders[idx].firstname}
+											{tentLeaders[idx].lastname}
+											<span style="color:red">(Zelt XXX)</span>
+										</strong>
+									</i>
+								</li>
+							{:else}
+								<li>
+									{tentLeaders[idx].firstname}
+									{tentLeaders[idx].lastname} (Zelt {tentLeaders[idx].tent})
+								</li>
+							{/if}
+						{:else}
+							<li>{tentLeaders[idx].firstname} {tentLeaders[idx].lastname}</li>
+						{/if}
 					{/each}
 				</ul>
 			</div>
