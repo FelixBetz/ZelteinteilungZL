@@ -3,7 +3,9 @@
 	import { drag, zoom } from 'd3';
 	import { onMount } from 'svelte';
 
-	const links = [
+	import type { IData } from '$lib/_apiParticipants';
+
+	/*const links = [
 		{ source: 'Microsoft', target: 'Amazon', type: 'friend' },
 		{ source: 'Microsoft', target: 'HTC', type: 'friend' },
 		{ source: 'Samsung', target: 'Apple', type: 'friend' },
@@ -94,7 +96,7 @@
 		{
 			id: 'Ericsson'
 		}
-	];
+	];*/
 
 	let width = 1800;
 	let height = 800;
@@ -102,8 +104,123 @@
 	let container;
 	let simulation;
 
-	let node, link, svg;
-	let types = ['friend'];
+	let node, link;
+	let types = [1];
+
+	const colourScale = d3.scaleOrdinal(d3.schemeCategory10);
+
+	const testData: IData = {
+		nodes: [
+			{
+				id: 'Christian Behrendt',
+				group: '1'
+			},
+			{
+				id: 'Lennart Übelhör',
+				group: '2'
+			},
+			{
+				id: 'Mauro Romer',
+				group: '4'
+			},
+			{
+				id: 'Philipp Schmid',
+				group: '6'
+			},
+			{
+				id: 'Samuel Frick',
+				group: '8'
+			},
+			{
+				id: 'Simon Frick',
+				group: '9'
+			},
+			{
+				id: 'Kilian Armbruster',
+				group: '10'
+			},
+			{
+				id: 'Paul Bischoff',
+				group: '10'
+			},
+			{
+				id: 'Vincent Dörrler',
+				group: '11'
+			},
+			{
+				id: 'Benjamin Abt',
+				group: '12'
+			},
+			{
+				id: 'Samuel Abt',
+				group: '13'
+			},
+			{
+				id: 'Jonas Faigle',
+				group: '14'
+			},
+			{
+				id: 'Vincent Romer',
+				group: '14'
+			},
+			{
+				id: 'Luc Wahlenmayer',
+				group: '15'
+			},
+			{
+				id: 'Vincent Wahlenmayer',
+				group: '16'
+			},
+			{
+				id: 'Robin Dreyer',
+				group: '16'
+			},
+			{
+				id: 'Magnus Roland',
+				group: '17'
+			},
+			{
+				id: 'Theo Frey',
+				group: '17'
+			},
+			{
+				id: 'Benedikt Föhr',
+				group: '18'
+			}
+		],
+		links: [
+			{
+				source: 'Paul Bischoff',
+				target: 'Kilian Armbruster',
+				value: 1
+			},
+			{
+				source: 'Jonas Faigle',
+				target: 'Vincent Romer',
+				value: 1
+			},
+			{
+				source: 'Vincent Wahlenmayer',
+				target: 'Robin Dreyer',
+				value: 1
+			},
+			{
+				source: 'Robin Dreyer',
+				target: 'Vincent Wahlenmayer',
+				value: 1
+			},
+			{
+				source: 'Magnus Roland',
+				target: 'Theo Frey',
+				value: 1
+			},
+			{
+				source: 'Theo Frey',
+				target: 'Magnus Roland',
+				value: 1
+			}
+		]
+	};
 
 	let linkArc = (d) => `M${d.source.x},${d.source.y}A0,0 0 0,1 ${d.target.x},${d.target.y}`;
 
@@ -118,18 +235,15 @@
 		//.attr('viewBox', [-width / 2, -height / 2, width, height]);
 
 		simulation = d3
-			.forceSimulation(nodes)
+			.forceSimulation(testData.nodes)
 			.force(
 				'link',
-				d3.forceLink(links).id((d) => d.id)
+				d3.forceLink(testData.links).id((d) => d.id)
 			)
-			.force('charge', d3.forceManyBody().strength(-400))
+			.force('charge', d3.forceManyBody().strength(-0))
 			.force('x', d3.forceX())
 			.force('y', d3.forceY())
-			.force(
-				'collide',
-				d3.forceCollide((d) => 65)
-			)
+			.force('collide', d3.forceCollide(70))
 			.force('center', d3.forceCenter(width / 2, height / 2));
 
 		// Per-type markers, as they don't inherit styles.
@@ -154,10 +268,10 @@
 			.attr('fill', 'none')
 			.attr('stroke-width', 1.5)
 			.selectAll('path')
-			.data(links)
+			.data(testData.links)
 			.join('path')
 			.attr('stroke', 'black')
-			.attr('marker-end', (d) => `url(${new URL(`#arrow-${d.type}`, location)})`);
+			.attr('marker-end', (d) => `url(${new URL(`#arrow-${d.value}`, location)})`);
 
 		node = svg
 			.append('g')
@@ -165,7 +279,7 @@
 			.attr('stroke-linecap', 'round')
 			.attr('stroke-linejoin', 'round')
 			.selectAll('g')
-			.data(nodes)
+			.data(testData.nodes)
 			.join('g')
 			.call(drag(simulation));
 
@@ -174,7 +288,7 @@
 			.attr('stroke', 'white')
 			.attr('stroke-width', 1.5)
 			.attr('r', 25)
-			.attr('fill', (d) => '#6baed6');
+			.attr('fill', (d) => colourScale(d.group));
 
 		node
 			.append('text')
@@ -187,12 +301,11 @@
 			.attr('stroke', 'white')
 			.attr('stroke-width', 3);
 
-		node.on('dblclick', (e, d) => console.log(nodes[d.index]));
+		node.on('dblclick', (e, d) => console.log(testData.nodes[d.index]));
 
 		simulation.on('tick', () => {
 			link.attr('d', linkArc);
 			node.attr('transform', (d) => `translate(${d.x},${d.y})`);
-			console.log('asdfs');
 		});
 		svg.node();
 	});

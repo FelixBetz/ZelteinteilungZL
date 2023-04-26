@@ -3,6 +3,7 @@
 	import NetworkChart from '$lib/chart/NetworkChart.svelte';
 	import { apiGetGraph, type GraphInput } from '$lib/_apiParticipants';
 	import { onMount } from 'svelte';
+	import Test from '../../lib/chart/Test.svelte';
 
 	function hasIntersection(setA: Set<string>, setB: Set<string>): boolean {
 		for (let elem of setB) {
@@ -118,6 +119,8 @@
 		{/if}
 	{/each}
 </Row>-->
+
+<Test />
 
 {#each chartData as data, index}
 	{#if index == 0}
