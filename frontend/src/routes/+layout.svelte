@@ -8,7 +8,7 @@
 <Styles />
 <Navbar />
 
-<main style="margin-top: 50px">
+<main style="margin-top: 10px">
 	<slot />
 </main>
 

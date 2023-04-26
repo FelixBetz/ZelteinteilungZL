@@ -9,6 +9,7 @@
 	import SortTable from '$lib/SortTable.svelte';
 
 	import { getAgeTwoDecimal, type IColumn } from '$lib/sort';
+	import { displayTentString } from '$lib/helpers';
 
 	let participants: cTentParticipant[] = [];
 	let filterdParticipants: cTentParticipant[] = [];
@@ -20,6 +21,7 @@
 	const columns: IColumn[] = [
 		{ label: 'id', key: 'identifier', ascending: true, link: '/participant/' },
 		{ label: 'paid', key: 'paid', ascending: true },
+		{ label: 'Zelt', key: 'tent', ascending: true, displayCallback: displayTentString },
 		{ label: 'firstName', key: 'firstname', ascending: true },
 		{ label: 'lastName', key: 'lastname', ascending: true },
 		{ label: 'zipCode', key: 'zipcode', ascending: true },

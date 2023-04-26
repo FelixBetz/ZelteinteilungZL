@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import SortTable from '$lib/SortTable.svelte';
 	import { getAgeTwoDecimal, type IColumn } from '$lib/sort';
+	import { displayTentString } from '$lib/helpers';
 
 	let tentLeaders: cTentLeader[] = [];
 	let filterdTentLeaders: cTentLeader[] = [];
@@ -50,7 +51,7 @@
 		{ label: 'lastName', key: 'lastname', ascending: true },
 		{ label: 'job', key: 'job', ascending: true },
 		{ label: 'team', key: 'team', ascending: true },
-		{ label: 'tent', key: 'tent', ascending: true },
+		{ label: 'Zelt', key: 'tent', ascending: true, displayCallback: displayTentString },
 		/*{ label: 'street', key: 'street', ascending: true },
 		{ label: 'zipCode', key: 'zipcode', ascending: true },
 		{ label: 'village', key: 'village', ascending: true },*/

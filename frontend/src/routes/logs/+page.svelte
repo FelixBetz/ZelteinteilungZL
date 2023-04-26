@@ -20,7 +20,7 @@
 <div class="m-5">
 	<h1>Logs</h1>
 	<div class="row">
-		<div class="col-sm-3">
+		<div class="col-sm-2">
 			<h3>Error Logs <span class="badge bg-danger">{logs.errors.length}</span></h3>
 
 			{#if logs.errors.length == 0}
@@ -37,7 +37,7 @@
 				</div>
 			{/each}
 		</div>
-		<div class="col-sm-9">
+		<div class="col-sm-10">
 			<h3>Revisions <span class="badge bg-info">{logs.revisions.length}</span></h3>
 
 			{#if logs.revisions.length == 0}
@@ -45,7 +45,7 @@
 			{/if}
 			<div class="row">
 				{#each logs.revisions as log, logIndex}
-					<div class="col-sm-6">
+					<div class="col-sm-4">
 						<div class="card border-secondary mb-1 position-relative">
 							<div class="text-right text-white position-absolute top-0 end-0 me-2">
 								<i>Revision {logIndex}</i>
