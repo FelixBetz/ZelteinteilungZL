@@ -9,6 +9,7 @@
 		type Configs,
 		apiGetConfigs
 	} from '$lib/_apiParticipants';
+	import { getStrTwoDecimal } from '$lib/sort';
 
 	import { onMount } from 'svelte';
 
@@ -44,6 +45,10 @@
 
 	let tentAvgAge: TentAvg[] = [];
 
+	let notPaid: string[] = [];
+	let noPhotosAllowed: string[] = [];
+	let vegetarians: string[] = [];
+
 	const weekdays = [
 		'Sonntag',
 		'Montag',
@@ -59,10 +64,29 @@
 	$: eldestParticipant = calculateEldestParticipant(participants);
 	$: assignedParticipants = caluclateAssignedParticipants(participants);
 	$: calculateBirthdayKids(participants, tentLeaders, configs.zlStart);
+	$: calculateStats(participants);
 
 	$: onMount(() => {
 		getParticipants();
 	});
+
+	function calculateStats(arg_participants: cTentParticipant[]) {
+		notPaid = [];
+		noPhotosAllowed = [];
+		vegetarians = [];
+
+		arg_participants.forEach((p) => {
+			if (!p.paid) {
+				notPaid[notPaid.length] = p.getFullname();
+			}
+			if (p.is_vegetarian) {
+				vegetarians[vegetarians.length] = p.getFullname();
+			}
+			if (!p.is_photo_allowed) {
+				noPhotosAllowed[noPhotosAllowed.length] = p.getFullname();
+			}
+		});
+	}
 
 	function caluclateAssignedParticipants(arg_participants: cTentParticipant[]): number {
 		if (arg_participants.length == 0) {
@@ -286,7 +310,7 @@
 									role="progressbar"
 									style="width: {(100 * assignedParticipants) / participants.length}%;"
 								>
-									{(100 * assignedParticipants) / participants.length}%
+									{getStrTwoDecimal((100 * assignedParticipants) / participants.length)}%
 								</div>
 							</div>
 						</li>
@@ -308,6 +332,44 @@
 								})}),<br />
 								<i>{kid.weekday} ({kid.tent})</i>
 							</li>
+						{/each}
+					</ul>
+				</div>
+				<div class="col-sm-12">
+					<h3>Nicht fotografieren: {noPhotosAllowed.length}</h3>
+					<ul>
+						{#each noPhotosAllowed as p}
+							<li>{p}</li>
+						{/each}
+					</ul>
+				</div>
+				<div class="col-sm-12">
+					<h3>Vegetarisch: {vegetarians.length}</h3>
+					<ul>
+						{#each vegetarians as p}
+							<li>{p}</li>
+						{/each}
+					</ul>
+				</div>
+				<div class="col-sm-12">
+					<h3>Bezahlt: {participants.length - notPaid.length}/{participants.length}</h3>
+
+					<div class="progress">
+						<div
+							class="progress-bar bg-info"
+							role="progressbar"
+							style="width: {(100 * (participants.length - notPaid.length)) /
+								participants.length}%;"
+						>
+							{getStrTwoDecimal(
+								(100 * (participants.length - notPaid.length)) / participants.length
+							)}%
+						</div>
+					</div>
+					<h5>Nicht Bezahlt: {participants.length - notPaid.length}</h5>
+					<ul>
+						{#each notPaid as p}
+							<li>{p}</li>
 						{/each}
 					</ul>
 				</div>
