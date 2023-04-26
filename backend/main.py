@@ -9,6 +9,7 @@ import inspect
 import json
 from flask import Flask, abort, jsonify, request, send_from_directory
 from flask_cors import CORS
+from config import Config
 from maps import generate_maps
 from participant import Participant
 from tent_leader import TentLeader
@@ -28,15 +29,18 @@ INPUT_TENT_LEADER_FILE_NAME = "2023_leitungsteam_anfrage.csv"
 INPUT_REVISION_FILE_NAME = "revisions.txt"
 INPUT_TENT_NUMBERS_FILE_NAME = "tent_numbers.txt"
 INPUT_PAID_FILE_NAME = "paid.txt"
+INPUT_CONFIG_FILE_NAME = "config.txt"
 
 INPUT_PARICIPANT_PATH = INPUT_FILE_PATH + INPUT_FILE_NAME
 INPUT_TENT_LEADER_PATH = INPUT_FILE_PATH + INPUT_TENT_LEADER_FILE_NAME
 INPUT_REVISION_PATH = INPUT_FILE_PATH + INPUT_REVISION_FILE_NAME
 INPUT_TENT_NUMBERS_PATH = INPUT_FILE_PATH + INPUT_TENT_NUMBERS_FILE_NAME
 INPUT_PAID_PATH = INPUT_FILE_PATH + INPUT_PAID_FILE_NAME
+INPUT_CONFIG_PATH = INPUT_FILE_PATH + INPUT_CONFIG_FILE_NAME
 
 tent_leaders = []
 participants_d = []
+configs_d = Config(INPUT_CONFIG_PATH)
 
 error_logs = []
 revison_logs = []
@@ -590,8 +594,21 @@ def get_logs():
     return jsonify(ret)
 
 
+@ app.route("/api/configs", methods=["GET", "POST"])
+def get_configs():
+    """returns logs"""
+    if request.method == "POST":
+        req = request.get_json()
+        print(req)
+        configs_d.num_tents = req["numTents"]
+        configs_d.zl_start = req["zlStart"]
+        configs_d.save()
+    return jsonify(configs_d.get_dict())
+
+
 if __name__ == "__main__":
     participants_d = parse_participants(INPUT_PARICIPANT_PATH)
     tent_leaders = parse_tent_leader(INPUT_TENT_LEADER_PATH)
+    configs_d.load()
 
     app.run(host="0.0.0.0", port=8080, debug=True)
