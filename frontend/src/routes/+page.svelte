@@ -254,11 +254,11 @@
 
 <div style="margin-top: 80px; margin-left: 10px;">
 	<div class="row">
-		<div class="col col-sm-6">
+		<div class="col col-sm-4">
 			<h3>Leitungsteam ({tentLeaders.length})</h3>
 			<div class="row">
 				{#each teams as team}
-					<div class="col col-sm-4">
+					<div class="col col-sm-6">
 						<h5>{team.name} ({team.persons.length})</h5>
 						<ul>
 							{#each team.persons as person}
@@ -271,57 +271,59 @@
 		</div>
 
 		<div class="col col-sm-3">
-			<div class="col">
-				<h3>Teilnehmer Statistik:</h3>
-				<ul>
-					<li>Anzahl Teilnehmer: {participants.length}</li>
-					<li>Durchschnittsalter: {avgAge}</li>
-					<li>jüngster Teilnehmer: {youngestParticipant}</li>
-					<li>ältester Teilnehmer: {eldestParticipant}</li>
-					<li>
-						<div>zu einem Zelt zugeteilt: {assignedParticipants}/{participants.length}</div>
-						<div class="progress">
-							<div
-								class="progress-bar bg-info"
-								role="progressbar"
-								style="width: {(100 * assignedParticipants) / participants.length}%;"
-							>
-								{(100 * assignedParticipants) / participants.length}%
-							</div>
-						</div>
-					</li>
-				</ul>
-			</div>
-			<div class="col">
-				<h3>Geburtstage im Lager</h3>
-				<ul>
-					{#each birthDayKids as kid}
+			<div class="row">
+				<div class="col-sm-12">
+					<h3>Teilnehmer Statistik:</h3>
+					<ul>
+						<li>Anzahl Teilnehmer: {participants.length}</li>
+						<li>Durchschnittsalter: {avgAge}</li>
+						<li>jüngster Teilnehmer: {youngestParticipant}</li>
+						<li>ältester Teilnehmer: {eldestParticipant}</li>
 						<li>
-							<strong>
-								{kid.name},
-								<i>{+configs.zlStart.split('-')[0] - kid.birthday.getFullYear()} Jahre</i>
-							</strong>
-							({kid.birthday.toLocaleDateString('de-DE', {
-								day: '2-digit',
-								month: '2-digit',
-								year: 'numeric'
-							})}),<br />
-							<i>{kid.weekday} ({kid.tent})</i>
+							<div>zu einem Zelt zugeteilt: {assignedParticipants}/{participants.length}</div>
+							<div class="progress">
+								<div
+									class="progress-bar bg-info"
+									role="progressbar"
+									style="width: {(100 * assignedParticipants) / participants.length}%;"
+								>
+									{(100 * assignedParticipants) / participants.length}%
+								</div>
+							</div>
 						</li>
-					{/each}
-				</ul>
-			</div>
-			<div class="col">
-				<h3>Durchschnittsalter Zelte:</h3>
-				<ul>
-					{#each tentAvgAge as avg}
-						<li>Zelt {avg.tentNumber} ({Math.round((100 * avg.avg) / avg.num) / 100})</li>
-					{/each}
-				</ul>
+					</ul>
+				</div>
+				<div class="col-sm-12">
+					<h3>Geburtstage im Lager</h3>
+					<ul>
+						{#each birthDayKids as kid}
+							<li>
+								<strong>
+									{kid.name},
+									<i>{+configs.zlStart.split('-')[0] - kid.birthday.getFullYear()} Jahre</i>
+								</strong>
+								({kid.birthday.toLocaleDateString('de-DE', {
+									day: '2-digit',
+									month: '2-digit',
+									year: 'numeric'
+								})}),<br />
+								<i>{kid.weekday} ({kid.tent})</i>
+							</li>
+						{/each}
+					</ul>
+				</div>
+				<div class="col-sm-12">
+					<h3>Durchschnittsalter Zelte:</h3>
+					<ul>
+						{#each tentAvgAge as avg}
+							<li>Zelt {avg.tentNumber} ({Math.round((100 * avg.avg) / avg.num) / 100})</li>
+						{/each}
+					</ul>
+				</div>
 			</div>
 		</div>
 
-		<div class="col col-sm-3">
+		<div class="col col-sm-2">
 			<h3>Logs:</h3>
 			<ul>
 				<a href="/logs">
@@ -332,7 +334,7 @@
 				</a>
 			</ul>
 		</div>
-		<div class="col col-sm-3">
+		<div class="col col-sm-2">
 			<h3>Configs:</h3>
 			<ul>
 				<li>Anzahl Zelte: {configs.numTents}</li>
