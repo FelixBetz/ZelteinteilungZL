@@ -301,7 +301,11 @@
 								{kid.name},
 								<i>{+configs.zlStart.split('-')[0] - kid.birthday.getFullYear()} Jahre</i>
 							</strong>
-							({kid.birthday.toLocaleDateString()}),<br />
+							({kid.birthday.toLocaleDateString('de-DE', {
+								day: '2-digit',
+								month: '2-digit',
+								year: 'numeric'
+							})}),<br />
 							<i>{kid.weekday} ({kid.tent})</i>
 						</li>
 					{/each}

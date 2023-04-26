@@ -594,9 +594,15 @@ def get_logs():
     return jsonify(ret)
 
 
-@ app.route("/api/configs", methods=["GET"])
+@ app.route("/api/configs", methods=["GET", "POST"])
 def get_configs():
     """returns logs"""
+    if request.method == "POST":
+        req = request.get_json()
+        print(req)
+        configs_d.num_tents = req["numTents"]
+        configs_d.zl_start = req["zlStart"]
+        configs_d.save()
     return jsonify(configs_d.get_dict())
 
 

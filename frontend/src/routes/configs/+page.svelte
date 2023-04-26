@@ -1,11 +1,14 @@
 <script lang="ts">
-	import { apiGetConfigs, type Configs } from '$lib/_apiParticipants';
+	import { apiGetConfigs, apiPostConfigs, type Configs } from '$lib/_apiParticipants';
 	import { onMount } from 'svelte';
 
 	let configs: Configs = { numTents: 9999, zlStart: '1970-08-12' };
 
 	async function getConfigs() {
 		configs = await apiGetConfigs();
+	}
+	async function postConfigs() {
+		configs = await apiPostConfigs(configs);
 	}
 
 	onMount(() => {
@@ -57,7 +60,7 @@
 			</div>
 		</div>
 		<div class="mb-3">
-			<button class="btn btn-primary btn-lg w-100">Save</button>
+			<button class="btn btn-primary btn-lg w-100" on:click={postConfigs}>Save</button>
 		</div>
 	</div>
 </div>
