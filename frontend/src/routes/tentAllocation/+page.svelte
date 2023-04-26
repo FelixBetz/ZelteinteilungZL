@@ -1,16 +1,17 @@
 <script lang="ts">
 	import {
+		apiGetConfigs,
 		apiGetParticipants,
 		apiGetTentLeader,
 		apiPostParticipants,
+		type Configs,
 		type cTentLeader
 	} from '$lib/_apiParticipants';
 	import type { cTentParticipant } from '$lib/_apiParticipants';
 	import { onMount } from 'svelte';
 	import Tent from '$lib/TentParticipant.svelte';
 	import TentParticipant from '$lib/TentParticipant.svelte';
-	import { NUM_TENTS } from '$lib/constants';
-
+	let configs: Configs = { numTents: 9999, zlStart: '1970-08-12' };
 	interface Basket {
 		name: string;
 		items: number[];
@@ -33,7 +34,7 @@
 				tentLeaders: []
 			}
 		];
-		for (let i = 0; i < NUM_TENTS; i++) {
+		for (let i = 0; i < configs.numTents; i++) {
 			baskets.push({ name: 'Zelt ' + (i + 1), items: [], tentLeaders: [] });
 		}
 	}
@@ -62,7 +63,7 @@
 		//add participants to baskets
 		for (let i = 0; i < participants.length; i++) {
 			let tentNumber = participants[i].tent;
-			if (tentNumber <= NUM_TENTS) {
+			if (tentNumber <= configs.numTents) {
 				baskets[tentNumber].items[baskets[tentNumber].items.length] = i;
 			} else {
 				baskets[0].items[baskets[0].items.length] = i;
@@ -72,7 +73,7 @@
 		//add tent leaders to baskets
 		for (let i = 0; i < arg_tentLeaders.length; i++) {
 			let tentNumber = arg_tentLeaders[i].tent;
-			if (tentNumber > 0 && tentNumber <= NUM_TENTS) {
+			if (tentNumber > 0 && tentNumber <= configs.numTents) {
 				baskets[tentNumber].tentLeaders[baskets[tentNumber].tentLeaders.length] =
 					arg_tentLeaders[i].firstname + ' ' + arg_tentLeaders[i].lastname;
 			}
@@ -80,6 +81,7 @@
 	}
 
 	async function getParticipants() {
+		configs = await apiGetConfigs();
 		let tentLeaders = await apiGetTentLeader();
 		let unsortedParticipants = await apiGetParticipants();
 		distributePartiscipantsToBaskets(unsortedParticipants, tentLeaders);

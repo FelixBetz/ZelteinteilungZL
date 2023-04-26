@@ -11,7 +11,6 @@
 	} from '$lib/_apiParticipants';
 
 	import { onMount } from 'svelte';
-	import { NUM_TENTS } from '$lib/constants';
 
 	interface TentAvg {
 		avg: number;
@@ -120,12 +119,12 @@
 
 	function calculateTentAvgAge() {
 		tentAvgAge = [];
-		for (let i = 0; i < NUM_TENTS; i++) {
+		for (let i = 0; i < configs.numTents; i++) {
 			tentAvgAge[tentAvgAge.length] = { avg: 0, num: 0, tentNumber: i + 1 };
 		}
 		for (let i = 0; i < participants.length; i++) {
 			let tentNumber = participants[i].tent;
-			if (tentNumber <= NUM_TENTS) {
+			if (tentNumber <= configs.numTents) {
 				tentAvgAge[tentNumber - 1].avg += participants[i].age;
 				tentAvgAge[tentNumber - 1].num++;
 			}
@@ -158,9 +157,9 @@
 		const zlStartSplitted = pZlStart.split('-');
 
 		const zlYear = +zlStartSplitted[0];
-		const beginZlDate = new Date(zlYear, +zlStartSplitted[1] - 1, +zlStartSplitted[2]); //todo
+		const beginZlDate = new Date(zlYear, +zlStartSplitted[1] - 1, +zlStartSplitted[2]);
 		const endZlDate = new Date(zlYear, +zlStartSplitted[1] - 1, +zlStartSplitted[2]);
-		endZlDate.setDate(beginZlDate.getDate() + 7);
+		endZlDate.setDate(beginZlDate.getDate() + 7); //+ 7 days
 
 		birthDayKids = [];
 
