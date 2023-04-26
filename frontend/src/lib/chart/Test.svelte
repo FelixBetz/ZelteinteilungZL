@@ -1,110 +1,18 @@
 <script lang="ts">
 	import * as d3 from 'd3';
-	import { drag, zoom } from 'd3';
+	import { drag } from 'd3';
 	import { onMount } from 'svelte';
 
-	import type { IData } from '$lib/_apiParticipants';
-
-	/*const links = [
-		{ source: 'Microsoft', target: 'Amazon', type: 'friend' },
-		{ source: 'Microsoft', target: 'HTC', type: 'friend' },
-		{ source: 'Samsung', target: 'Apple', type: 'friend' },
-		{ source: 'Motorola', target: 'Apple', type: 'friend' },
-		{ source: 'Nokia', target: 'Apple', type: 'friend' },
-		{ source: 'HTC', target: 'Apple', type: 'friend' },
-		{ source: 'Kodak', target: 'Apple', type: 'friend' },
-		{ source: 'Microsoft', target: 'Barnes & Noble', type: 'friend' },
-		{ source: 'Microsoft', target: 'Foxconn', type: 'friend' },
-		{ source: 'Oracle', target: 'Google', type: 'friend' },
-		{ source: 'Apple', target: 'HTC', type: 'friend' },
-		{ source: 'Microsoft', target: 'Inventec', type: 'friend' },
-		{ source: 'Samsung', target: 'Kodak', type: 'friend' },
-		{ source: 'LG', target: 'Kodak', type: 'friend' },
-		{ source: 'RIM', target: 'Kodak', type: 'friend' },
-		{ source: 'Sony', target: 'LG', type: 'friend' },
-		{ source: 'Kodak', target: 'LG', type: 'friend' },
-		{ source: 'Apple', target: 'Nokia', type: 'friend' },
-		{ source: 'Qualcomm', target: 'Nokia', type: 'friend' },
-		{ source: 'Apple', target: 'Motorola', type: 'friend' },
-		{ source: 'Microsoft', target: 'Motorola', type: 'friend' },
-		{ source: 'Motorola', target: 'Microsoft', type: 'friend' },
-		{ source: 'Huawei', target: 'ZTE', type: 'friend' },
-		{ source: 'Ericsson', target: 'ZTE', type: 'friend' },
-		{ source: 'Kodak', target: 'Samsung', type: 'friend' },
-		{ source: 'Apple', target: 'Samsung', type: 'friend' },
-		{ source: 'Kodak', target: 'RIM', type: 'friend' },
-		{ source: 'Nokia', target: 'Qualcomm', type: 'friend' }
-	];
-	const nodes = [
-		{
-			id: 'Microsoft'
-		},
-		{
-			id: 'Amazon'
-		},
-		{
-			id: 'HTC'
-		},
-		{
-			id: 'Samsung'
-		},
-		{
-			id: 'Apple'
-		},
-		{
-			id: 'Motorola'
-		},
-		{
-			id: 'Nokia'
-		},
-		{
-			id: 'Kodak'
-		},
-		{
-			id: 'Barnes & Noble'
-		},
-		{
-			id: 'Foxconn'
-		},
-		{
-			id: 'Oracle'
-		},
-		{
-			id: 'Google'
-		},
-		{
-			id: 'Inventec'
-		},
-		{
-			id: 'LG'
-		},
-		{
-			id: 'RIM'
-		},
-		{
-			id: 'Sony'
-		},
-		{
-			id: 'Qualcomm'
-		},
-		{
-			id: 'Huawei'
-		},
-		{
-			id: 'ZTE'
-		},
-		{
-			id: 'Ericsson'
-		}
-	];*/
+	import type { IData, ILink, INode } from '$lib/_apiParticipants';
 
 	let width = 1800;
 	let height = 800;
 
-	let container;
+	let container: SVGSVGElement;
 	let simulation;
 
-	let node, link;
+	let node;
+	let link;
 	let types = [1];
 
 	const colourScale = d3.scaleOrdinal(d3.schemeCategory10);
@@ -223,6 +131,7 @@
 	};
 
 	let linkArc = (d) => `M${d.source.x},${d.source.y}A0,0 0 0,1 ${d.target.x},${d.target.y}`;
+	let zoomFunc = d3.zoom().on('zoom', handleZoom);
 
 	function handleZoom(e) {
 		d3.selectAll('g').attr('transform', e.transform);
@@ -231,7 +140,7 @@
 		node.attr('transform', (d) => `translate(${d.x},${d.y})`);
 	}
 	onMount(() => {
-		const svg = d3.select(container).call(zoom().on('zoom', handleZoom));
+		const svg = d3.select(container).call(zoomFunc);
 		//.attr('viewBox', [-width / 2, -height / 2, width, height]);
 
 		simulation = d3
@@ -281,7 +190,7 @@
 			.selectAll('g')
 			.data(testData.nodes)
 			.join('g')
-			.call(drag(simulation));
+			.call(drag);
 
 		node
 			.append('circle')
@@ -292,7 +201,7 @@
 
 		node
 			.append('text')
-			.attr('x', 30 + 4)
+			.attr('x', 26)
 			.attr('y', '0.31em')
 			.text((d) => d.id)
 			.clone(true)
@@ -301,7 +210,7 @@
 			.attr('stroke', 'white')
 			.attr('stroke-width', 3);
 
-		node.on('dblclick', (e, d) => console.log(testData.nodes[d.index]));
+		node.on('click', (e, d) => console.log(d));
 
 		simulation.on('tick', () => {
 			link.attr('d', linkArc);

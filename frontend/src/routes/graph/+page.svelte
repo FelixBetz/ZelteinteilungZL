@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { IData } from '$lib/_apiParticipants';
-	import NetworkChart from '$lib/chart/NetworkChart.svelte';
+
 	import { apiGetGraph, type GraphInput } from '$lib/_apiParticipants';
 	import { onMount } from 'svelte';
 	import Test from '../../lib/chart/Test.svelte';
@@ -14,7 +14,6 @@
 		return false;
 	}
 
-	let chart: NetworkChart;
 	let chartData: IData[] = [];
 	let groups: Set<string>[] = [];
 
@@ -92,36 +91,9 @@
 	<title>Graph</title>
 </svelte:head>
 
-<!--
-<Row>
-	{#each chartData as data}
-		<Col sm="2">
-			<ul>
-				{#each data.nodes as d}
-					<li>{d.id} ({d.group})</li>
-				{/each}
-			</ul>
-		</Col>
-	{/each}
-</Row>
-{screen.width}
-{screen.height}
-<Row>
-	{#each chartData as data, index}
-		{#if index == 0}
-			<Col sm="12">
-				<NetworkChart bind:this={chart} graph={data} height={400} width={600} />
-			</Col>
-		{:else}
-			<Col sm="4">
-				<NetworkChart bind:this={chart} graph={data} height={200} width={200} />
-			</Col>
-		{/if}
-	{/each}
-</Row>-->
-
 <Test />
 
+<!--
 {#each chartData as data, index}
 	{#if index == 0}
 		<NetworkChart bind:this={chart} graph={data} height={800} width={600} />
@@ -129,3 +101,4 @@
 		<NetworkChart bind:this={chart} graph={data} height={400} width={600} />
 	{/if}
 {/each}
+-->
