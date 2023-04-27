@@ -56,6 +56,9 @@
 	let noPhotosAllowed: string[] = [];
 	let vegetarians: string[] = [];
 
+	let showNotPaid = false;
+	let showTeamMembers = false;
+
 	const weekdays = [
 		'Sonntag',
 		'Montag',
@@ -332,18 +335,44 @@
 			<div class="row">
 				{#each teams as team}
 					<div class="col col-sm-6">
-						<h5>{team.name} ({team.persons.length})</h5>
-						<ul>
+						<h5>
+							{team.name} ({team.persons.length})
+							<i
+								on:click={() => (showTeamMembers = !showTeamMembers)}
+								on:keydown={() => (showTeamMembers = !showTeamMembers)}
+								class={showTeamMembers ? 'bi-chevron-double-down' : 'bi-chevron-double-up'}
+							/>
+						</h5>
+						<ul class={showTeamMembers ? '' : 'collapse'}>
 							{#each team.persons as person}
 								<li>{person}</li>
 							{/each}
 						</ul>
 					</div>
 				{/each}
+
+				<div class="col col-sm-6 mt-5">
+					<h3>Logs:</h3>
+					<ul>
+						<a href="/logs">
+							<li>Error Logs: <span class="badge bg-danger">{logs.errors.length}</span></li>
+						</a>
+						<a href="/logs">
+							<li>Revision Logs: <span class="badge bg-info">{logs.revisions.length}</span></li>
+						</a>
+					</ul>
+				</div>
+				<div class="col col-sm-6 mt-5">
+					<h3>Configs:</h3>
+					<ul>
+						<li>Anzahl Zelte: {configs.numTents}</li>
+						<li>Start des Zeltlagers: {configs.zlStart}</li>
+					</ul>
+				</div>
 			</div>
 		</div>
 
-		<div class="col col-sm-3">
+		<div class="col col-sm-4">
 			<div class="row">
 				<div class="col-sm-12">
 					<h3>Teilnehmer Statistik:</h3>
@@ -424,8 +453,16 @@
 							)}%
 						</div>
 					</div>
-					<h5>Nicht Bezahlt: {participants.length - notPaid.length}</h5>
-					<ul>
+					<h5>
+						Nicht Bezahlt: {participants.length - notPaid.length}
+						<i
+							on:click={() => (showNotPaid = !showNotPaid)}
+							on:keydown={() => (showNotPaid = !showNotPaid)}
+							class={showNotPaid ? 'bi-chevron-double-down' : 'bi-chevron-double-up'}
+						/>
+					</h5>
+
+					<ul class={showNotPaid ? '' : 'collapse'}>
 						{#each notPaid as p}
 							<li>{p}</li>
 						{/each}
@@ -440,25 +477,6 @@
 					</ul>
 				</div>
 			</div>
-		</div>
-
-		<div class="col col-sm-2">
-			<h3>Logs:</h3>
-			<ul>
-				<a href="/logs">
-					<li>Error Logs: <span class="badge bg-danger">{logs.errors.length}</span></li>
-				</a>
-				<a href="/logs">
-					<li>Revision Logs: <span class="badge bg-info">{logs.revisions.length}</span></li>
-				</a>
-			</ul>
-		</div>
-		<div class="col col-sm-2">
-			<h3>Configs:</h3>
-			<ul>
-				<li>Anzahl Zelte: {configs.numTents}</li>
-				<li>Start des Zeltlagers: {configs.zlStart}</li>
-			</ul>
 		</div>
 	</div>
 </div>
