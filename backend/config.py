@@ -53,6 +53,3 @@ class Config:
                 self.zl_start = loc_config["zlStart"]
             except KeyError:
                 self.errors.append("Config ERROR: \"zlStart\" nicht gefunden")
-
-        print(self)
-        print(self.errors)
