@@ -11,8 +11,5 @@
   - wer ist als Freund angegeben aber nicht angemeldet?
   - alter im Zeltlager
 
-- Graph
-	- gerichtete Pfeile => wer hat wen als Freund angegeben
-
 - Todo Reiter einbauen
 
