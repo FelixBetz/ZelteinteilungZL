@@ -1,5 +1,10 @@
 <script lang="ts">
-	import { apiGetTentLeader, type cTentLeader } from '$lib/_apiParticipants';
+	import {
+		apiGetConfigs,
+		apiGetTentLeader,
+		type Configs,
+		type cTentLeader
+	} from '$lib/_apiParticipants';
 	import { onMount } from 'svelte';
 	import SortTable from '$lib/SortTable.svelte';
 	import { getStrTwoDecimal, type IColumn } from '$lib/sort';
@@ -84,7 +89,7 @@
 		avg: number;
 	}
 	let teams: Team[] = [];
-
+	let configs: Configs = { numTents: 9999, zlStart: '1970-08-12' };
 	function parseJobs() {
 		let mats: Job = { name: 'Mat Warts', indices: [] };
 		let sukus: Job = { name: 'Suppenkutscher', indices: [] };
@@ -154,6 +159,7 @@
 	});
 
 	async function getParticipants() {
+		configs = await apiGetConfigs();
 		tentLeaders = await apiGetTentLeader();
 		parseJobs();
 		parseTeams();
@@ -203,6 +209,16 @@
 											{tentLeaders[idx].firstname}
 											{tentLeaders[idx].lastname}
 											<span style="color:red">(Zelt XXX)</span>
+										</strong>
+									</i>
+								</li>
+							{:else if tentLeaders[idx].tent > configs.numTents}
+								<li>
+									<i>
+										<strong>
+											{tentLeaders[idx].firstname}
+											{tentLeaders[idx].lastname}
+											<span style="color:red">(Zelt {tentLeaders[idx].tent})</span>
 										</strong>
 									</i>
 								</li>
