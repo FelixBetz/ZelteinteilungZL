@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { IData } from '$lib/_apiParticipants';
-	import NetworkChart from '$lib/chart/NetworkChart.svelte';
 	import { apiGetGraph, type GraphInput } from '$lib/_apiParticipants';
 	import { onMount } from 'svelte';
+	import NetworkGraph from '../../lib/chart/NetworkGraph.svelte';
 
 	function hasIntersection(setA: Set<string>, setB: Set<string>): boolean {
 		for (let elem of setB) {
@@ -13,7 +13,6 @@
 		return false;
 	}
 
-	let chart: NetworkChart;
 	let chartData: IData[] = [];
 	let groups: Set<string>[] = [];
 
@@ -23,20 +22,19 @@
 				return array[i];
 			}
 		}
-		console.log(name, ' not found');
 	}
 
 	async function getGraph() {
-		let tmpDodos = await apiGetGraph();
+		let graphData = await apiGetGraph();
 
-		for (let i = 0; i < tmpDodos.length; i++) {
-			let name = tmpDodos[i].name;
+		for (let i = 0; i < graphData.length; i++) {
+			let name = graphData[i].name;
 
 			let loc_set = new Set<string>();
 			loc_set.add(name);
 
-			for (let k = 0; k < tmpDodos[i].friends.length; k++) {
-				let friendName = tmpDodos[i].friends[k];
+			for (let k = 0; k < graphData[i].friends.length; k++) {
+				let friendName = graphData[i].friends[k];
 
 				loc_set.add(friendName);
 			}
@@ -53,24 +51,24 @@
 			}
 		}
 
-		let cnt_index = 1;
+		chartData[0] = { nodes: [], links: [] }; //paricipants with friends
+		chartData[1] = { nodes: [], links: [] }; //participants without friends
+
 		for (let i = 0; i < groups.length; i++) {
-			let loc_index = 0;
-			if (groups[i].size > 3) {
-				loc_index = cnt_index;
-				cnt_index++;
+			let chartIndex = 0;
+			if (groups[i].size > 1) {
+				chartIndex = 0; //paricipants with friends
+			} else {
+				chartIndex = 1; //participants without friends
 			}
 
-			if (undefined == chartData[loc_index]) {
-				chartData[loc_index] = { nodes: [], links: [] };
-			}
 			for (let name of Array.from(groups[i].values())) {
-				let loc_element = getByName(name, tmpDodos);
+				let loc_element = getByName(name, graphData);
 				if (loc_element !== undefined) {
-					chartData[loc_index].nodes.push({ id: loc_element.name, group: i.toString() });
+					chartData[chartIndex].nodes.push({ id: loc_element.name, group: i.toString() });
 
 					for (let k = 0; k < loc_element.friends.length; k++) {
-						chartData[loc_index].links.push({
+						chartData[chartIndex].links.push({
 							source: name,
 							target: loc_element.friends[k],
 							value: 1
@@ -90,39 +88,22 @@
 <svelte:head>
 	<title>Graph</title>
 </svelte:head>
-
-<!--
-<Row>
-	{#each chartData as data}
-		<Col sm="2">
-			<ul>
-				{#each data.nodes as d}
-					<li>{d.id} ({d.group})</li>
-				{/each}
-			</ul>
-		</Col>
-	{/each}
-</Row>
-{screen.width}
-{screen.height}
-<Row>
+<div class="mt-4">
 	{#each chartData as data, index}
 		{#if index == 0}
-			<Col sm="12">
-				<NetworkChart bind:this={chart} graph={data} height={400} width={600} />
-			</Col>
+			<NetworkGraph
+				nodes={data.nodes}
+				links={data.links}
+				containerWidth={'80%'}
+				containerHeight={'85vh'}
+			/>
 		{:else}
-			<Col sm="4">
-				<NetworkChart bind:this={chart} graph={data} height={200} width={200} />
-			</Col>
+			<NetworkGraph
+				nodes={data.nodes}
+				links={data.links}
+				containerWidth={'20%'}
+				containerHeight={'85vh'}
+			/>
 		{/if}
 	{/each}
-</Row>-->
-
-{#each chartData as data, index}
-	{#if index == 0}
-		<NetworkChart bind:this={chart} graph={data} height={800} width={600} />
-	{:else}
-		<NetworkChart bind:this={chart} graph={data} height={400} width={600} />
-	{/if}
-{/each}
+</div>

@@ -2,7 +2,8 @@
 	import { apiGetTentLeader, type cTentLeader } from '$lib/_apiParticipants';
 	import { onMount } from 'svelte';
 	import SortTable from '$lib/SortTable.svelte';
-	import { getAgeTwoDecimal, type IColumn } from '$lib/sort';
+	import { getStrTwoDecimal, type IColumn } from '$lib/sort';
+	import { displayTentString } from '$lib/helpers';
 
 	let tentLeaders: cTentLeader[] = [];
 	let filterdTentLeaders: cTentLeader[] = [];
@@ -50,13 +51,13 @@
 		{ label: 'lastName', key: 'lastname', ascending: true },
 		{ label: 'job', key: 'job', ascending: true },
 		{ label: 'team', key: 'team', ascending: true },
-		{ label: 'tent', key: 'tent', ascending: true },
+		{ label: 'Zelt', key: 'tent', ascending: true, displayCallback: displayTentString },
 		/*{ label: 'street', key: 'street', ascending: true },
 		{ label: 'zipCode', key: 'zipcode', ascending: true },
 		{ label: 'village', key: 'village', ascending: true },*/
 		{ label: 'mail', key: 'mail', ascending: true },
 		{ label: 'handy', key: 'handy', ascending: true },
-		{ label: 'age', key: 'age', ascending: true, displayCallback: getAgeTwoDecimal },
+		{ label: 'age', key: 'age', ascending: true, displayCallback: getStrTwoDecimal },
 		{ label: 'comment', key: 'comment', ascending: true }
 	];
 
@@ -175,7 +176,7 @@
 				<br />
 				<li>
 					<i>
-						Durchschnittsalter: {getAgeTwoDecimal(avgAge)} <br />
+						Durchschnittsalter: {getStrTwoDecimal(avgAge)} <br />
 						(
 						<input
 							type="checkbox"
@@ -216,7 +217,7 @@
 						{/if}
 					{/each}
 					<br />
-					<li><i>Durchschnittsalter: {getAgeTwoDecimal(team.avg)}</i></li>
+					<li><i>Durchschnittsalter: {getStrTwoDecimal(team.avg)}</i></li>
 				</ul>
 			</div>
 		{/each}

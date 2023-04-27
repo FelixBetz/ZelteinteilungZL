@@ -9,6 +9,7 @@
 		type Configs,
 		apiGetConfigs
 	} from '$lib/_apiParticipants';
+	import { getStrTwoDecimal } from '$lib/sort';
 
 	import { onMount } from 'svelte';
 
@@ -29,11 +30,18 @@
 		tent: string;
 	}
 
+	interface FriendsNotRegistered {
+		name: string;
+		namendBy: string[];
+	}
+
 	let participants: cTentParticipant[] = [];
 	let birthDayKids: BirthdayKid[] = [];
 	let tentLeaders: cTentLeader[] = [];
 	let logs: Logs = { errors: [], revisions: [] };
 	let configs: Configs = { numTents: 9999, zlStart: '1970-08-12' };
+
+	let friendsNotRegistered: FriendsNotRegistered[] = [];
 
 	let teams: Team[] = [];
 
@@ -43,6 +51,10 @@
 	let assignedParticipants = 0;
 
 	let tentAvgAge: TentAvg[] = [];
+
+	let notPaid: string[] = [];
+	let noPhotosAllowed: string[] = [];
+	let vegetarians: string[] = [];
 
 	const weekdays = [
 		'Sonntag',
@@ -59,10 +71,29 @@
 	$: eldestParticipant = calculateEldestParticipant(participants);
 	$: assignedParticipants = caluclateAssignedParticipants(participants);
 	$: calculateBirthdayKids(participants, tentLeaders, configs.zlStart);
+	$: calculateStats(participants);
 
 	$: onMount(() => {
 		getParticipants();
 	});
+
+	function calculateStats(arg_participants: cTentParticipant[]) {
+		notPaid = [];
+		noPhotosAllowed = [];
+		vegetarians = [];
+
+		arg_participants.forEach((p) => {
+			if (!p.paid) {
+				notPaid[notPaid.length] = p.getFullname();
+			}
+			if (p.is_vegetarian) {
+				vegetarians[vegetarians.length] = p.getFullname();
+			}
+			if (!p.is_photo_allowed) {
+				noPhotosAllowed[noPhotosAllowed.length] = p.getFullname();
+			}
+		});
+	}
 
 	function caluclateAssignedParticipants(arg_participants: cTentParticipant[]): number {
 		if (arg_participants.length == 0) {
@@ -194,10 +225,53 @@
 		birthDayKids.sort((x, y) => x.birthday.getTime() - y.birthday.getTime());
 	}
 
+	function parseNotRegisteredFriends(pParitcipants: cTentParticipant[]) {
+		friendsNotRegistered = [];
+
+		let compareFriends: string[] = [];
+		pParitcipants.forEach((participant) => {
+			compareFriends.push(participant.getFullname());
+		});
+		pParitcipants.forEach((participant) => {
+			participant.friends.forEach((friend) => {
+				if (friend != '' && !compareFriends.includes(friend)) {
+					let isAdded = false;
+					friendsNotRegistered.forEach((el) => {
+						if (el.name == friend) {
+							el.namendBy.push(participant.getFullname());
+							isAdded = true;
+						}
+					});
+					if (!isAdded) {
+						friendsNotRegistered.push({
+							name: friend,
+							namendBy: new Array(participant.getFullname())
+						});
+					}
+				}
+			});
+		});
+
+		friendsNotRegistered = friendsNotRegistered.sort((a, b) => {
+			let lastNameA = a.name.split(' ')[1];
+			let lastNameB = b.name.split(' ')[1];
+			if (lastNameA > lastNameB) {
+				return 1;
+			}
+			if (lastNameA < lastNameB) {
+				return -1;
+			}
+
+			return 0;
+		});
+	}
+
 	async function getParticipants() {
 		configs = await apiGetConfigs();
 		logs = await apiGetLogs();
 		participants = await apiGetParticipants();
+
+		parseNotRegisteredFriends(participants);
 
 		let mats: Team = { name: 'Mat Warts', persons: [] };
 		let sukus: Team = { name: 'Suppenkutscher', persons: [] };
@@ -227,7 +301,7 @@
 					if (leader.tent == 9999) {
 						notAssigend.persons.push(fullname);
 					} else {
-						free.persons.push(fullname);
+						free.persons.push(fullname + (' (Zelt: ' + leader.tent + ')'));
 					}
 					break;
 				default:
@@ -286,7 +360,7 @@
 									role="progressbar"
 									style="width: {(100 * assignedParticipants) / participants.length}%;"
 								>
-									{(100 * assignedParticipants) / participants.length}%
+									{getStrTwoDecimal((100 * assignedParticipants) / participants.length)}%
 								</div>
 							</div>
 						</li>
@@ -308,6 +382,52 @@
 								})}),<br />
 								<i>{kid.weekday} ({kid.tent})</i>
 							</li>
+						{/each}
+					</ul>
+				</div>
+				<div class="col-sm-12">
+					<h3>Nicht fotografieren: {noPhotosAllowed.length}</h3>
+					<ul>
+						{#each noPhotosAllowed as p}
+							<li>{p}</li>
+						{/each}
+					</ul>
+				</div>
+				<div class="col-sm-12">
+					<h3>Vegetarisch: {vegetarians.length}</h3>
+					<ul>
+						{#each vegetarians as p}
+							<li>{p}</li>
+						{/each}
+					</ul>
+				</div>
+				<div class="col-sm-12">
+					<h3>Nicht angemeldete Freunde: {friendsNotRegistered.length}</h3>
+					<ul>
+						{#each friendsNotRegistered as p}
+							<li><strong>{p.name}</strong> (angegeben von: {p.namendBy.join(', ')})</li>
+						{/each}
+					</ul>
+				</div>
+				<div class="col-sm-12">
+					<h3>Bezahlt: {participants.length - notPaid.length}/{participants.length}</h3>
+
+					<div class="progress">
+						<div
+							class="progress-bar bg-info"
+							role="progressbar"
+							style="width: {(100 * (participants.length - notPaid.length)) /
+								participants.length}%;"
+						>
+							{getStrTwoDecimal(
+								(100 * (participants.length - notPaid.length)) / participants.length
+							)}%
+						</div>
+					</div>
+					<h5>Nicht Bezahlt: {participants.length - notPaid.length}</h5>
+					<ul>
+						{#each notPaid as p}
+							<li>{p}</li>
 						{/each}
 					</ul>
 				</div>

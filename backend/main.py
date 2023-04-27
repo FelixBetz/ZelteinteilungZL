@@ -205,13 +205,8 @@ def parse_participants(arg_file_name):
                 try:
                     loc_zipcode = int(row[IDX_PARP_ZIP_CODE])
                 except:
-                    print(
-                        "ERROR: failed to parse zip coce: i: ",
-                        i,
-                        loc_firstname,
-                        " ",
-                        loc_lastname,
-                    )
+                    print("ERROR: failed to parse zip coce: i: ", i,
+                          loc_firstname, " ", loc_lastname,)
                     raise
 
                 try:
@@ -223,13 +218,8 @@ def parse_participants(arg_file_name):
                     loc_birthdate = timestamp
 
                 except:
-                    print(
-                        "failed to parse birthdate: i: ",
-                        i,
-                        loc_firstname,
-                        " ",
-                        loc_lastname,
-                    )
+                    print("failed to parse birthdate: i: ",
+                          i, loc_firstname, " ", loc_lastname)
                     raise
                 loc_birthdate = row[IDX_PARP_BIRTHDATE]
 
@@ -294,13 +284,8 @@ def parse_tent_leader(arg_file_name):
                 try:
                     loc_zipcode = int(row[IDX_LEAD_ZIP_CODE])
                 except:
-                    print(
-                        "ERROR: failed to parse zip code: i: ",
-                        i,
-                        loc_firstname,
-                        " ",
-                        loc_lastname,
-                    )
+                    print("ERROR: failed to parse zip code: i: ",
+                          i, loc_firstname, " ", loc_lastname,)
                     raise
 
                 # parse tent number
@@ -310,12 +295,8 @@ def parse_tent_leader(arg_file_name):
                     try:
                         loc_tent = int(row[IDX_LEAD_TENT])
                     except:
-                        print(
-                            "ERROR: failed to parse tent number: ",
-                            row[IDX_LEAD_TENT],
-                            "row: ",
-                            row,
-                        )
+                        print("ERROR: failed to parse tent number: ",
+                              row[IDX_LEAD_TENT], "row: ", row,)
                         raise
                 loc_birthdate = ""
                 try:
@@ -326,14 +307,8 @@ def parse_tent_leader(arg_file_name):
                     loc_birthdate = str(loc_time_string)
 
                 except:
-                    print(
-                        "failed to parse birthdate: i: ",
-                        i,
-                        loc_firstname,
-                        " ",
-                        loc_lastname,
-                        loc_birthdate
-                    )
+                    print("failed to parse birthdate: i: ",
+                          i, loc_firstname, " ", loc_lastname, loc_birthdate)
                     raise
 
                 loc_tent_leader = TentLeader(
@@ -576,8 +551,6 @@ def get_graph():
         for loc_friend in participant.friends:
             if loc_friend in compare_friends:
                 loc_friends.append(loc_friend)
-            else:
-                pass  # todo nicht angemeldet
 
         loc_stuebis.append(
             {"name": participant.get_fullname(), "friends": loc_friends})
@@ -599,7 +572,6 @@ def get_configs():
     """returns logs"""
     if request.method == "POST":
         req = request.get_json()
-        print(req)
         configs_d.num_tents = req["numTents"]
         configs_d.zl_start = req["zlStart"]
         configs_d.save()

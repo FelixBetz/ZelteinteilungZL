@@ -45,6 +45,6 @@ export function boolSort(a: boolean, b: boolean, sortby: boolean) {
 	}
 }
 
-export function getAgeTwoDecimal(age: number): number {
+export function getStrTwoDecimal(age: number): number {
 	return Math.round(age * 100) / 100;
 }
