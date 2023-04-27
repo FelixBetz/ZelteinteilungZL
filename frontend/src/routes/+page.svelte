@@ -30,11 +30,18 @@
 		tent: string;
 	}
 
+	interface FriendsNotRegistered {
+		name: string;
+		namendBy: string[];
+	}
+
 	let participants: cTentParticipant[] = [];
 	let birthDayKids: BirthdayKid[] = [];
 	let tentLeaders: cTentLeader[] = [];
 	let logs: Logs = { errors: [], revisions: [] };
 	let configs: Configs = { numTents: 9999, zlStart: '1970-08-12' };
+
+	let friendsNotRegistered: FriendsNotRegistered[] = [];
 
 	let teams: Team[] = [];
 
@@ -218,10 +225,53 @@
 		birthDayKids.sort((x, y) => x.birthday.getTime() - y.birthday.getTime());
 	}
 
+	function parseNotRegisteredFriends(pParitcipants: cTentParticipant[]) {
+		friendsNotRegistered = [];
+
+		let compareFriends: string[] = [];
+		pParitcipants.forEach((participant) => {
+			compareFriends.push(participant.getFullname());
+		});
+		pParitcipants.forEach((participant) => {
+			participant.friends.forEach((friend) => {
+				if (friend != '' && !compareFriends.includes(friend)) {
+					let isAdded = false;
+					friendsNotRegistered.forEach((el) => {
+						if (el.name == friend) {
+							el.namendBy.push(participant.getFullname());
+							isAdded = true;
+						}
+					});
+					if (!isAdded) {
+						friendsNotRegistered.push({
+							name: friend,
+							namendBy: new Array(participant.getFullname())
+						});
+					}
+				}
+			});
+		});
+
+		friendsNotRegistered = friendsNotRegistered.sort((a, b) => {
+			let lastNameA = a.name.split(' ')[1];
+			let lastNameB = b.name.split(' ')[1];
+			if (lastNameA > lastNameB) {
+				return 1;
+			}
+			if (lastNameA < lastNameB) {
+				return -1;
+			}
+
+			return 0;
+		});
+	}
+
 	async function getParticipants() {
 		configs = await apiGetConfigs();
 		logs = await apiGetLogs();
 		participants = await apiGetParticipants();
+
+		parseNotRegisteredFriends(participants);
 
 		let mats: Team = { name: 'Mat Warts', persons: [] };
 		let sukus: Team = { name: 'Suppenkutscher', persons: [] };
@@ -251,7 +301,7 @@
 					if (leader.tent == 9999) {
 						notAssigend.persons.push(fullname);
 					} else {
-						free.persons.push(fullname);
+						free.persons.push(fullname + (' (Zelt: ' + leader.tent + ')'));
 					}
 					break;
 				default:
@@ -348,6 +398,14 @@
 					<ul>
 						{#each vegetarians as p}
 							<li>{p}</li>
+						{/each}
+					</ul>
+				</div>
+				<div class="col-sm-12">
+					<h3>Nicht angemeldete Freunde: {friendsNotRegistered.length}</h3>
+					<ul>
+						{#each friendsNotRegistered as p}
+							<li><strong>{p.name}</strong> (angegeben von: {p.namendBy.join(', ')})</li>
 						{/each}
 					</ul>
 				</div>

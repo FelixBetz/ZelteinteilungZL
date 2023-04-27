@@ -551,8 +551,6 @@ def get_graph():
         for loc_friend in participant.friends:
             if loc_friend in compare_friends:
                 loc_friends.append(loc_friend)
-            else:
-                pass  # todo nicht angemeldet
 
         loc_stuebis.append(
             {"name": participant.get_fullname(), "friends": loc_friends})
