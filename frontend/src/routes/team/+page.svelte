@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { apiGetTentLeader, type cTentLeader } from '$lib/api/_apiParticipants';
+	import { apiGetTentLeader, type cTentLeader } from '$lib/api/apiTentleader';
 	import { onMount } from 'svelte';
 	import SortTable from '$lib/SortTable.svelte';
 	import type { IColumn } from '$lib/sort';

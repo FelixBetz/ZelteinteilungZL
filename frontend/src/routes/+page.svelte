@@ -1,11 +1,7 @@
 <script lang="ts">
 	import DashboardCard from '$lib/Dashboard/DashboardCard.svelte';
-	import {
-		apiGetTentLeader,
-		apiGetLogs,
-		type cTentLeader,
-		type Logs
-	} from '$lib/api/_apiParticipants';
+	import { apiGetLogs, type Logs } from '$lib/api/_apiParticipants';
+	import { apiGetTentLeader, type cTentLeader } from '$lib/api/apiTentleader';
 
 	import { apiGetParticipants, type cTentParticipant } from '$lib/api/apiParticipants';
 
