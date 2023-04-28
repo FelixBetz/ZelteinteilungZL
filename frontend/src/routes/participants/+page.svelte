@@ -22,12 +22,13 @@
 		{ label: 'id', key: 'identifier', ascending: true, link: '/participant/' },
 		{ label: 'paid', key: 'paid', ascending: true },
 		{ label: 'Zelt', key: 'tent', ascending: true, displayCallback: displayTentString },
-		{ label: 'firstName', key: 'firstname', ascending: true },
-		{ label: 'lastName', key: 'lastname', ascending: true },
-		{ label: 'zipCode', key: 'zipcode', ascending: true },
-		{ label: 'village', key: 'village', ascending: true },
-		{ label: 'age', key: 'age', ascending: true, displayCallback: getStrTwoDecimal },
-		{ label: 'friends', key: 'friends', ascending: true, displayCallback: getFriendsString }
+		{ label: 'Vorname', key: 'firstname', ascending: true },
+		{ label: 'Nachname', key: 'lastname', ascending: true },
+		{ label: 'PLZ', key: 'zipcode', ascending: true },
+		{ label: 'Ort', key: 'village', ascending: true },
+		{ label: 'Alter', key: 'age', ascending: true, displayCallback: getStrTwoDecimal },
+		{ label: 'Freunde', key: 'friends', ascending: true, displayCallback: getFriendsString },
+		{ label: 'Sonstiges', key: 'other', ascending: true }
 	];
 	const searchColumns: string[] = ['firstname', 'lastname', 'zipcode', 'village'];
 

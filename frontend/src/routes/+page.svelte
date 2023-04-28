@@ -401,21 +401,29 @@
 						title={'Fotos untersagt: ' + noPhotosAllowed.length}
 						icon="bi-camera-video-off"
 					>
-						<ul>
-							{#each noPhotosAllowed as p}
-								<li>{p}</li>
-							{/each}
-						</ul>
+						{#if noPhotosAllowed.length == 0}
+							<i>niemand</i>
+						{:else}
+							<ul>
+								{#each noPhotosAllowed as p}
+									<li>{p}</li>
+								{/each}
+							</ul>
+						{/if}
 					</DashboardCard>
 				</div>
 
 				<div class="col-sm-6">
 					<DashboardCard title={'Vegetarisch: ' + vegetarians.length} icon="bi-piggy-bank">
-						<ul>
-							{#each vegetarians as p}
-								<li>{p}</li>
-							{/each}
-						</ul>
+						{#if vegetarians.length == 0}
+							<i>niemand</i>
+						{:else}
+							<ul>
+								{#each vegetarians as p}
+									<li>{p}</li>
+								{/each}
+							</ul>
+						{/if}
 					</DashboardCard>
 				</div>
 
