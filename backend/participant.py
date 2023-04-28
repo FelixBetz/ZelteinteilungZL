@@ -7,6 +7,7 @@ class Participant(Person):
     # pylint: disable=too-many-instance-attributes
     # pylint: disable=too-many-locals
     # pylint: disable=too-many-arguments
+    # pylint: disable=too-many-public-methods
 
     def __init__(
         self,
@@ -28,6 +29,7 @@ class Participant(Person):
         arg_is_event_mail,
         arg_other,
         arg_tent,
+        arg_registered
     ):
         self.identifier = arg_id
 
@@ -49,6 +51,7 @@ class Participant(Person):
 
         self.other = arg_other
         self.tent = arg_tent
+        self.registered = arg_registered
 
     def __str__(self):
         friends_str = ""
@@ -148,6 +151,11 @@ class Participant(Person):
         elif arg_prop == "friend2":
             old_value = self.friends[1]
             self.friends[1] = arg_val
+
+        # registered
+        elif arg_prop == "registered":
+            old_value = self.registered
+            self.registered = arg_val
 
         else:
             old_value = None
@@ -271,4 +279,11 @@ class Participant(Person):
         if self.other != arg_val:
             self.other = arg_val
             return str(self.identifier) + ";other;"+str(self.other)
+        return ""
+
+    def set_registered(self, arg_val):
+        """set registered and return revision string"""
+        if self.registered != arg_val:
+            self.registered = arg_val
+            return str(self.identifier) + ";registered;"+str(self.registered)
         return ""

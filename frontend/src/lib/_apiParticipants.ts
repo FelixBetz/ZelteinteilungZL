@@ -18,6 +18,7 @@ interface Participant {
 	other: string;
 	tent: number;
 	paid: boolean;
+	registered: string;
 }
 
 export class cTentParticipant {
@@ -41,7 +42,8 @@ export class cTentParticipant {
 		public is_reduced: boolean,
 		public friends: string[],
 		public other: string,
-		public tent: number
+		public tent: number,
+		public registered: string
 	) {
 		this.calculateAge();
 	}
@@ -182,7 +184,8 @@ function partipantInterfaceToParticipantObject(p: Participant): cTentParticipant
 		p.is_reduced,
 		p.friends,
 		p.other,
-		p.tent
+		p.tent,
+		p.registered
 	);
 	return tentParticipant;
 }
@@ -207,7 +210,8 @@ function participantObjectToParticipantInterface(p: cTentParticipant): Participa
 		zipcode: p.zipcode,
 		other: p.other,
 		tent: p.tent,
-		paid: p.paid
+		paid: p.paid,
+		registered: p.registered
 	};
 	return participant;
 }

@@ -14,7 +14,8 @@ from maps import generate_maps
 from participant import Participant
 from tent_leader import TentLeader
 
-from file_indices import IDX_PARP_FIRST_NAME, IDX_PARP_LAST_NAME, IDX_PARP_STREET,\
+from file_indices import IDX_PARP_FIRST_NAME, IDX_PARP_LAST_NAME, IDX_PARP_REGISTER_DATE, \
+    IDX_PARP_STREET,\
     IDX_PARP_ZIP_CODE, IDX_PARP_VILLAGE,   IDX_PARP_MAIL, IDX_PARP_BIRTHDATE,\
     IDX_PARP_PHONE, IDX_PARP_EMERCENCY_CONTACT, IDX_PARP_EMERCENCY_PHONE,\
     IDX_PARP_REDUCED, IDX_PARP_VEGETARIAN, IDX_PARP_NEWSLETTER, IDX_PARP_FRIEND1,\
@@ -243,6 +244,7 @@ def parse_participants(arg_file_name):
                     parse_yes_no(row[IDX_PARP_NEWSLETTER]),
                     row[IDX_PARP_OTHER],
                     9999,  # will be overwritten by parse_tent_numbers()
+                    row[IDX_PARP_REGISTER_DATE]
                 )
 
                 loc_participant.set_friends(
@@ -368,6 +370,7 @@ def particpant_object_to_class(arg_p, arg_o):
     revisions.append(arg_p.set_friend2(arg_o["friends"][1]))
     revisions.append(arg_p.set_is_photo_allowed(arg_o["is_photo_allowed"]))
     revisions.append(arg_p.set_other(arg_o["other"]))
+    revisions.append(arg_p.set_registered(arg_o["registered"]))
     arg_p.tent = arg_o["tent"]
 
     revisions = list(filter(lambda x: x != "", revisions))
