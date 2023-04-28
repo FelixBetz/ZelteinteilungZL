@@ -141,86 +141,92 @@
 <svelte:head>
 	<title>Zelteinteilung</title>
 </svelte:head>
-<div class="row" style="padding: 20px">
-	<div
-		class="btn btn-primary w-100"
-		color="primary"
-		on:click={saveParticipants}
-		on:keydown={saveParticipants}
-	>
-		Save
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-sm-12">
+			<button
+				class="btn btn-primary w-100"
+				color="primary"
+				on:click={saveParticipants}
+				on:keydown={saveParticipants}
+			>
+				Save
+			</button>
+		</div>
 	</div>
-</div>
-<div class="row">
-	<div class="col-sm-8">
-		<div class="row">
-			{#each baskets as b, basketIndex}
-				{#if basketIndex > 0}
-					<div class="col-sm-6">
-						<div
-							class="card"
-							class:hovering={hoveringOverBasket === b.name}
-							on:dragenter={() => (hoveringOverBasket = b.name)}
-							on:dragleave={() => (hoveringOverBasket = '')}
-							on:drop={(event) => drop(event, basketIndex)}
-							on:dragover={(event) => {
-								if (b.items.length <= 6) {
-									event.preventDefault();
-								}
-							}}
-							style="margin: 10px; border: 1px solid black; "
-						>
-							<div class="card-header">
-								<h5 class="card-title">
-									Zelt {basketIndex} (
-									{#each b.tentLeaders as leader}
-										{leader}
-									{/each})
-								</h5>
-							</div>
+	<div class="row gx-3 gy-0 mt-3">
+		<div class="col-sm-8">
+			<div class="row gx-3 gy-3">
+				{#each baskets as b, basketIndex}
+					{#if basketIndex > 0}
+						<div class="col-sm-6">
 							<div
-								class="card-body"
-								class:tent_alert={b.items.length >= 7}
-								class:tent_warning={b.items.length <= 5}
+								class="card position-relative"
+								class:hovering={hoveringOverBasket === b.name}
+								on:dragenter={() => (hoveringOverBasket = b.name)}
+								on:dragleave={() => (hoveringOverBasket = '')}
+								on:drop={(event) => drop(event, basketIndex)}
+								on:dragover={(event) => {
+									if (b.items.length <= 6) {
+										event.preventDefault();
+									}
+								}}
+								style="border: 1px solid black; "
 							>
-								<div class="row">
-									{#each b.items as item, itemIndex}
-										<Tent
-											participant={participants[item]}
-											on:dragstart={(event) => dragStart(event, basketIndex, itemIndex)}
-										/>
-									{/each}
+								<div class="text-right position-absolute top-0 end-0 me-2">
+									<i> Ø - Alter: </i>
+								</div>
+								<div class="card-header">
+									<h5 class="card-title">
+										Zelt {basketIndex} (
+										{#each b.tentLeaders as leader}
+											{leader}
+										{/each})
+									</h5>
+								</div>
+								<div
+									class="card-body"
+									class:tent_alert={b.items.length >= 7}
+									class:tent_warning={b.items.length <= 5}
+								>
+									<div class="row">
+										{#each b.items as item, itemIndex}
+											<Tent
+												participant={participants[item]}
+												on:dragstart={(event) => dragStart(event, basketIndex, itemIndex)}
+											/>
+										{/each}
+									</div>
 								</div>
 							</div>
 						</div>
-					</div>
-				{/if}
-			{/each}
-		</div>
-	</div>
-
-	<div class="col-sm-4" style="overflow-y: scroll;">
-		<div
-			class="card"
-			class:hovering={hoveringOverBasket === baskets[0].name}
-			on:dragenter={() => (hoveringOverBasket = baskets[0].name)}
-			on:dragleave={() => (hoveringOverBasket = '')}
-			on:drop={(event) => drop(event, 0)}
-			on:dragover={(event) => event.preventDefault()}
-			style="margin: 10px"
-		>
-			<div class="card-header">
-				<h5 class="card-title">Backlog</h5>
+					{/if}
+				{/each}
 			</div>
+		</div>
 
-			<div class="card-body">
-				<div class="row">
-					{#each baskets[0].items as item, itemIndex}
-						<TentParticipant
-							participant={participants[item]}
-							on:dragstart={(event) => dragStart(event, 0, itemIndex)}
-						/>
-					{/each}
+		<div class="col-sm-4" style="overflow-y: scroll;">
+			<div
+				class="card"
+				class:hovering={hoveringOverBasket === baskets[0].name}
+				on:dragenter={() => (hoveringOverBasket = baskets[0].name)}
+				on:dragleave={() => (hoveringOverBasket = '')}
+				on:drop={(event) => drop(event, 0)}
+				on:dragover={(event) => event.preventDefault()}
+			>
+				<div class="card-header">
+					<h5 class="card-title">Backlog</h5>
+				</div>
+
+				<div class="card-body">
+					<div class="row">
+						{#each baskets[0].items as item, itemIndex}
+							<TentParticipant
+								participant={participants[item]}
+								on:dragstart={(event) => dragStart(event, 0, itemIndex)}
+							/>
+						{/each}
+					</div>
 				</div>
 			</div>
 		</div>

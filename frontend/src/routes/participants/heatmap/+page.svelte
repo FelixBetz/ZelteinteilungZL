@@ -12,11 +12,14 @@
 <svelte:head>
 	<title>Heatmap</title>
 </svelte:head>
-<NavbarParticipants />
-<!--add radnom number to iframe src, to prevent browser from caching the iframe-->
-<iframe
-	id="id_heatmap"
-	title="heatmap"
-	src={baseUrl + '/maps/heatmap.html?' + randomNumber}
-	style="width:100%; height: calc(100vh - 125px) !important; "
-/>
+
+<div class="container-fluid">
+	<NavbarParticipants />
+	<!--add radnom number to iframe src, to prevent browser from caching the iframe-->
+	<iframe
+		id="id_heatmap"
+		title="heatmap"
+		src={baseUrl + '/maps/heatmap.html?' + randomNumber}
+		style="width:100%; height: calc(100vh - 125px) !important; "
+	/>
+</div>

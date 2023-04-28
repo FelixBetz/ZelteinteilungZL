@@ -5,6 +5,7 @@
   - csv liste generieren
   - map für jedes Zelt generiren
   - Voreinteilung der Stübis
+  - Durchsnittsalter pro Zelt
 
 - Stübis
   - tabelle auswählbar mit Checkbox machen

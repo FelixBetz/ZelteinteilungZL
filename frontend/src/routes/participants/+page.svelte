@@ -8,8 +8,8 @@
 
 	import SortTable from '$lib/SortTable.svelte';
 
-	import { getStrTwoDecimal, type IColumn } from '$lib/sort';
-	import { displayTentString } from '$lib/helpers';
+	import type { IColumn } from '$lib/sort';
+	import { displayTentString, getStrTwoDecimal } from '$lib/helpers';
 
 	let participants: cTentParticipant[] = [];
 	let filterdParticipants: cTentParticipant[] = [];
@@ -22,12 +22,13 @@
 		{ label: 'id', key: 'identifier', ascending: true, link: '/participant/' },
 		{ label: 'paid', key: 'paid', ascending: true },
 		{ label: 'Zelt', key: 'tent', ascending: true, displayCallback: displayTentString },
-		{ label: 'firstName', key: 'firstname', ascending: true },
-		{ label: 'lastName', key: 'lastname', ascending: true },
-		{ label: 'zipCode', key: 'zipcode', ascending: true },
-		{ label: 'village', key: 'village', ascending: true },
-		{ label: 'age', key: 'age', ascending: true, displayCallback: getStrTwoDecimal },
-		{ label: 'friends', key: 'friends', ascending: true, displayCallback: getFriendsString }
+		{ label: 'Vorname', key: 'firstname', ascending: true },
+		{ label: 'Nachname', key: 'lastname', ascending: true },
+		{ label: 'PLZ', key: 'zipcode', ascending: true },
+		{ label: 'Ort', key: 'village', ascending: true },
+		{ label: 'Alter', key: 'age', ascending: true, displayCallback: getStrTwoDecimal },
+		{ label: 'Freunde', key: 'friends', ascending: true, displayCallback: getFriendsString },
+		{ label: 'Sonstiges', key: 'other', ascending: true }
 	];
 	const searchColumns: string[] = ['firstname', 'lastname', 'zipcode', 'village'];
 
@@ -77,21 +78,22 @@
 </svelte:head>
 
 <NavbarParticipants />
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-sm-3">
+			<div class="btn btn-warning" on:click={getParticipants} on:keydown={getParticipants}>
+				Refresh
+			</div>
 
-<div class="row" style="padding: 10px;">
-	<div class="col-sm-3">
-		<div class="btn btn-warning" on:click={getParticipants} on:keydown={getParticipants}>
-			Refresh
+			<div class="btn btn-primary" on:click={saveParticipants} on:keydown={saveParticipants}>
+				Save
+			</div>
+
+			<div class="btn btn-primary" on:click={getMaps} on:keydown={getMaps}>generate Maps</div>
 		</div>
-
-		<div class="btn btn-primary" on:click={saveParticipants} on:keydown={saveParticipants}>
-			Save
-		</div>
-
-		<div class="btn btn-primary" on:click={getMaps} on:keydown={getMaps}>generate Maps</div>
+		<div class="col-sm-auto"><strong>Anzahl Teilnehmer:</strong> {participants.length}</div>
+		<div class="col-sm-auto"><strong>Durchschnittsalter: </strong> {avgAge}</div>
 	</div>
-	<div class="col-sm-auto"><strong>Anzahl Teilnehmer:</strong> {participants.length}</div>
-	<div class="col-sm-auto"><strong>Durchschnittsalter: </strong> {avgAge}</div>
-</div>
 
-<SortTable data={participants} bind:filterdData={filterdParticipants} {columns} {searchColumns} />
+	<SortTable data={participants} bind:filterdData={filterdParticipants} {columns} {searchColumns} />
+</div>

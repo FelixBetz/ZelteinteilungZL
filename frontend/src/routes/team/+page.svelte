@@ -7,8 +7,8 @@
 	} from '$lib/_apiParticipants';
 	import { onMount } from 'svelte';
 	import SortTable from '$lib/SortTable.svelte';
-	import { getStrTwoDecimal, type IColumn } from '$lib/sort';
-	import { displayTentString } from '$lib/helpers';
+	import type { IColumn } from '$lib/sort';
+	import { displayTentString, getStrTwoDecimal } from '$lib/helpers';
 
 	let tentLeaders: cTentLeader[] = [];
 	let filterdTentLeaders: cTentLeader[] = [];
@@ -52,18 +52,18 @@
 
 	const columns: IColumn[] = [
 		{ label: 'id', key: 'identifier', ascending: true },
-		{ label: 'firstName', key: 'firstname', ascending: true },
-		{ label: 'lastName', key: 'lastname', ascending: true },
-		{ label: 'job', key: 'job', ascending: true },
-		{ label: 'team', key: 'team', ascending: true },
+		{ label: 'Vorname', key: 'firstname', ascending: true },
+		{ label: 'Nachname', key: 'lastname', ascending: true },
+		{ label: 'Job', key: 'job', ascending: true },
+		{ label: 'Team', key: 'team', ascending: true },
 		{ label: 'Zelt', key: 'tent', ascending: true, displayCallback: displayTentString },
 		/*{ label: 'street', key: 'street', ascending: true },
 		{ label: 'zipCode', key: 'zipcode', ascending: true },
 		{ label: 'village', key: 'village', ascending: true },*/
-		{ label: 'mail', key: 'mail', ascending: true },
-		{ label: 'handy', key: 'handy', ascending: true },
-		{ label: 'age', key: 'age', ascending: true, displayCallback: getStrTwoDecimal },
-		{ label: 'comment', key: 'comment', ascending: true }
+		{ label: 'Mail', key: 'mail', ascending: true },
+		{ label: 'Handy', key: 'handy', ascending: true },
+		{ label: 'Alter', key: 'age', ascending: true, displayCallback: getStrTwoDecimal },
+		{ label: 'Kommentar', key: 'comment', ascending: true }
 	];
 
 	const searchColumns: string[] = [
@@ -170,7 +170,7 @@
 	<title>Team</title>
 </svelte:head>
 
-<div style="margin-top: 80px; margin-left: 10px;">
+<div class="container-fluid">
 	<div class="row">
 		<div class="col">
 			<h3>Leitungsteam</h3>
