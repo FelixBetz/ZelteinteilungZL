@@ -9,7 +9,7 @@
 		type Configs,
 		apiGetConfigs
 	} from '$lib/_apiParticipants';
-	import { getStrTwoDecimal } from '$lib/sort';
+	import { getWeekdayString, getStrTwoDecimal } from '$lib/helpers';
 
 	import { onMount } from 'svelte';
 
@@ -58,16 +58,6 @@
 
 	let showNotPaid = false;
 	let showTeamMembers = false;
-
-	const weekdays = [
-		'Sonntag',
-		'Montag',
-		'Dienstag',
-		'Mittwoch',
-		'Donnerstag',
-		'Freitag',
-		'Samstag'
-	];
 
 	$: avgAge = calculateAvgAge(participants);
 	$: youngestParticipant = calculateYoungestParticipant(participants);
@@ -174,13 +164,6 @@
 			ageSum += arg_participants[i].age;
 		}
 		return Math.round((ageSum / arg_participants.length) * 100) / 100;
-	}
-
-	function getWeekdayString(pDate: Date) {
-		let weekday = weekdays[pDate.getDay()];
-		let date = pDate.toLocaleString('de-DE', { day: '2-digit', month: '2-digit' });
-		let weekdayString = weekday + ' ' + date;
-		return weekdayString;
 	}
 
 	function calculateBirthdayKids(

@@ -8,8 +8,8 @@
 
 	import SortTable from '$lib/SortTable.svelte';
 
-	import { getStrTwoDecimal, type IColumn } from '$lib/sort';
-	import { displayTentString } from '$lib/helpers';
+	import type { IColumn } from '$lib/sort';
+	import { displayTentString, getStrTwoDecimal } from '$lib/helpers';
 
 	let participants: cTentParticipant[] = [];
 	let filterdParticipants: cTentParticipant[] = [];
