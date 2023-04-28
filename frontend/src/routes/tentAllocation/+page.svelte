@@ -154,14 +154,14 @@
 			</button>
 		</div>
 	</div>
-	<div class="row gx-0 gy-0">
+	<div class="row gx-3 gy-0 mt-3">
 		<div class="col-sm-8">
-			<div class="row gx-0 gy-0">
+			<div class="row gx-3 gy-3">
 				{#each baskets as b, basketIndex}
 					{#if basketIndex > 0}
 						<div class="col-sm-6">
 							<div
-								class="card"
+								class="card position-relative"
 								class:hovering={hoveringOverBasket === b.name}
 								on:dragenter={() => (hoveringOverBasket = b.name)}
 								on:dragleave={() => (hoveringOverBasket = '')}
@@ -171,8 +171,11 @@
 										event.preventDefault();
 									}
 								}}
-								style="margin: 10px; border: 1px solid black; "
+								style="border: 1px solid black; "
 							>
+								<div class="text-right position-absolute top-0 end-0 me-2">
+									<i> Ø - Alter: </i>
+								</div>
 								<div class="card-header">
 									<h5 class="card-title">
 										Zelt {basketIndex} (
@@ -210,7 +213,6 @@
 				on:dragleave={() => (hoveringOverBasket = '')}
 				on:drop={(event) => drop(event, 0)}
 				on:dragover={(event) => event.preventDefault()}
-				style="margin: 10px"
 			>
 				<div class="card-header">
 					<h5 class="card-title">Backlog</h5>

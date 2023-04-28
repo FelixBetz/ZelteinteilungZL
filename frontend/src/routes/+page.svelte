@@ -347,27 +347,6 @@
 						</ul>
 					</DashboardCard>
 				</div>
-
-				<div class="col-sm-6">
-					<DashboardCard title={'Logs'} icon="bi-card-text">
-						<ul>
-							<a href="/logs">
-								<li>Error Logs: <span class="badge bg-danger">{logs.errors.length}</span></li>
-							</a>
-							<a href="/logs">
-								<li>Revision Logs: <span class="badge bg-info">{logs.revisions.length}</span></li>
-							</a>
-						</ul>
-					</DashboardCard>
-				</div>
-				<div class="col-sm-6">
-					<DashboardCard title={'Configs'} icon="bi-gear">
-						<ul>
-							<li>Anzahl Zelte: {configs.numTents}</li>
-							<li>Start des Zeltlagers: {configs.zlStart}</li>
-						</ul>
-					</DashboardCard>
-				</div>
 			</div>
 		</div>
 
@@ -476,7 +455,7 @@
 			</div>
 		</div>
 		<div class="col-sm-4">
-			<div class="row gx-0 gy-3">
+			<div class="row gx-3 gy-3">
 				<div class="col-sm-12">
 					<DashboardCard
 						title={'Nicht angemeldete Freunde: ' + friendsNotRegistered.length}
@@ -486,6 +465,26 @@
 							{#each friendsNotRegistered as p}
 								<li><strong>{p.name}</strong> (angegeben von: {p.namendBy.join(', ')})</li>
 							{/each}
+						</ul>
+					</DashboardCard>
+				</div>
+				<div class="col-sm-6">
+					<DashboardCard title={'Logs'} icon="bi-card-text">
+						<ul>
+							<a href="/logs">
+								<li>Error Logs: <span class="badge bg-danger">{logs.errors.length}</span></li>
+							</a>
+							<a href="/logs">
+								<li>Revision Logs: <span class="badge bg-info">{logs.revisions.length}</span></li>
+							</a>
+						</ul>
+					</DashboardCard>
+				</div>
+				<div class="col-sm-6">
+					<DashboardCard title={'Configs'} icon="bi-gear">
+						<ul>
+							<li>Anzahl Zelte: {configs.numTents}</li>
+							<li>Start des Zeltlagers: {configs.zlStart}</li>
 						</ul>
 					</DashboardCard>
 				</div>
