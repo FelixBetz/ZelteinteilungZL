@@ -12,10 +12,13 @@
 <svelte:head>
 	<title>Markermap</title>
 </svelte:head>
-<NavbarParticipants />
-<!--add radnom number to iframe src, to prevent browser from caching the iframe-->
-<iframe
-	title="markermap"
-	src={baseUrl + '/maps/markermap.html?' + randomNumber}
-	style="width:100%; height: calc(100vh - 125px) !important; "
-/>
+
+<div class="container-fluid">
+	<NavbarParticipants />
+	<!--add radnom number to iframe src, to prevent browser from caching the iframe-->
+	<iframe
+		title="markermap"
+		src={baseUrl + '/maps/markermap.html?' + randomNumber}
+		style="width:100%; height: calc(100vh - 125px) !important; "
+	/>
+</div>

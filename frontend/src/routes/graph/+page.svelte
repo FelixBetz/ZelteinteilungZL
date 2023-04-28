@@ -89,7 +89,7 @@
 	<title>Graph</title>
 </svelte:head>
 
-<div>
+<div class="container-fluid">
 	{#each chartData as data, index}
 		{#if index == 0}
 			<NetworkGraph

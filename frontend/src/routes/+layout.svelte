@@ -15,5 +15,6 @@
 <style>
 	main {
 		margin-top: 50px;
+		padding-top: 10px;
 	}
 </style>

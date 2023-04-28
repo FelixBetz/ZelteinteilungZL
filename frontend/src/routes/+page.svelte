@@ -311,182 +311,184 @@
 <svelte:head>
 	<title>Home</title>
 </svelte:head>
-
-<div class="row gx-0 gy-0">
-	<div class="col-sm-4">
-		<DashboardCard title={'Leitungsteam (' + tentLeaders.length + ')'} icon="bi-people">
-			<div class="row gx-0 gy-0">
-				{#each teams as team}
-					<div class="col-sm-6">
-						<h5>
-							{team.name} ({team.persons.length})
-							<i
-								on:click={() => (showTeamMembers = !showTeamMembers)}
-								on:keydown={() => (showTeamMembers = !showTeamMembers)}
-								class={showTeamMembers ? 'bi-dash-lg' : 'bi-plus-lg'}
-							/>
-						</h5>
-						<ul class={showTeamMembers ? '' : 'collapse'}>
-							{#each team.persons as person}
-								<li>{person}</li>
+<div class="container-fluid">
+	<div class="row gx-3 gy-3">
+		<div class="col-sm-4">
+			<div class="row gx-3 gy-3">
+				<div class="col-sm-12">
+					<DashboardCard title={'Leitungsteam (' + tentLeaders.length + ')'} icon="bi-people">
+						<div class="row gx-0 gy-0">
+							{#each teams as team}
+								<div class="col-sm-6">
+									<h5>
+										{team.name} ({team.persons.length})
+										<i
+											on:click={() => (showTeamMembers = !showTeamMembers)}
+											on:keydown={() => (showTeamMembers = !showTeamMembers)}
+											class={showTeamMembers ? 'bi-dash-lg' : 'bi-plus-lg'}
+										/>
+									</h5>
+									<ul class={showTeamMembers ? '' : 'collapse'}>
+										{#each team.persons as person}
+											<li>{person}</li>
+										{/each}
+									</ul>
+								</div>
+							{/each}
+						</div>
+					</DashboardCard>
+				</div>
+				<div class="col-sm-6">
+					<DashboardCard title={'Durchschnittsalter Zelte'} icon="bi-bar-chart">
+						<ul>
+							{#each tentAvgAge as avg}
+								<li>Zelt {avg.tentNumber} ({Math.round((100 * avg.avg) / avg.num) / 100})</li>
 							{/each}
 						</ul>
-					</div>
-				{/each}
-			</div>
-		</DashboardCard>
+					</DashboardCard>
+				</div>
 
-		<div class="col-sm-12">
-			<DashboardCard title={'Durchschnittsalter Zelte'} icon="bi-bar-chart">
-				<ul>
-					{#each tentAvgAge as avg}
-						<li>Zelt {avg.tentNumber} ({Math.round((100 * avg.avg) / avg.num) / 100})</li>
-					{/each}
-				</ul>
-			</DashboardCard>
-		</div>
-
-		<div class="row gx-0 gy-0">
-			<div class="col-sm-6">
-				<DashboardCard title={'Logs'} icon="bi-card-text">
-					<ul>
-						<a href="/logs">
-							<li>Error Logs: <span class="badge bg-danger">{logs.errors.length}</span></li>
-						</a>
-						<a href="/logs">
-							<li>Revision Logs: <span class="badge bg-info">{logs.revisions.length}</span></li>
-						</a>
-					</ul>
-				</DashboardCard>
-			</div>
-			<div class="col-sm-6">
-				<DashboardCard title={'Configs'} icon="bi-gear">
-					<ul>
-						<li>Anzahl Zelte: {configs.numTents}</li>
-						<li>Start des Zeltlagers: {configs.zlStart}</li>
-					</ul>
-				</DashboardCard>
+				<div class="col-sm-6">
+					<DashboardCard title={'Logs'} icon="bi-card-text">
+						<ul>
+							<a href="/logs">
+								<li>Error Logs: <span class="badge bg-danger">{logs.errors.length}</span></li>
+							</a>
+							<a href="/logs">
+								<li>Revision Logs: <span class="badge bg-info">{logs.revisions.length}</span></li>
+							</a>
+						</ul>
+					</DashboardCard>
+				</div>
+				<div class="col-sm-6">
+					<DashboardCard title={'Configs'} icon="bi-gear">
+						<ul>
+							<li>Anzahl Zelte: {configs.numTents}</li>
+							<li>Start des Zeltlagers: {configs.zlStart}</li>
+						</ul>
+					</DashboardCard>
+				</div>
 			</div>
 		</div>
-	</div>
 
-	<div class="col-sm-4">
-		<div class="row gx-0 gy-0">
-			<div class="col-sm-12">
-				<DashboardCard title={'Teilnehmer Statistik'} icon="bi-graph-up">
-					<ul>
-						<li>Anzahl Teilnehmer: {participants.length}</li>
-						<li>Durchschnittsalter: {avgAge}</li>
-						<li>jüngster Teilnehmer: {youngestParticipant}</li>
-						<li>ältester Teilnehmer: {eldestParticipant}</li>
-						<li>
-							<div>zu einem Zelt zugeteilt: {assignedParticipants}/{participants.length}</div>
-							<div class="progress">
-								<div
-									class="progress-bar bg-info"
-									role="progressbar"
-									style="width: {(100 * assignedParticipants) / participants.length}%;"
-								>
-									{getStrTwoDecimal((100 * assignedParticipants) / participants.length)}%
-								</div>
-							</div>
-						</li>
-					</ul>
-				</DashboardCard>
-			</div>
-
-			<div class="col-sm-12">
-				<DashboardCard title={'Geburtstage im Lager'} icon="bi-gift">
-					<ul>
-						{#each birthDayKids as kid}
+		<div class="col-sm-4">
+			<div class="row gx-3 gy-3">
+				<div class="col-sm-12">
+					<DashboardCard title={'Teilnehmer Statistik'} icon="bi-graph-up">
+						<ul>
+							<li>Anzahl Teilnehmer: {participants.length}</li>
+							<li>Durchschnittsalter: {avgAge}</li>
+							<li>jüngster Teilnehmer: {youngestParticipant}</li>
+							<li>ältester Teilnehmer: {eldestParticipant}</li>
 							<li>
-								<strong>
-									{kid.name},
-									<i>{+configs.zlStart.split('-')[0] - kid.birthday.getFullYear()} Jahre</i>
-								</strong>
-								({kid.birthday.toLocaleDateString('de-DE', {
-									day: '2-digit',
-									month: '2-digit',
-									year: 'numeric'
-								})}),<br />
-								<i>{kid.weekday} ({kid.tent})</i>
+								<div>zu einem Zelt zugeteilt: {assignedParticipants}/{participants.length}</div>
+								<div class="progress">
+									<div
+										class="progress-bar bg-info"
+										role="progressbar"
+										style="width: {(100 * assignedParticipants) / participants.length}%;"
+									>
+										{getStrTwoDecimal((100 * assignedParticipants) / participants.length)}%
+									</div>
+								</div>
 							</li>
-						{/each}
-					</ul>
-				</DashboardCard>
-			</div>
+						</ul>
+					</DashboardCard>
+				</div>
 
-			<div class="col-sm-12">
-				<DashboardCard
-					title={'Nicht fotografieren:' + noPhotosAllowed.length}
-					icon="bi-camera-video-off"
-				>
-					<ul>
-						{#each noPhotosAllowed as p}
-							<li>{p}</li>
-						{/each}
-					</ul>
-				</DashboardCard>
-			</div>
+				<div class="col-sm-12">
+					<DashboardCard title={'Geburtstage im Lager'} icon="bi-gift">
+						<ul>
+							{#each birthDayKids as kid}
+								<li>
+									<strong>
+										{kid.name},
+										<i>{+configs.zlStart.split('-')[0] - kid.birthday.getFullYear()} Jahre</i>
+									</strong>
+									({kid.birthday.toLocaleDateString('de-DE', {
+										day: '2-digit',
+										month: '2-digit',
+										year: 'numeric'
+									})}),<br />
+									<i>{kid.weekday} ({kid.tent})</i>
+								</li>
+							{/each}
+						</ul>
+					</DashboardCard>
+				</div>
 
-			<div class="col-sm-12">
-				<DashboardCard title={'Vegetarisch: ' + vegetarians.length} icon="bi-piggy-bank">
-					<ul>
-						{#each vegetarians as p}
-							<li>{p}</li>
-						{/each}
-					</ul>
-				</DashboardCard>
+				<div class="col-sm-6">
+					<DashboardCard
+						title={'Fotos untersagt: ' + noPhotosAllowed.length}
+						icon="bi-camera-video-off"
+					>
+						<ul>
+							{#each noPhotosAllowed as p}
+								<li>{p}</li>
+							{/each}
+						</ul>
+					</DashboardCard>
+				</div>
+
+				<div class="col-sm-6">
+					<DashboardCard title={'Vegetarisch: ' + vegetarians.length} icon="bi-piggy-bank">
+						<ul>
+							{#each vegetarians as p}
+								<li>{p}</li>
+							{/each}
+						</ul>
+					</DashboardCard>
+				</div>
+
+				<div class="col-sm-6">
+					<DashboardCard
+						title={'Bezahlt: ' + (participants.length - notPaid.length) + '/' + participants.length}
+						icon="bi-currency-euro"
+					>
+						<div class="progress">
+							<div
+								class="progress-bar bg-info"
+								role="progressbar"
+								style="width: {(100 * (participants.length - notPaid.length)) /
+									participants.length}%;"
+							>
+								{getStrTwoDecimal(
+									(100 * (participants.length - notPaid.length)) / participants.length
+								)}%
+							</div>
+						</div>
+						<h5>
+							Nicht Bezahlt: {notPaid.length}
+							<i
+								on:click={() => (showNotPaid = !showNotPaid)}
+								on:keydown={() => (showNotPaid = !showNotPaid)}
+								class={showNotPaid ? 'bi-dash-lg' : 'bi-plus-lg'}
+							/>
+						</h5>
+
+						<ul class={showNotPaid ? '' : 'collapse'}>
+							{#each notPaid as p}
+								<li>{p}</li>
+							{/each}
+						</ul>
+					</DashboardCard>
+				</div>
 			</div>
 		</div>
-	</div>
-	<div class="col-sm-4">
-		<div class="row gx-0 gy-0">
-			<div class="col-sm-12">
-				<DashboardCard
-					title={'Nicht angemeldete Freunde: ' + friendsNotRegistered.length}
-					icon="bi-person-x"
-				>
-					<ul>
-						{#each friendsNotRegistered as p}
-							<li><strong>{p.name}</strong> (angegeben von: {p.namendBy.join(', ')})</li>
-						{/each}
-					</ul>
-				</DashboardCard>
-			</div>
-
-			<div class="col-sm-12">
-				<DashboardCard
-					title={'Bezahlt: ' + (participants.length - notPaid.length) + '/' + participants.length}
-					icon="bi-currency-euro"
-				>
-					<div class="progress">
-						<div
-							class="progress-bar bg-info"
-							role="progressbar"
-							style="width: {(100 * (participants.length - notPaid.length)) /
-								participants.length}%;"
-						>
-							{getStrTwoDecimal(
-								(100 * (participants.length - notPaid.length)) / participants.length
-							)}%
-						</div>
-					</div>
-					<h5>
-						Nicht Bezahlt: {notPaid.length}
-						<i
-							on:click={() => (showNotPaid = !showNotPaid)}
-							on:keydown={() => (showNotPaid = !showNotPaid)}
-							class={showNotPaid ? 'bi-dash-lg' : 'bi-plus-lg'}
-						/>
-					</h5>
-
-					<ul class={showNotPaid ? '' : 'collapse'}>
-						{#each notPaid as p}
-							<li>{p}</li>
-						{/each}
-					</ul>
-				</DashboardCard>
+		<div class="col-sm-4">
+			<div class="row gx-0 gy-3">
+				<div class="col-sm-12">
+					<DashboardCard
+						title={'Nicht angemeldete Freunde: ' + friendsNotRegistered.length}
+						icon="bi-person-x"
+					>
+						<ul>
+							{#each friendsNotRegistered as p}
+								<li><strong>{p.name}</strong> (angegeben von: {p.namendBy.join(', ')})</li>
+							{/each}
+						</ul>
+					</DashboardCard>
+				</div>
 			</div>
 		</div>
 	</div>

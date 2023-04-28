@@ -17,7 +17,7 @@
 	<title>Logs</title>
 </svelte:head>
 
-<div class="m-5">
+<div class="container-fluid">
 	<h1>Logs</h1>
 	<div class="row">
 		<div class="col-sm-2">

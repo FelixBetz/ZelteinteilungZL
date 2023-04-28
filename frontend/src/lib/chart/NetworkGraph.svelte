@@ -126,5 +126,5 @@
 	bind:clientHeight={height}
 	style="height: {containerHeight}; width:{containerWidth}; 	float: left; "
 >
-	<svg bind:this={container} {width} {height} style="border: 3px black solid" />
+	<svg bind:this={container} {width} {height} style="border: 1px black solid" />
 </div>

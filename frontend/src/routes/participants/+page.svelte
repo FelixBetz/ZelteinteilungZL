@@ -77,21 +77,22 @@
 </svelte:head>
 
 <NavbarParticipants />
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-sm-3">
+			<div class="btn btn-warning" on:click={getParticipants} on:keydown={getParticipants}>
+				Refresh
+			</div>
 
-<div class="row" style="padding: 10px;">
-	<div class="col-sm-3">
-		<div class="btn btn-warning" on:click={getParticipants} on:keydown={getParticipants}>
-			Refresh
+			<div class="btn btn-primary" on:click={saveParticipants} on:keydown={saveParticipants}>
+				Save
+			</div>
+
+			<div class="btn btn-primary" on:click={getMaps} on:keydown={getMaps}>generate Maps</div>
 		</div>
-
-		<div class="btn btn-primary" on:click={saveParticipants} on:keydown={saveParticipants}>
-			Save
-		</div>
-
-		<div class="btn btn-primary" on:click={getMaps} on:keydown={getMaps}>generate Maps</div>
+		<div class="col-sm-auto"><strong>Anzahl Teilnehmer:</strong> {participants.length}</div>
+		<div class="col-sm-auto"><strong>Durchschnittsalter: </strong> {avgAge}</div>
 	</div>
-	<div class="col-sm-auto"><strong>Anzahl Teilnehmer:</strong> {participants.length}</div>
-	<div class="col-sm-auto"><strong>Durchschnittsalter: </strong> {avgAge}</div>
-</div>
 
-<SortTable data={participants} bind:filterdData={filterdParticipants} {columns} {searchColumns} />
+	<SortTable data={participants} bind:filterdData={filterdParticipants} {columns} {searchColumns} />
+</div>

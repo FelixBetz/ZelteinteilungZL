@@ -170,7 +170,7 @@
 	<title>Team</title>
 </svelte:head>
 
-<div style="margin-top: 80px; margin-left: 10px;">
+<div class="container-fluid">
 	<div class="row">
 		<div class="col">
 			<h3>Leitungsteam</h3>
