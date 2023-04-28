@@ -1,7 +1,5 @@
 <script lang="ts">
-	import { apiGetMaps } from '$lib/api/_apiParticipants';
-
-	import type { ZipCodes } from '$lib/api/_apiParticipants';
+	import { apiGetMaps, type ZipCodes } from '$lib/api/apiGraphs';
 
 	import { onMount } from 'svelte';
 	import NavbarParticipants from '$lib/NavbarParticipants.svelte';
