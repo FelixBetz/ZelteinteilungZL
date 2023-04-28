@@ -315,7 +315,7 @@
 <div class="row gx-0 gy-0">
 	<div class="col-sm-4">
 		<DashboardCard title={'Leitungsteam (' + tentLeaders.length + ')'} icon="bi-people">
-			<div class="row">
+			<div class="row gx-0 gy-0">
 				{#each teams as team}
 					<div class="col-sm-6">
 						<h5>
@@ -346,7 +346,7 @@
 			</DashboardCard>
 		</div>
 
-		<div class="row">
+		<div class="row gx-0 gy-0">
 			<div class="col-sm-6">
 				<DashboardCard title={'Logs'} icon="bi-card-text">
 					<ul>
@@ -441,7 +441,7 @@
 		</div>
 	</div>
 	<div class="col-sm-4">
-		<div class="row">
+		<div class="row gx-0 gy-0">
 			<div class="col-sm-12">
 				<DashboardCard
 					title={'Nicht angemeldete Freunde: ' + friendsNotRegistered.length}
