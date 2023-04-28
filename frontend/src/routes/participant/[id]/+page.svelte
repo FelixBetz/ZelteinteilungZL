@@ -7,20 +7,8 @@
 	import { page } from '$app/stores';
 
 	let participant: cTentParticipant | null = null;
-
 	let inputRegisteredValue: string;
 
-	function parseTimeStr(argParticipant: cTentParticipant | null): string {
-		if (argParticipant == null) {
-			return '';
-		}
-		let splittedBitdateStr = argParticipant.birthdate.split('-');
-		let y = splittedBitdateStr[0];
-		let m = splittedBitdateStr[1];
-		let d = splittedBitdateStr[2];
-		inputBirthdateValue = y + '-' + m + '-' + d;
-		return inputBirthdateValue;
-	}
 	function parseDatimeTimeStr(argParticipant: cTentParticipant | null): string {
 		if (argParticipant == null) {
 			return '';
