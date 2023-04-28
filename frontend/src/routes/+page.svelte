@@ -338,7 +338,7 @@
 						</div>
 					</DashboardCard>
 				</div>
-				<div class="col-sm-6">
+				<div class="col-sm-12">
 					<DashboardCard title={'Durchschnittsalter Zelte'} icon="bi-bar-chart">
 						<ul>
 							{#each tentAvgAge as avg}
