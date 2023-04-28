@@ -18,7 +18,7 @@
 	let isOpen = false;
 </script>
 
-<nav class="navbar navbar-dark navbar-expand-md bg-dark fixed-top">
+<nav class="navbar navbar-dark navbar-expand-md bg-dark bg-gradient fixed-top" style="height: 50px">
 	<div class="container-fluid">
 		<a class="navbar-brand" href="/">LaleControl</a>
 
@@ -50,15 +50,3 @@
 		</div>
 	</div>
 </nav>
-
-<ul class="nav">
-	<li class="nav-item">
-		<a class="nav-link active" aria-current="page" href="/participants">Tabelle</a>
-	</li>
-	<li class="nav-item">
-		<a class="nav-link active" aria-current="page" href="/participants/heatmap">Heatmap</a>
-	</li>
-	<li class="nav-item">
-		<a class="nav-link active" aria-current="page" href="/participants/markermap">Markermap</a>
-	</li>
-</ul>

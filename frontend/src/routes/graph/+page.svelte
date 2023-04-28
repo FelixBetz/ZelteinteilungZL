@@ -88,7 +88,8 @@
 <svelte:head>
 	<title>Graph</title>
 </svelte:head>
-<div class="mt-4">
+
+<div>
 	{#each chartData as data, index}
 		{#if index == 0}
 			<NetworkGraph
