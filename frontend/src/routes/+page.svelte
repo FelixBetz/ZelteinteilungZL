@@ -66,12 +66,14 @@
 		getParticipants();
 	});
 
-	function calculateStats(arg_participants: cTentParticipant[]) {
+	function calcRegisteredGraph(pParticipants: cTentParticipant[]) {}
+
+	function calculateStats(pParticipants: cTentParticipant[]) {
 		notPaid = [];
 		noPhotosAllowed = [];
 		vegetarians = [];
 
-		arg_participants.forEach((p) => {
+		pParticipants.forEach((p) => {
 			if (!p.paid) {
 				notPaid[notPaid.length] = p.getFullname();
 			}
@@ -84,55 +86,55 @@
 		});
 	}
 
-	function caluclateAssignedParticipants(arg_participants: cTentParticipant[]): number {
-		if (arg_participants.length == 0) {
+	function caluclateAssignedParticipants(pParticipants: cTentParticipant[]): number {
+		if (pParticipants.length == 0) {
 			return 0;
 		}
 		let loc_assigned = 0;
-		for (let i = 0; i < arg_participants.length; i++) {
-			if (arg_participants[i].tent != 9999) {
+		for (let i = 0; i < pParticipants.length; i++) {
+			if (pParticipants[i].tent != 9999) {
 				loc_assigned++;
 			}
 		}
 		return loc_assigned;
 	}
 
-	function calculateYoungestParticipant(arg_participants: cTentParticipant[]): string {
-		if (arg_participants.length == 0) {
+	function calculateYoungestParticipant(pParticipants: cTentParticipant[]): string {
+		if (pParticipants.length == 0) {
 			return '';
 		}
 		let loc_age = 100;
 		let loc_index = 0;
-		for (let i = 0; i < arg_participants.length; i++) {
-			if (arg_participants[i].age < loc_age) {
-				loc_age = arg_participants[i].age;
+		for (let i = 0; i < pParticipants.length; i++) {
+			if (pParticipants[i].age < loc_age) {
+				loc_age = pParticipants[i].age;
 				loc_index = i;
 			}
 		}
 		return (
-			arg_participants[loc_index].getFullname() +
+			pParticipants[loc_index].getFullname() +
 			' (' +
-			arg_participants[loc_index].getAgeTwoDecimal() +
+			pParticipants[loc_index].getAgeTwoDecimal() +
 			')'
 		);
 	}
 
-	function calculateEldestParticipant(arg_participants: cTentParticipant[]): string {
-		if (arg_participants.length == 0) {
+	function calculateEldestParticipant(pParticipants: cTentParticipant[]): string {
+		if (pParticipants.length == 0) {
 			return '';
 		}
 		let loc_age = 0;
 		let loc_index = 0;
-		for (let i = 0; i < arg_participants.length; i++) {
-			if (arg_participants[i].age > loc_age) {
-				loc_age = arg_participants[i].age;
+		for (let i = 0; i < pParticipants.length; i++) {
+			if (pParticipants[i].age > loc_age) {
+				loc_age = pParticipants[i].age;
 				loc_index = i;
 			}
 		}
 		return (
-			arg_participants[loc_index].getFullname() +
+			pParticipants[loc_index].getFullname() +
 			' (' +
-			arg_participants[loc_index].getAgeTwoDecimal() +
+			pParticipants[loc_index].getAgeTwoDecimal() +
 			')'
 		);
 	}
@@ -151,15 +153,15 @@
 		}
 	}
 
-	function calculateAvgAge(arg_participants: cTentParticipant[]): number {
-		if (arg_participants.length == 0) {
+	function calculateAvgAge(pParticipants: cTentParticipant[]): number {
+		if (pParticipants.length == 0) {
 			return 0;
 		}
 		let ageSum = 0;
-		for (let i = 0; i < arg_participants.length; i++) {
-			ageSum += arg_participants[i].age;
+		for (let i = 0; i < pParticipants.length; i++) {
+			ageSum += pParticipants[i].age;
 		}
-		return Math.round((ageSum / arg_participants.length) * 100) / 100;
+		return Math.round((ageSum / pParticipants.length) * 100) / 100;
 	}
 
 	function calculateBirthdayKids(

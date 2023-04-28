@@ -54,11 +54,11 @@
 	let hoveringOverBasket: string;
 
 	function distributePartiscipantsToBaskets(
-		arg_participants: cTentParticipant[],
-		arg_tentLeaders: cTentLeader[]
+		pParticipants: cTentParticipant[],
+		pTentLeaders: cTentLeader[]
 	) {
 		clearBaskets();
-		participants = arg_participants.sort(compareByAge);
+		participants = pParticipants.sort(compareByAge);
 
 		//add participants to baskets
 		for (let i = 0; i < participants.length; i++) {
@@ -71,11 +71,11 @@
 		}
 
 		//add tent leaders to baskets
-		for (let i = 0; i < arg_tentLeaders.length; i++) {
-			let tentNumber = arg_tentLeaders[i].tent;
+		for (let i = 0; i < pTentLeaders.length; i++) {
+			let tentNumber = pTentLeaders[i].tent;
 			if (tentNumber > 0 && tentNumber <= configs.numTents) {
 				baskets[tentNumber].tentLeaders[baskets[tentNumber].tentLeaders.length] =
-					arg_tentLeaders[i].firstname + ' ' + arg_tentLeaders[i].lastname;
+					pTentLeaders[i].firstname + ' ' + pTentLeaders[i].lastname;
 			}
 		}
 	}

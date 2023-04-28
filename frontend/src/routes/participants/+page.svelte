@@ -38,15 +38,15 @@
 	let avgAge = 0;
 	$: avgAge = calculateAvgAge(participants);
 
-	function calculateAvgAge(arg_participants: cTentParticipant[]): number {
-		if (arg_participants.length == 0) {
+	function calculateAvgAge(pParticipants: cTentParticipant[]): number {
+		if (pParticipants.length == 0) {
 			return 0;
 		}
 		let ageSum = 0;
-		for (let i = 0; i < arg_participants.length; i++) {
-			ageSum += arg_participants[i].age;
+		for (let i = 0; i < pParticipants.length; i++) {
+			ageSum += pParticipants[i].age;
 		}
-		return Math.round((ageSum / arg_participants.length) * 100) / 100;
+		return Math.round((ageSum / pParticipants.length) * 100) / 100;
 	}
 
 	onMount(() => {

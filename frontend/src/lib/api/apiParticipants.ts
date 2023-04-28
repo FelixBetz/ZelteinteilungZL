@@ -89,8 +89,8 @@ export async function apiGetParticipants(): Promise<cTentParticipant[]> {
 	return response;
 }
 
-export async function apiGetParticipant(arg_id: number): Promise<cTentParticipant | null> {
-	const response = await fetch(BASE_URL + '/participant?id=' + arg_id)
+export async function apiGetParticipant(pId: number): Promise<cTentParticipant | null> {
+	const response = await fetch(BASE_URL + '/participant?id=' + pId)
 		.then((res) => res.json())
 		.then((res: Participant) => {
 			const ret: cTentParticipant = partipantInterfaceToParticipantObject(res);
@@ -158,13 +158,13 @@ function participantObjectToParticipantInterface(p: cTentParticipant): Participa
 }
 
 export async function apiPostParticipant(
-	arg_participant: cTentParticipant | null
+	pParticipant: cTentParticipant | null
 ): Promise<cTentParticipant | null> {
-	if (arg_participant == null) {
+	if (pParticipant == null) {
 		return null;
 	}
 
-	const participant = participantObjectToParticipantInterface(arg_participant);
+	const participant = participantObjectToParticipantInterface(pParticipant);
 	const formData = new FormData();
 	formData.append('participant', JSON.stringify(participant));
 	const response = await fetch(BASE_URL + '/participant?id=' + participant.identifier, {
@@ -186,15 +186,15 @@ export async function apiPostParticipant(
 }
 
 export async function apiPostParticipants(
-	arg_participant: cTentParticipant[]
+	pParticipant: cTentParticipant[]
 ): Promise<cTentParticipant[]> {
-	if (arg_participant.length == 0) {
+	if (pParticipant.length == 0) {
 		return [];
 	}
 
 	const participants: Participant[] = [];
-	for (let i = 0; i < arg_participant.length; i++) {
-		const participant = participantObjectToParticipantInterface(arg_participant[i]);
+	for (let i = 0; i < pParticipant.length; i++) {
+		const participant = participantObjectToParticipantInterface(pParticipant[i]);
 		participants.push(participant);
 	}
 	const formData = new FormData();
