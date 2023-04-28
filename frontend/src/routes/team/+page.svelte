@@ -1,14 +1,10 @@
 <script lang="ts">
-	import {
-		apiGetConfigs,
-		apiGetTentLeader,
-		type Configs,
-		type cTentLeader
-	} from '$lib/_apiParticipants';
+	import { apiGetTentLeader, type cTentLeader } from '$lib/api/_apiParticipants';
 	import { onMount } from 'svelte';
 	import SortTable from '$lib/SortTable.svelte';
 	import type { IColumn } from '$lib/sort';
 	import { displayTentString, getStrTwoDecimal } from '$lib/helpers';
+	import { type Configs, apiGetConfigs } from '$lib/api/apiConfig';
 
 	let tentLeaders: cTentLeader[] = [];
 	let filterdTentLeaders: cTentLeader[] = [];

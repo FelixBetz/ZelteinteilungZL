@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { apiGetConfigs, apiPostConfigs, type Configs } from '$lib/_apiParticipants';
 	import { onMount } from 'svelte';
+	import { type Configs, apiGetConfigs, apiPostConfigs } from '$lib/api/apiConfig';
 
 	let configs: Configs = { numTents: 9999, zlStart: '1970-08-12' };
 

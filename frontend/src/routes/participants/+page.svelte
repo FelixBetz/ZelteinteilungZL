@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { apiGetMaps, apiGetParticipants, apiPostParticipants } from '$lib/_apiParticipants';
+	import { apiGetMaps } from '$lib/api/_apiParticipants';
 
-	import type { cTentParticipant, ZipCodes } from '$lib/_apiParticipants';
+	import type { ZipCodes } from '$lib/api/_apiParticipants';
 
 	import { onMount } from 'svelte';
 	import NavbarParticipants from '$lib/NavbarParticipants.svelte';
@@ -10,6 +10,11 @@
 
 	import type { IColumn } from '$lib/sort';
 	import { displayTentString, getStrTwoDecimal } from '$lib/helpers';
+	import {
+		apiGetParticipants,
+		apiPostParticipants,
+		cTentParticipant
+	} from '$lib/api/apiParticipants';
 
 	let participants: cTentParticipant[] = [];
 	let filterdParticipants: cTentParticipant[] = [];

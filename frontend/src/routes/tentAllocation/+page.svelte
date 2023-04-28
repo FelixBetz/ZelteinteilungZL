@@ -1,16 +1,16 @@
 <script lang="ts">
+	import { apiGetTentLeader, type cTentLeader } from '$lib/api/_apiParticipants';
+
 	import {
-		apiGetConfigs,
 		apiGetParticipants,
-		apiGetTentLeader,
 		apiPostParticipants,
-		type Configs,
-		type cTentLeader
-	} from '$lib/_apiParticipants';
-	import type { cTentParticipant } from '$lib/_apiParticipants';
+		type cTentParticipant
+	} from '$lib/api/apiParticipants';
+
 	import { onMount } from 'svelte';
 	import Tent from '$lib/TentParticipant.svelte';
 	import TentParticipant from '$lib/TentParticipant.svelte';
+	import { type Configs, apiGetConfigs } from '$lib/api/apiConfig';
 	let configs: Configs = { numTents: 9999, zlStart: '1970-08-12' };
 	interface Basket {
 		name: string;

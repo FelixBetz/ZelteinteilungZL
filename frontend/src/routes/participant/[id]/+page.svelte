@@ -1,10 +1,11 @@
 <script lang="ts">
-	import { apiGetParticipant, apiPostParticipant } from '$lib/_apiParticipants';
-
-	import type { cTentParticipant } from '$lib/_apiParticipants';
-
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
+	import {
+		type cTentParticipant,
+		apiPostParticipant,
+		apiGetParticipant
+	} from '$lib/api/apiParticipants';
 
 	let participant: cTentParticipant | null = null;
 	let inputRegisteredValue: string;

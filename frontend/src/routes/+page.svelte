@@ -1,17 +1,16 @@
 <script lang="ts">
 	import DashboardCard from '$lib/Dashboard/DashboardCard.svelte';
 	import {
-		apiGetParticipants,
 		apiGetTentLeader,
 		apiGetLogs,
 		type cTentLeader,
-		type cTentParticipant,
-		type Logs,
-		type Configs,
-		apiGetConfigs
-	} from '$lib/_apiParticipants';
-	import { getWeekdayString, getStrTwoDecimal } from '$lib/helpers';
+		type Logs
+	} from '$lib/api/_apiParticipants';
 
+	import { apiGetParticipants, type cTentParticipant } from '$lib/api/apiParticipants';
+
+	import { getWeekdayString, getStrTwoDecimal } from '$lib/helpers';
+	import { type Configs, apiGetConfigs } from '$lib/api/apiConfig';
 	import { onMount } from 'svelte';
 
 	interface TentAvg {
