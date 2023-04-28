@@ -337,6 +337,16 @@
 				</div>
 			</DashboardCard>
 
+			<div class="col-sm-12">
+				<DashboardCard title={'Durchschnittsalter Zelte'} icon="bi-bar-chart">
+					<ul>
+						{#each tentAvgAge as avg}
+							<li>Zelt {avg.tentNumber} ({Math.round((100 * avg.avg) / avg.num) / 100})</li>
+						{/each}
+					</ul>
+				</DashboardCard>
+			</div>
+
 			<div class="row">
 				<div class="col-sm-6">
 					<DashboardCard title={'Logs'} icon="bi-card-text">
@@ -429,6 +439,10 @@
 						</ul>
 					</DashboardCard>
 				</div>
+			</div>
+		</div>
+		<div class="col col-sm-4">
+			<div class="row">
 				<div class="col-sm-12">
 					<DashboardCard
 						title={'Nicht angemeldete Freunde: ' + friendsNotRegistered.length}
@@ -460,7 +474,7 @@
 							</div>
 						</div>
 						<h5>
-							Nicht Bezahlt: {participants.length - notPaid.length}
+							Nicht Bezahlt: {notPaid.length}
 							<i
 								on:click={() => (showNotPaid = !showNotPaid)}
 								on:keydown={() => (showNotPaid = !showNotPaid)}
@@ -471,15 +485,6 @@
 						<ul class={showNotPaid ? '' : 'collapse'}>
 							{#each notPaid as p}
 								<li>{p}</li>
-							{/each}
-						</ul>
-					</DashboardCard>
-				</div>
-				<div class="col-sm-12">
-					<DashboardCard title={'Durchschnittsalter Zelte'} icon="bi-bar-chart">
-						<ul>
-							{#each tentAvgAge as avg}
-								<li>Zelt {avg.tentNumber} ({Math.round((100 * avg.avg) / avg.num) / 100})</li>
 							{/each}
 						</ul>
 					</DashboardCard>
