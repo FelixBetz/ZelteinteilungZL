@@ -5,9 +5,10 @@
 
 	import { apiGetParticipants, type cTentParticipant } from '$lib/api/apiParticipants';
 
-	import { getWeekdayString, getStrTwoDecimal } from '$lib/helpers';
+	import { getWeekdayString, getStrTwoDecimal, type DateGraphData } from '$lib/helpers';
 	import { type Configs, apiGetConfigs } from '$lib/api/apiConfig';
 	import { onMount } from 'svelte';
+	import DateGraph from '$lib/chart/DateGraph.svelte';
 
 	interface TentAvg {
 		avg: number;
@@ -52,6 +53,8 @@
 	let noPhotosAllowed: string[] = [];
 	let vegetarians: string[] = [];
 
+	let loopedDates: DateGraphData[] = [];
+
 	let showNotPaid = false;
 	let showTeamMembers = false;
 
@@ -61,12 +64,46 @@
 	$: assignedParticipants = caluclateAssignedParticipants(participants);
 	$: calculateBirthdayKids(participants, tentLeaders, configs.zlStart);
 	$: calculateStats(participants);
+	$: calcRegisteredGraph(participants);
 
 	$: onMount(() => {
 		getParticipants();
 	});
 
-	function calcRegisteredGraph(pParticipants: cTentParticipant[]) {}
+	function calcRegisteredGraph(pParticipants: cTentParticipant[]) {
+		let parsedDates: Date[] = [];
+		if (pParticipants.length == 0) {
+			return;
+		}
+		pParticipants.forEach((p) => {
+			let datetime = new Date(p.registered);
+			parsedDates.push(new Date(datetime.toDateString()));
+		});
+		//parsedDates = parsedDates.sort();
+		parsedDates = parsedDates.sort((a, b) => a.getTime() - b.getTime());
+		let minDate = parsedDates[0];
+		let maxDate = parsedDates[parsedDates.length - 1];
+
+		// Clone the start date to avoid modifying the original
+		let currentDate = new Date(minDate.getTime());
+
+		// Loop through each day between the start and end dates
+		while (currentDate <= maxDate) {
+			// Add the current date to the array
+			loopedDates.push({ date: new Date(currentDate.getTime()), num: 0 });
+			// Move to the next day
+			currentDate.setDate(currentDate.getDate() + 1);
+		}
+		loopedDates.forEach((l) => {
+			parsedDates.forEach((p) => {
+				if (l.date.getTime() >= p.getTime()) {
+					l.num += 1;
+				}
+			});
+		});
+
+		loopedDates = loopedDates;
+	}
 
 	function calculateStats(pParticipants: cTentParticipant[]) {
 		notPaid = [];
@@ -308,6 +345,7 @@
 <svelte:head>
 	<title>Home</title>
 </svelte:head>
+
 <div class="container-fluid">
 	<div class="row gx-3 gy-3">
 		<div class="col-sm-4">
@@ -497,3 +535,7 @@
 		</div>
 	</div>
 </div>
+
+{#if loopedDates.length > 0}
+	<DateGraph data={loopedDates} />
+{/if}
