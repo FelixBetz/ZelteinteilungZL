@@ -5,7 +5,7 @@
 
 	let container: SVGSVGElement;
 
-	const margin = { top: 5, right: 0, bottom: 20, left: 20 };
+	const margin = { top: 5, right: 15, bottom: 20, left: 20 };
 	let width = 500;
 	let height = 300 - margin.top - margin.bottom;
 	export let data: DateGraphData[] = [];
