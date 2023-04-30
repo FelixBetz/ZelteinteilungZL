@@ -9,7 +9,6 @@
 
 - Stübis
   - tabelle auswählbar mit Checkbox machen
-  - wer ist als Freund angegeben aber nicht angemeldet?
   - alter im Zeltlager
 
 - Todo Reiter einbauen
