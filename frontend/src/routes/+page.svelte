@@ -466,7 +466,7 @@
 
 				<div class="col-sm-6">
 					<DashboardCard
-						title={'Fotos untersagt: ' + noPhotosAllowed.length}
+						title={'keine Fotos: ' + noPhotosAllowed.length}
 						icon="bi-camera-video-off"
 					>
 						{#if noPhotosAllowed.length == 0}
