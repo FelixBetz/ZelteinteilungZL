@@ -3,22 +3,22 @@
 	import * as d3 from 'd3';
 	import { onMount } from 'svelte';
 
-	export let containerHeight = '100vh';
-	export let containerWidth = '100%';
-
 	let container: SVGSVGElement;
 
-	const margin = { top: 20, right: 20, bottom: 30, left: 50 };
-	const width = 800 - margin.left - margin.right;
-	const height = 300 - margin.top - margin.bottom;
-
+	const margin = { top: 5, right: 0, bottom: 20, left: 20 };
+	let width = 500;
+	let height = 300 - margin.top - margin.bottom;
 	export let data: DateGraphData[] = [];
 
 	onMount(() => {
 		const svg = d3
 			.select(container)
-			.attr('width', width + margin.left + margin.right)
-			.attr('height', height + margin.top + margin.bottom);
+			.attr('viewBox', [
+				0,
+				0,
+				width + margin.left + margin.right,
+				height + margin.top + margin.bottom
+			]);
 
 		const chartGroup = svg
 			.append('g')
@@ -50,9 +50,33 @@
 			.attr('stroke', 'steelblue')
 			.attr('stroke-width', 5)
 			.attr('d', line);
+
+		// Define an area generator
+		const area = d3
+			.area()
+			.x((d) => x(d.date))
+			.y0(y(0))
+			.y1((d) => y(d.num));
+
+		// Add the area path to the chart
+		chartGroup
+			.append('path')
+			.datum(data)
+			.attr('fill', 'steelblue')
+			.attr('opacity', 0.5)
+			.attr('d', area);
+
+		// Add horizontal dotted lines
+		chartGroup
+			.append('g')
+			.attr('class', 'grid')
+			.call(d3.axisLeft(y).tickSize(-0).tickFormat('').ticks(5))
+
+			.selectAll('line')
+			.attr('x2', width) // extend the lines to the edge of the chart
+			.attr('stroke-dasharray', '1 1') // make all lines dotted*/
+			.attr('opacity', 0.5);
 	});
 </script>
 
-<div style="height: {containerHeight}; width:{containerWidth}; 	float: left; ">
-	<svg bind:this={container} {width} {height} />
-</div>
+<svg bind:this={container} width="100%" height="100%" />

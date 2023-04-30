@@ -79,6 +79,8 @@
 			let datetime = new Date(p.registered);
 			parsedDates.push(new Date(datetime.toDateString()));
 		});
+		parsedDates.push(new Date(Date.now()));
+
 		//parsedDates = parsedDates.sort();
 		parsedDates = parsedDates.sort((a, b) => a.getTime() - b.getTime());
 		let minDate = parsedDates[0];
@@ -373,6 +375,18 @@
 						</div>
 					</DashboardCard>
 				</div>
+
+				<div class="col-sm-12">
+					<DashboardCard
+						title={'Anmeldeverlauf (' + participants.length + ' Anmeldungen)'}
+						icon="bi-graph-up"
+					>
+						{#if loopedDates.length > 0}
+							<DateGraph data={loopedDates} />
+						{/if}
+					</DashboardCard>
+				</div>
+
 				<div class="col-sm-12">
 					<DashboardCard title={'Durchschnittsalter Zelte'} icon="bi-bar-chart">
 						<ul>
@@ -534,8 +548,5 @@
 			</div>
 		</div>
 	</div>
+	<div class="row gx-3 gy-3" />
 </div>
-
-{#if loopedDates.length > 0}
-	<DateGraph data={loopedDates} />
-{/if}
