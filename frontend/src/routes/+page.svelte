@@ -3,7 +3,11 @@
 	import { apiGetLogs, type Logs } from '$lib/api/apiLogs';
 	import { apiGetTentLeader, type cTentLeader } from '$lib/api/apiTentleader';
 
-	import { apiGetParticipants, type cTentParticipant } from '$lib/api/apiParticipants';
+	import {
+		apiGetParticipants,
+		apiGetParticipantsLastYear,
+		type cTentParticipant
+	} from '$lib/api/apiParticipants';
 
 	import { getWeekdayString, getStrTwoDecimal, type DateGraphData } from '$lib/helpers';
 	import { type Configs, apiGetConfigs } from '$lib/api/apiConfig';
@@ -39,6 +43,7 @@
 	let configs: Configs = { numTents: 9999, zlStart: '1970-08-12' };
 
 	let friendsNotRegistered: FriendsNotRegistered[] = [];
+	let lastYearRegistered: string[] = [];
 
 	let teams: Team[] = [];
 
@@ -293,6 +298,20 @@
 		configs = await apiGetConfigs();
 		logs = await apiGetLogs();
 		participants = await apiGetParticipants();
+		lastYearRegistered = await apiGetParticipantsLastYear();
+
+		lastYearRegistered = lastYearRegistered.sort((a, b) => {
+			let lastNameA = a.split(' ')[1];
+			let lastNameB = b.split(' ')[1];
+			if (lastNameA > lastNameB) {
+				return 1;
+			}
+			if (lastNameA < lastNameB) {
+				return -1;
+			}
+
+			return 0;
+		});
 
 		parseNotRegisteredFriends(participants);
 
@@ -523,6 +542,20 @@
 								<li><strong>{p.name}</strong> (angegeben von: {p.namendBy.join(', ')})</li>
 							{/each}
 						</ul>
+					</DashboardCard>
+				</div>
+				<div class="col-sm-12">
+					<DashboardCard
+						title={'Letztes Jahr angemeldet: ' + lastYearRegistered.length}
+						icon="bi-person-x"
+					>
+						<div class="row">
+							{#each lastYearRegistered as name}
+								<div class="col-sm-4">
+									<li><strong>{name}</strong></li>
+								</div>
+							{/each}
+						</div>
 					</DashboardCard>
 				</div>
 				<div class="col-sm-6">

@@ -31,6 +31,7 @@ INPUT_REVISION_FILE_NAME = "revisions.txt"
 INPUT_TENT_NUMBERS_FILE_NAME = "tent_numbers.txt"
 INPUT_PAID_FILE_NAME = "paid.txt"
 INPUT_CONFIG_FILE_NAME = "config.txt"
+INPUT_LAST_YEAR_FILE_NAME = "2022_zl_tn_out.csv"
 
 INPUT_PARICIPANT_PATH = INPUT_FILE_PATH + INPUT_FILE_NAME
 INPUT_TENT_LEADER_PATH = INPUT_FILE_PATH + INPUT_TENT_LEADER_FILE_NAME
@@ -38,6 +39,7 @@ INPUT_REVISION_PATH = INPUT_FILE_PATH + INPUT_REVISION_FILE_NAME
 INPUT_TENT_NUMBERS_PATH = INPUT_FILE_PATH + INPUT_TENT_NUMBERS_FILE_NAME
 INPUT_PAID_PATH = INPUT_FILE_PATH + INPUT_PAID_FILE_NAME
 INPUT_CONFIG_PATH = INPUT_FILE_PATH + INPUT_CONFIG_FILE_NAME
+INPUT_LAST_YEAR_PATH = INPUT_FILE_PATH + INPUT_LAST_YEAR_FILE_NAME
 
 tent_leaders = []
 participants_d = []
@@ -177,6 +179,38 @@ def parse_paid(arg_participants):
             else:
                 loc_participant.paid = is_paided(loc_is_paid)
     return arg_participants
+
+
+def parse_participants_last_year(arg_file_name):
+    """parses zeltlager participants from input csv file"""
+
+    error_logs.clear()
+    loc_participants = []
+
+    if not os.path.isfile(arg_file_name):
+        error_logs.append("ERROR: " + arg_file_name + " existiert nicht")
+        print("ERROR: " + arg_file_name + " existiert nicht")
+        return loc_participants
+
+    with open(arg_file_name, newline="", encoding="utf-8") as csvfile:
+        spamreader = csv.reader(csvfile, delimiter=";", quotechar="|")
+
+        for i, row in enumerate(spamreader):
+            if i >= 1:
+                strip_row(row)
+
+                loc_lastname = row[1]
+                loc_firstname = row[0]
+
+                loc_participants.append(loc_firstname + " " + loc_lastname)
+
+    ret = []
+    compare_friends = [p.get_fullname() for p in participants_d]
+    for participant in loc_participants:
+        if participant not in compare_friends:
+            ret.append(participant)
+
+    return ret
 
 
 def parse_participants(arg_file_name):
@@ -581,9 +615,16 @@ def get_configs():
     return jsonify(configs_d.get_dict())
 
 
+@ app.route("/api/participants/last-year", methods=["GET"])
+def get_participants_last_year():
+    """returns all participants as json"""
+    return jsonify(participants_last_year)
+
+
 if __name__ == "__main__":
     participants_d = parse_participants(INPUT_PARICIPANT_PATH)
     tent_leaders = parse_tent_leader(INPUT_TENT_LEADER_PATH)
+    participants_last_year = parse_participants_last_year(INPUT_LAST_YEAR_PATH)
     configs_d.load()
 
     app.run(host="0.0.0.0", port=8080, debug=True)

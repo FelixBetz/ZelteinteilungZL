@@ -219,3 +219,17 @@ export async function apiPostParticipants(
 
 	return response;
 }
+
+export async function apiGetParticipantsLastYear(): Promise<string[]> {
+	const response = await fetch(BASE_URL + '/participants/last-year')
+		.then((res) => res.json())
+		.then((res: string[]) => {
+			return res;
+		})
+		.catch((error: Error) => {
+			console.error(error);
+			return [];
+		});
+
+	return response;
+}
