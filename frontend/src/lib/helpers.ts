@@ -20,3 +20,8 @@ export function getWeekdayString(pDate: Date) {
 export function getStrTwoDecimal(age: number): number {
 	return Math.round(age * 100) / 100;
 }
+
+export interface DateGraphData {
+	date: Date;
+	num: number;
+}

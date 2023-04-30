@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { cTentParticipant } from '$lib/_apiParticipants';
+	import type { cTentParticipant } from '$lib/api/apiParticipants';
 	export let participant: cTentParticipant;
 </script>
 

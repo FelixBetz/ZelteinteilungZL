@@ -1,18 +1,14 @@
 <script lang="ts">
 	import DashboardCard from '$lib/Dashboard/DashboardCard.svelte';
-	import {
-		apiGetParticipants,
-		apiGetTentLeader,
-		apiGetLogs,
-		type cTentLeader,
-		type cTentParticipant,
-		type Logs,
-		type Configs,
-		apiGetConfigs
-	} from '$lib/_apiParticipants';
-	import { getWeekdayString, getStrTwoDecimal } from '$lib/helpers';
+	import { apiGetLogs, type Logs } from '$lib/api/apiLogs';
+	import { apiGetTentLeader, type cTentLeader } from '$lib/api/apiTentleader';
 
+	import { apiGetParticipants, type cTentParticipant } from '$lib/api/apiParticipants';
+
+	import { getWeekdayString, getStrTwoDecimal, type DateGraphData } from '$lib/helpers';
+	import { type Configs, apiGetConfigs } from '$lib/api/apiConfig';
 	import { onMount } from 'svelte';
+	import DateGraph from '$lib/chart/DateGraph.svelte';
 
 	interface TentAvg {
 		avg: number;
@@ -57,6 +53,8 @@
 	let noPhotosAllowed: string[] = [];
 	let vegetarians: string[] = [];
 
+	let loopedDates: DateGraphData[] = [];
+
 	let showNotPaid = false;
 	let showTeamMembers = false;
 
@@ -66,17 +64,55 @@
 	$: assignedParticipants = caluclateAssignedParticipants(participants);
 	$: calculateBirthdayKids(participants, tentLeaders, configs.zlStart);
 	$: calculateStats(participants);
+	$: calcRegisteredGraph(participants);
 
 	$: onMount(() => {
 		getParticipants();
 	});
 
-	function calculateStats(arg_participants: cTentParticipant[]) {
+	function calcRegisteredGraph(pParticipants: cTentParticipant[]) {
+		let parsedDates: Date[] = [];
+		if (pParticipants.length == 0) {
+			return;
+		}
+		pParticipants.forEach((p) => {
+			let datetime = new Date(p.registered);
+			parsedDates.push(new Date(datetime.toDateString()));
+		});
+		parsedDates.push(new Date(Date.now()));
+
+		//parsedDates = parsedDates.sort();
+		parsedDates = parsedDates.sort((a, b) => a.getTime() - b.getTime());
+		let minDate = parsedDates[0];
+		let maxDate = parsedDates[parsedDates.length - 1];
+
+		// Clone the start date to avoid modifying the original
+		let currentDate = new Date(minDate.getTime());
+
+		// Loop through each day between the start and end dates
+		while (currentDate <= maxDate) {
+			// Add the current date to the array
+			loopedDates.push({ date: new Date(currentDate.getTime()), num: 0 });
+			// Move to the next day
+			currentDate.setDate(currentDate.getDate() + 1);
+		}
+		loopedDates.forEach((l) => {
+			parsedDates.forEach((p) => {
+				if (l.date.getTime() >= p.getTime()) {
+					l.num += 1;
+				}
+			});
+		});
+
+		loopedDates = loopedDates;
+	}
+
+	function calculateStats(pParticipants: cTentParticipant[]) {
 		notPaid = [];
 		noPhotosAllowed = [];
 		vegetarians = [];
 
-		arg_participants.forEach((p) => {
+		pParticipants.forEach((p) => {
 			if (!p.paid) {
 				notPaid[notPaid.length] = p.getFullname();
 			}
@@ -89,55 +125,55 @@
 		});
 	}
 
-	function caluclateAssignedParticipants(arg_participants: cTentParticipant[]): number {
-		if (arg_participants.length == 0) {
+	function caluclateAssignedParticipants(pParticipants: cTentParticipant[]): number {
+		if (pParticipants.length == 0) {
 			return 0;
 		}
 		let loc_assigned = 0;
-		for (let i = 0; i < arg_participants.length; i++) {
-			if (arg_participants[i].tent != 9999) {
+		for (let i = 0; i < pParticipants.length; i++) {
+			if (pParticipants[i].tent != 9999) {
 				loc_assigned++;
 			}
 		}
 		return loc_assigned;
 	}
 
-	function calculateYoungestParticipant(arg_participants: cTentParticipant[]): string {
-		if (arg_participants.length == 0) {
+	function calculateYoungestParticipant(pParticipants: cTentParticipant[]): string {
+		if (pParticipants.length == 0) {
 			return '';
 		}
 		let loc_age = 100;
 		let loc_index = 0;
-		for (let i = 0; i < arg_participants.length; i++) {
-			if (arg_participants[i].age < loc_age) {
-				loc_age = arg_participants[i].age;
+		for (let i = 0; i < pParticipants.length; i++) {
+			if (pParticipants[i].age < loc_age) {
+				loc_age = pParticipants[i].age;
 				loc_index = i;
 			}
 		}
 		return (
-			arg_participants[loc_index].getFullname() +
+			pParticipants[loc_index].getFullname() +
 			' (' +
-			arg_participants[loc_index].getAgeTwoDecimal() +
+			pParticipants[loc_index].getAgeTwoDecimal() +
 			')'
 		);
 	}
 
-	function calculateEldestParticipant(arg_participants: cTentParticipant[]): string {
-		if (arg_participants.length == 0) {
+	function calculateEldestParticipant(pParticipants: cTentParticipant[]): string {
+		if (pParticipants.length == 0) {
 			return '';
 		}
 		let loc_age = 0;
 		let loc_index = 0;
-		for (let i = 0; i < arg_participants.length; i++) {
-			if (arg_participants[i].age > loc_age) {
-				loc_age = arg_participants[i].age;
+		for (let i = 0; i < pParticipants.length; i++) {
+			if (pParticipants[i].age > loc_age) {
+				loc_age = pParticipants[i].age;
 				loc_index = i;
 			}
 		}
 		return (
-			arg_participants[loc_index].getFullname() +
+			pParticipants[loc_index].getFullname() +
 			' (' +
-			arg_participants[loc_index].getAgeTwoDecimal() +
+			pParticipants[loc_index].getAgeTwoDecimal() +
 			')'
 		);
 	}
@@ -156,15 +192,15 @@
 		}
 	}
 
-	function calculateAvgAge(arg_participants: cTentParticipant[]): number {
-		if (arg_participants.length == 0) {
+	function calculateAvgAge(pParticipants: cTentParticipant[]): number {
+		if (pParticipants.length == 0) {
 			return 0;
 		}
 		let ageSum = 0;
-		for (let i = 0; i < arg_participants.length; i++) {
-			ageSum += arg_participants[i].age;
+		for (let i = 0; i < pParticipants.length; i++) {
+			ageSum += pParticipants[i].age;
 		}
-		return Math.round((ageSum / arg_participants.length) * 100) / 100;
+		return Math.round((ageSum / pParticipants.length) * 100) / 100;
 	}
 
 	function calculateBirthdayKids(
@@ -311,6 +347,7 @@
 <svelte:head>
 	<title>Home</title>
 </svelte:head>
+
 <div class="container-fluid">
 	<div class="row gx-3 gy-3">
 		<div class="col-sm-4">
@@ -338,6 +375,18 @@
 						</div>
 					</DashboardCard>
 				</div>
+
+				<div class="col-sm-12">
+					<DashboardCard
+						title={'Anmeldeverlauf (' + participants.length + ' Anmeldungen)'}
+						icon="bi-graph-up"
+					>
+						{#if loopedDates.length > 0}
+							<DateGraph data={loopedDates} />
+						{/if}
+					</DashboardCard>
+				</div>
+
 				<div class="col-sm-12">
 					<DashboardCard title={'Durchschnittsalter Zelte'} icon="bi-bar-chart">
 						<ul>
@@ -499,4 +548,5 @@
 			</div>
 		</div>
 	</div>
+	<div class="row gx-3 gy-3" />
 </div>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { apiGetLogs, type Logs } from '$lib/_apiParticipants';
+	import { apiGetLogs, type Logs } from '$lib/api/apiLogs';
 	import { onMount } from 'svelte';
 
 	let logs: Logs = { errors: [], revisions: [] };

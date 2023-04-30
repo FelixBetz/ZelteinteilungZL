@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { baseUrl } from '$lib/_apiParticipants';
+
 	import NavbarParticipants from '$lib/NavbarParticipants.svelte';
+	import { BASE_URL } from '$lib/api/api';
 	let randomNumber = 0;
 
 	onMount(() => {
@@ -18,7 +19,7 @@
 	<!--add radnom number to iframe src, to prevent browser from caching the iframe-->
 	<iframe
 		title="markermap"
-		src={baseUrl + '/maps/markermap.html?' + randomNumber}
+		src={BASE_URL + '/maps/markermap.html?' + randomNumber}
 		style="width:100%; height: calc(100vh - 125px) !important; "
 	/>
 </div>

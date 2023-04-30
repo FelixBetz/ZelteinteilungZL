@@ -2,8 +2,7 @@
 	import * as d3 from 'd3';
 	import { drag } from 'd3';
 	import { onMount } from 'svelte';
-
-	import type { ILink, INode } from '$lib/_apiParticipants';
+	import type { ILink, INode } from '$lib/api/apiGraphs';
 
 	let width = 1800;
 	let height = 800;

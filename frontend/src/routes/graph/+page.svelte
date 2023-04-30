@@ -1,6 +1,5 @@
 <script lang="ts">
-	import type { IData } from '$lib/_apiParticipants';
-	import { apiGetGraph, type GraphInput } from '$lib/_apiParticipants';
+	import { apiGetGraph, type GraphInput, type IData } from '$lib/api/apiGraphs';
 	import { onMount } from 'svelte';
 	import NetworkGraph from '../../lib/chart/NetworkGraph.svelte';
 

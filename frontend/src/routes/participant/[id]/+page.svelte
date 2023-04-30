@@ -1,27 +1,23 @@
 <script lang="ts">
-	import { apiGetParticipant, apiPostParticipant } from '$lib/_apiParticipants';
-
-	import type { cTentParticipant } from '$lib/_apiParticipants';
-
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
+	import {
+		type cTentParticipant,
+		apiPostParticipant,
+		apiGetParticipant
+	} from '$lib/api/apiParticipants';
 
 	let participant: cTentParticipant | null = null;
-	let inputBirthdateValue: string;
+	let inputRegisteredValue: string;
 
-	function parseTimeStr(argParticipant: cTentParticipant | null): string {
+	function parseDatimeTimeStr(argParticipant: cTentParticipant | null): string {
 		if (argParticipant == null) {
 			return '';
 		}
-		let splittedBitdateStr = argParticipant.birthdate.split('-');
-		let y = splittedBitdateStr[0];
-		let m = splittedBitdateStr[1];
-		let d = splittedBitdateStr[2];
-		inputBirthdateValue = y + '-' + m + '-' + d;
-		return inputBirthdateValue;
+		return argParticipant.registered.replace(' ', 'T');
 	}
 
-	$: inputBirthdateValue = parseTimeStr(participant);
+	$: inputRegisteredValue = parseDatimeTimeStr(participant);
 
 	async function getParticipant(id: number) {
 		participant = await apiGetParticipant(id);
@@ -97,16 +93,7 @@
 							type="date"
 							placeholder="Enter birthdate"
 							id="birthdate"
-							bind:value={inputBirthdateValue}
-							on:change={() => {
-								let splittedBitdateStr = inputBirthdateValue.split('-');
-								let y = splittedBitdateStr[0];
-								let m = splittedBitdateStr[1];
-								let d = splittedBitdateStr[2];
-								if (participant != undefined) {
-									participant.birthdate = y + '-' + m + '-' + d;
-								}
-							}}
+							bind:value={participant.birthdate}
 						/>
 						<label for="birthdate">Geburtstag</label>
 					</div>
@@ -291,6 +278,24 @@
 								bind:checked={participant.paid}
 							/>
 							<label for="paid">bezahlt</label>
+						</div>
+					</div>
+
+					<div class="col mt-3">
+						<div class="form-floating">
+							<input
+								class="form-control"
+								type="datetime-local"
+								placeholder="Enter registered"
+								id="registered"
+								bind:value={inputRegisteredValue}
+								on:change={() => {
+									if (participant != undefined) {
+										participant.registered = inputRegisteredValue.replace('T', ' ');
+									}
+								}}
+							/>
+							<label for="registered">Registriert</label>
 						</div>
 					</div>
 				</div>
