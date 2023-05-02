@@ -9,5 +9,3 @@
 - Stübis
   - tabelle auswählbar mit Checkbox machen
   - alter im Zeltlager
-
-- Logs: Revisions von gleicher Person gruppieren
