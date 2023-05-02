@@ -9,7 +9,12 @@
 		type cTentParticipant
 	} from '$lib/api/apiParticipants';
 
-	import { getWeekdayString, getStrTwoDecimal, type DateGraphData } from '$lib/helpers';
+	import {
+		getWeekdayString,
+		getStrTwoDecimal,
+		type DateGraphData,
+		getGermanDateString
+	} from '$lib/helpers';
 	import { type Configs, apiGetConfigs } from '$lib/api/apiConfig';
 	import { onMount } from 'svelte';
 	import DateGraph from '$lib/chart/DateGraph.svelte';
@@ -372,7 +377,11 @@
 		<div class="col-sm-4">
 			<div class="row gx-3 gy-3">
 				<div class="col-sm-12">
-					<DashboardCard title={'Leitungsteam (' + tentLeaders.length + ')'} icon="bi-people">
+					<DashboardCard
+						title={'Leitungsteam (' + tentLeaders.length + ')'}
+						icon="bi-people"
+						bgColor={'bg-secondary'}
+					>
 						<div class="row gx-0 gy-0">
 							{#each teams as team}
 								<div class="col-sm-6">
@@ -399,16 +408,31 @@
 					<DashboardCard
 						title={'Anmeldeverlauf (' + participants.length + ' Anmeldungen)'}
 						icon="bi-graph-up"
+						bgColor={'bg-success'}
 					>
 						{#if loopedDates.length > 0}
-							<DateGraph data={loopedDates} />
+							<DateGraph data={loopedDates} color={'#198754'} />
 						{/if}
 					</DashboardCard>
 				</div>
 
 				<div class="col-sm-12">
-					<DashboardCard title={'Durchschnittsalter Zelte'} icon="bi-bar-chart">
+					<DashboardCard
+						title={'Durchschnittsalter Zelte'}
+						icon="bi-bar-chart"
+						bgColor={'bg-secondary'}
+					>
 						<ul>
+							<li>zu einem Zelt zugeteilt: {assignedParticipants}/{participants.length}</li>
+							<div class="progress mb-3" style="height: 30px;">
+								<div
+									class="progress-bar bg-secondary"
+									role="progressbar"
+									style="width: {(100 * assignedParticipants) / participants.length}%;"
+								>
+									{getStrTwoDecimal((100 * assignedParticipants) / participants.length)}%
+								</div>
+							</div>
 							<div class="row">
 								{#each tentAvgAge as avg}
 									<div class="col-sm-3">
@@ -425,30 +449,18 @@
 		<div class="col-sm-4">
 			<div class="row gx-3 gy-3">
 				<div class="col-sm-12">
-					<DashboardCard title={'Teilnehmer Statistik'} icon="bi-graph-up">
+					<DashboardCard title={'Teilnehmer Statistik'} icon="bi-graph-up" bgColor="bg-primary">
 						<ul>
 							<li>Anzahl Teilnehmer: {participants.length}</li>
 							<li>Durchschnittsalter: {avgAge}</li>
 							<li>jüngster Teilnehmer: {youngestParticipant}</li>
 							<li>ältester Teilnehmer: {eldestParticipant}</li>
-							<li>
-								<div>zu einem Zelt zugeteilt: {assignedParticipants}/{participants.length}</div>
-								<div class="progress">
-									<div
-										class="progress-bar bg-info"
-										role="progressbar"
-										style="width: {(100 * assignedParticipants) / participants.length}%;"
-									>
-										{getStrTwoDecimal((100 * assignedParticipants) / participants.length)}%
-									</div>
-								</div>
-							</li>
 						</ul>
 					</DashboardCard>
 				</div>
 
 				<div class="col-sm-12">
-					<DashboardCard title={'Geburtstage im Lager'} icon="bi-gift">
+					<DashboardCard title={'Geburtstage im Lager'} icon="bi-gift" bgColor={'bg-success'}>
 						<ul>
 							{#each birthDayKids as kid}
 								<li>
@@ -472,6 +484,7 @@
 					<DashboardCard
 						title={'keine Fotos: ' + noPhotosAllowed.length}
 						icon="bi-camera-video-off"
+						bgColor={'bg-warning'}
 					>
 						{#if noPhotosAllowed.length == 0}
 							<i>niemand</i>
@@ -486,7 +499,11 @@
 				</div>
 
 				<div class="col-sm-6">
-					<DashboardCard title={'Vegetarisch: ' + vegetarians.length} icon="bi-piggy-bank">
+					<DashboardCard
+						title={'Vegetarisch: ' + vegetarians.length}
+						icon="bi-piggy-bank"
+						bgColor={'bg-warning'}
+					>
 						{#if vegetarians.length == 0}
 							<i>niemand</i>
 						{:else}
@@ -503,13 +520,14 @@
 					<DashboardCard
 						title={'Bezahlt: ' + (participants.length - notPaid.length) + '/' + participants.length}
 						icon="bi-currency-euro"
+						bgColor={'bg-danger'}
 					>
-						<div class="progress">
+						<div class="progress my-2" style="height: 30px">
 							<div
-								class="progress-bar bg-info"
+								class="progress-bar bg-danger"
 								role="progressbar"
 								style="width: {(100 * (participants.length - notPaid.length)) /
-									participants.length}%;"
+									participants.length}%; font-size: 200%"
 							>
 								{getStrTwoDecimal(
 									(100 * (participants.length - notPaid.length)) / participants.length
@@ -540,6 +558,7 @@
 					<DashboardCard
 						title={'Nicht angemeldete Freunde: ' + friendsNotRegistered.length}
 						icon="bi-person-x"
+						bgColor={'bg-danger'}
 					>
 						<ul>
 							{#each friendsNotRegistered as p}
@@ -552,6 +571,7 @@
 					<DashboardCard
 						title={'Letztes Jahr angemeldet: ' + lastYearRegistered.length}
 						icon="bi-person-x"
+						bgColor={'bg-danger'}
 					>
 						<ul>
 							<div class="row">
@@ -565,7 +585,7 @@
 					</DashboardCard>
 				</div>
 				<div class="col-sm-6">
-					<DashboardCard title={'Logs'} icon="bi-card-text">
+					<DashboardCard title={'Logs'} icon="bi-card-text" bgColor={'bg-secondary'}>
 						<ul>
 							<a href="/logs">
 								<li>Error Logs: <span class="badge bg-danger">{logs.errors.length}</span></li>
@@ -577,10 +597,10 @@
 					</DashboardCard>
 				</div>
 				<div class="col-sm-6">
-					<DashboardCard title={'Configs'} icon="bi-gear">
+					<DashboardCard title={'Configs'} icon="bi-gear" bgColor={'bg-secondary'}>
 						<ul>
 							<li>Anzahl Zelte: {configs.numTents}</li>
-							<li>Start des Zeltlagers: {configs.zlStart}</li>
+							<li>Start des Zeltlagers: {getGermanDateString(configs.zlStart)}</li>
 						</ul>
 					</DashboardCard>
 				</div>

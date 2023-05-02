@@ -3,6 +3,8 @@
 	import * as d3 from 'd3';
 	import { onMount } from 'svelte';
 
+	export let color = 'steelblue';
+
 	let container: SVGSVGElement;
 
 	const margin = { top: 5, right: 15, bottom: 20, left: 20 };
@@ -47,7 +49,7 @@
 			.append('path')
 			.datum(data)
 			.attr('fill', 'none')
-			.attr('stroke', 'steelblue')
+			.attr('stroke', color)
 			.attr('stroke-width', 5)
 			.attr('d', line);
 
@@ -59,12 +61,7 @@
 			.y1((d) => y(d.num));
 
 		// Add the area path to the chart
-		chartGroup
-			.append('path')
-			.datum(data)
-			.attr('fill', 'steelblue')
-			.attr('opacity', 0.5)
-			.attr('d', area);
+		chartGroup.append('path').datum(data).attr('fill', color).attr('opacity', 0.5).attr('d', area);
 
 		// Add horizontal dotted lines
 		chartGroup
