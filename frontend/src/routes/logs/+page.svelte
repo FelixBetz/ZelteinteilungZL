@@ -5,14 +5,32 @@
 
 	let logs: Logs = { errors: [], revisions: [] };
 
-	let revisionIdx: number[] = [1, 2];
+	interface Revsions {
+		id: number;
+		indices: number[];
+	}
+
+	let revisionIdx: Revsions[] = [];
 
 	$: createRevisionIdx(logs);
 	function createRevisionIdx(logs: Logs) {
+		let paricipantsIds = new Set<number>();
+
+		logs.revisions.forEach((l) => {
+			paricipantsIds.add(l.id);
+		});
+
 		revisionIdx = [];
-		logs.revisions.forEach((revision, idx) => {
-			console.log(idx);
-			revisionIdx[revisionIdx.length] = idx;
+		Array.from(paricipantsIds).forEach((el) => {
+			revisionIdx[revisionIdx.length] = { id: el, indices: [] };
+		});
+
+		logs.revisions.forEach((logs, idx) => {
+			revisionIdx.forEach((revison) => {
+				if (logs.id == revison.id) {
+					revison.indices.push(idx);
+				}
+			});
 		});
 	}
 
@@ -57,51 +75,70 @@
 			{/if}
 			<div class="row">
 				<Masonry items={revisionIdx} minColWidth={500} maxColWidth={500} gap={6} let:item>
-					<div class="">
-						<div class="card border-secondary mb-1 position-relative">
-							<div class="text-right text-white position-absolute top-0 end-0 me-2">
-								<i>Revision {item}</i>
+					<div class="card border-dark border-2 border mb-1 position-relative">
+						<div class="text-right text-white position-absolute top-0 end-0 me-2">
+							<i>
+								{item.indices.length > 1 ? 'Revisions' : 'Revision'}
+								{#each item.indices as num, idx}
+									{#if idx != item.indices.length - 1}
+										{num},
+									{:else}
+										{num}
+									{/if}
+								{/each}
+							</i>
+						</div>
+						<div
+							class="card-header {item.indices.reduce(
+								(acc, val) => acc || logs.revisions[val].isError,
+								false
+							)
+								? ' bg-danger '
+								: ' bg-info'} p-1 rounded-top border-2 border-bottom border-dark"
+						>
+							<div class="text-white">
+								<strong>
+									ID {item.id}
+									<i>
+										{logs.revisions[item.indices[0]].fullname
+											? '(' + logs.revisions[item.indices[0]].fullname + ')'
+											: ''}
+									</i>
+								</strong>
 							</div>
-							<div
-								class="card-header {logs.revisions[item].isError ? ' bg-danger' : ' bg-info'} p-1"
-							>
-								<div class="text-white">
-									<strong>
-										ID {logs.revisions[item].id}
-										<i>
-											{logs.revisions[item].fullname
-												? '(' + logs.revisions[item].fullname + ')'
-												: ''}
-										</i>
-									</strong>
-								</div>
-							</div>
-							<div
-								class="card-body text-white p-1 ps-3 {logs.revisions[item].isError
-									? ' bg-danger'
-									: 'bg-info'}"
-							>
-								<!--Revision Error-->
-								{#if logs.revisions[item].isError}
-									<p class="card-text">
-										<strong>Error Message: </strong><i>{logs.revisions[item].errorMessage}</i><br />
-										Eigenschaft <strong>&quot;{logs.revisions[item].property}&quot;</strong> wurde
-										nicht zu
-										<strong>&quot;{logs.revisions[item].newValue}&quot;</strong> geändert
-									</p>
+						</div>
+						<div class="card-body text-white p-0">
+							{#each item.indices as revsionIdx, idx}
+								<div
+									class="bg-info ps-3 pe-1
+									{logs.revisions[revsionIdx].isError ? ' bg-danger' : 'bg-info'} 
+									{idx == item.indices.length - 1 ? ' rounded-bottom' : 'border-dark border-1 border-bottom'}"
+								>
+									<!--Revision Error-->
+									{#if logs.revisions[revsionIdx].isError}
+										<p class="card-text">
+											<strong>Error Message: </strong><i
+												>{logs.revisions[revsionIdx].errorMessage}</i
+											><br />
+											Eigenschaft
+											<strong>&quot;{logs.revisions[revsionIdx].property}&quot;</strong>
+											wurde nicht zu
+											<strong>&quot;{logs.revisions[revsionIdx].newValue}&quot;</strong> geändert
+										</p>
 
-									<!--Revison log-->
-								{:else}
-									<p class="card-text">
-										<strong>&quot;{logs.revisions[item].property}&quot;</strong>:
-										<strong>
-											<i>&quot;{logs.revisions[item].oldValue}&quot;</i>
-											<i class="bi bi-arrow-right" />
-											<i>&quot;{logs.revisions[item].newValue}&quot;</i>
-										</strong>
-									</p>
-								{/if}
-							</div>
+										<!--Revison log-->
+									{:else}
+										<p class="card-text">
+											<strong>&quot;{logs.revisions[revsionIdx].property}&quot;</strong>:
+											<strong>
+												<i>&quot;{logs.revisions[revsionIdx].oldValue}&quot;</i>
+												<i class="bi bi-arrow-right" />
+												<i>&quot;{logs.revisions[revsionIdx].newValue}&quot;</i>
+											</strong>
+										</p>
+									{/if}
+								</div>
+							{/each}
 						</div>
 					</div>
 				</Masonry>
