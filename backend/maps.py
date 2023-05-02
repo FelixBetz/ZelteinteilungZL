@@ -6,6 +6,7 @@ from folium.plugins import MarkerCluster
 from folium import plugins
 
 import pgeocode
+from geopy.geocoders import Nominatim
 
 OUTPUT_DIR_PATH = "./output_maps/"
 
@@ -27,19 +28,33 @@ def calc_middle_point(arg_locations):
 
 def generate_maps(zip_codes):
     """geneartes heatmap and markermaps by zipcodes"""
+    # pylint: disable=too-many-locals
     # generate output directory
+
+    warnings = []
 
     if not os.path.exists(OUTPUT_DIR_PATH):
         os.makedirs(OUTPUT_DIR_PATH)
 
+    geolocator = Nominatim(user_agent="LaleControl")
     # Get longitude and latitude for each zipcode
     marker_locations = []
     for zip_code in zip_codes:
-        zip_code_coords = pgeocode.Nominatim("de")\
-            .query_postal_code(zip_code[0])
-        marker_locations.append(
-            [zip_code_coords["latitude"], zip_code_coords["longitude"]]
-        )
+        location = geolocator.geocode(zip_code[2])
+        if location is not None:
+            #
+            marker_locations.append([location.latitude, location.longitude])
+        else:
+            zip_code_coords = pgeocode.Nominatim("de")\
+                .query_postal_code(zip_code[0])
+            marker_locations.append(
+                [zip_code_coords["latitude"], zip_code_coords["longitude"]]
+            )
+
+            warning = "WARNING: could not find address: " + \
+                zip_code[2] + " " + zip_code[3]
+            print(warning)
+            warnings.append(warning)
 
     middle_point = calc_middle_point(marker_locations)
 
@@ -51,12 +66,13 @@ def generate_maps(zip_codes):
 
     # create markers form PLZ coordinates array
     for i, pnt in enumerate(marker_locations):
-        zipcode = zip_codes[i][0]
-        location = zip_codes[i][1]
+
+        address = zip_codes[i][2]
+        name = zip_codes[i][3]
 
         folium.Marker(
             location=[pnt[0], pnt[1]],
-            popup=f"{zipcode} {location}\r\n({pnt[0]}°| {pnt[1]}°)",
+            popup=f"{name}, {address}"  # \r\n({pnt[0]}°| {pnt[1]}°)",
         ).add_to(map_cluster)
 
     minimap = plugins.MiniMap()
@@ -85,3 +101,5 @@ def generate_maps(zip_codes):
     )  # tiles="Stamen Toner"
     plugins.HeatMap(marker_locations).add_to(heatmap)
     heatmap.save(OUTPUT_DIR_PATH + "heatmap.html")
+
+    return warnings

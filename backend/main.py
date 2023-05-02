@@ -562,12 +562,15 @@ def get_tent_leaders():
 def get_maps():
     """generate maps by given zipcode an location"""
     zip_codes = []
+    warnings = []
     req = request.form.get("zipCodes")
     for zip_code in json.loads(req):
-        zip_codes.append((zip_code["zipCode"], zip_code["location"]))
+        zip_codes.append(
+            (zip_code["zipCode"], zip_code["location"],
+             zip_code["addressString"], zip_code["name"]))
     if len(zip_codes) > 0:
-        generate_maps(zip_codes)
-    return jsonify("ok")
+        warnings = generate_maps(zip_codes)
+    return jsonify(warnings)
 
 
 @ app.route("/api/maps/<path:filename>")

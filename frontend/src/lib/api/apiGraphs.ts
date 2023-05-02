@@ -3,9 +3,11 @@ import { BASE_URL } from './api';
 export interface ZipCodes {
 	zipCode: number;
 	location: string;
+	addressString: string;
+	name: string;
 }
 
-export async function apiGetMaps(zipCodes: ZipCodes[]): Promise<string> {
+export async function apiGetMaps(zipCodes: ZipCodes[]): Promise<string[]> {
 	const formData = new FormData();
 	formData.append('zipCodes', JSON.stringify(zipCodes));
 	const response = await fetch(BASE_URL + '/maps', {
@@ -13,12 +15,11 @@ export async function apiGetMaps(zipCodes: ZipCodes[]): Promise<string> {
 		body: formData
 	})
 		.then((res) => {
-			res;
-			return 'ok';
+			return res.json();
 		})
 		.catch((error: Error) => {
 			console.error(error);
-			return 'error';
+			return [];
 		});
 
 	return response;
