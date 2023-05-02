@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { apiGetTentLeader, type cTentLeader } from '$lib/api/apiTentleader';
-
 	import {
 		apiGetParticipants,
 		apiPostParticipants,
@@ -8,21 +7,24 @@
 	} from '$lib/api/apiParticipants';
 
 	import { onMount } from 'svelte';
-	import Tent from '$lib/TentParticipant.svelte';
 	import TentParticipant from '$lib/TentParticipant.svelte';
 	import { type Configs, apiGetConfigs } from '$lib/api/apiConfig';
+	import { getStrTwoDecimal } from '$lib/helpers';
+
 	let configs: Configs = { numTents: 9999, zlStart: '1970-08-12' };
 	interface Basket {
 		name: string;
 		items: number[];
 		tentLeaders: string[];
+		age: number;
 	}
 
 	let baskets: Basket[] = [
 		{
 			name: 'Backlog',
 			items: [],
-			tentLeaders: []
+			tentLeaders: [],
+			age: 0
 		}
 	];
 
@@ -31,15 +33,28 @@
 			{
 				name: 'Backlog',
 				items: [],
-				tentLeaders: []
+				tentLeaders: [],
+				age: 0
 			}
 		];
 		for (let i = 0; i < configs.numTents; i++) {
-			baskets.push({ name: 'Zelt ' + (i + 1), items: [], tentLeaders: [] });
+			baskets.push({ name: 'Zelt ' + (i + 1), items: [], tentLeaders: [], age: 0 });
 		}
 	}
 
 	let participants: cTentParticipant[] = [];
+
+	$: calcAvgAge(baskets);
+
+	function calcAvgAge(pBaskets: Basket[]) {
+		pBaskets.forEach((b) => {
+			let avgAge = 0;
+			b.items.forEach((p) => {
+				avgAge += participants[p].age;
+			});
+			b.age = avgAge / b.items.length;
+		});
+	}
 
 	function compareByAge(a: cTentParticipant, b: cTentParticipant) {
 		if (a.age < b.age) {
@@ -174,7 +189,9 @@
 								style="border: 1px solid black; "
 							>
 								<div class="text-right position-absolute top-0 end-0 me-2">
-									<i> Ø - Alter: </i>
+									<i>
+										Ø - Alter: {getStrTwoDecimal(b.age)}
+									</i>
 								</div>
 								<div class="card-header">
 									<h5 class="card-title">
@@ -191,7 +208,7 @@
 								>
 									<div class="row">
 										{#each b.items as item, itemIndex}
-											<Tent
+											<TentParticipant
 												participant={participants[item]}
 												on:dragstart={(event) => dragStart(event, basketIndex, itemIndex)}
 											/>
