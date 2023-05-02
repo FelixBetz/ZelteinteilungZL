@@ -9,15 +9,11 @@
 		type cTentParticipant
 	} from '$lib/api/apiParticipants';
 
-	import {
-		getWeekdayString,
-		getStrTwoDecimal,
-		type DateGraphData,
-		getGermanDateString
-	} from '$lib/helpers';
+	import { getWeekdayString, type DateGraphData, getGermanDateString } from '$lib/helpers';
 	import { type Configs, apiGetConfigs } from '$lib/api/apiConfig';
 	import { onMount } from 'svelte';
 	import DateGraph from '$lib/chart/DateGraph.svelte';
+	import ProgressBar from '$lib/Dashboard/ProgressBar.svelte';
 
 	interface TentAvg {
 		avg: number;
@@ -424,15 +420,14 @@
 					>
 						<ul>
 							<li>zu einem Zelt zugeteilt: {assignedParticipants}/{participants.length}</li>
-							<div class="progress mb-3" style="height: 30px;">
-								<div
-									class="progress-bar bg-secondary"
-									role="progressbar"
-									style="width: {(100 * assignedParticipants) / participants.length}%;"
-								>
-									{getStrTwoDecimal((100 * assignedParticipants) / participants.length)}%
-								</div>
-							</div>
+
+							<ProgressBar
+								bgColor={'bg-secondary'}
+								percentage={(100 * assignedParticipants) / participants.length}
+								height={30}
+								classes="mb-3"
+							/>
+
 							<div class="row">
 								{#each tentAvgAge as avg}
 									<div class="col-sm-3">
@@ -522,18 +517,13 @@
 						icon="bi-currency-euro"
 						bgColor={'bg-danger'}
 					>
-						<div class="progress my-2" style="height: 30px">
-							<div
-								class="progress-bar bg-danger"
-								role="progressbar"
-								style="width: {(100 * (participants.length - notPaid.length)) /
-									participants.length}%; font-size: 200%"
-							>
-								{getStrTwoDecimal(
-									(100 * (participants.length - notPaid.length)) / participants.length
-								)}%
-							</div>
-						</div>
+						<ProgressBar
+							bgColor={'bg-danger'}
+							percentage={(100 * (participants.length - notPaid.length)) / participants.length}
+							height={30}
+							classes="mb-2"
+						/>
+
 						<h5>
 							Nicht Bezahlt: {notPaid.length}
 							<i
