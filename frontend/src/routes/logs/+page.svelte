@@ -1,8 +1,20 @@
 <script lang="ts">
 	import { apiGetLogs, type Logs } from '$lib/api/apiLogs';
 	import { onMount } from 'svelte';
+	import Masonry from 'svelte-bricks';
 
 	let logs: Logs = { errors: [], revisions: [] };
+
+	let revisionIdx: number[] = [1, 2];
+
+	$: createRevisionIdx(logs);
+	function createRevisionIdx(logs: Logs) {
+		revisionIdx = [];
+		logs.revisions.forEach((revision, idx) => {
+			console.log(idx);
+			revisionIdx[revisionIdx.length] = idx;
+		});
+	}
 
 	async function getErrorLogs() {
 		logs = await apiGetLogs();
@@ -44,43 +56,55 @@
 				<i>keine Einträge</i>
 			{/if}
 			<div class="row">
-				{#each logs.revisions as log, logIndex}
-					<div class="col-sm-4">
+				<Masonry items={revisionIdx} minColWidth={500} maxColWidth={500} gap={6} let:item>
+					<div class="">
 						<div class="card border-secondary mb-1 position-relative">
 							<div class="text-right text-white position-absolute top-0 end-0 me-2">
-								<i>Revision {logIndex}</i>
+								<i>Revision {item}</i>
 							</div>
-							<div class="card-header {log.isError ? ' bg-danger' : ' bg-info'} p-1">
+							<div
+								class="card-header {logs.revisions[item].isError ? ' bg-danger' : ' bg-info'} p-1"
+							>
 								<div class="text-white">
 									<strong>
-										ID {log.id}
-										<i> {log.fullname ? '(' + log.fullname + ')' : ''} </i>
+										ID {logs.revisions[item].id}
+										<i>
+											{logs.revisions[item].fullname
+												? '(' + logs.revisions[item].fullname + ')'
+												: ''}
+										</i>
 									</strong>
 								</div>
 							</div>
-							<div class="card-body text-white p-1 ps-3 {log.isError ? ' bg-danger' : 'bg-info'}">
+							<div
+								class="card-body text-white p-1 ps-3 {logs.revisions[item].isError
+									? ' bg-danger'
+									: 'bg-info'}"
+							>
 								<!--Revision Error-->
-								{#if log.isError}
+								{#if logs.revisions[item].isError}
 									<p class="card-text">
-										<strong>Error Message: </strong><i>{log.errorMessage}</i><br />
-										Eigenschaft <strong>&quot;{log.property}&quot;</strong> wurde nicht zu
-										<strong>&quot;{log.newValue}&quot;</strong> geändert
+										<strong>Error Message: </strong><i>{logs.revisions[item].errorMessage}</i><br />
+										Eigenschaft <strong>&quot;{logs.revisions[item].property}&quot;</strong> wurde
+										nicht zu
+										<strong>&quot;{logs.revisions[item].newValue}&quot;</strong> geändert
 									</p>
 
 									<!--Revison log-->
 								{:else}
 									<p class="card-text">
-										<strong>&quot;{log.property}&quot;</strong>:
+										<strong>&quot;{logs.revisions[item].property}&quot;</strong>:
 										<strong>
-											<i>&quot;{log.oldValue}&quot;</i> <i class="bi bi-arrow-right" />
-											<i>&quot;{log.newValue}&quot;</i>
+											<i>&quot;{logs.revisions[item].oldValue}&quot;</i>
+											<i class="bi bi-arrow-right" />
+											<i>&quot;{logs.revisions[item].newValue}&quot;</i>
 										</strong>
 									</p>
 								{/if}
 							</div>
 						</div>
 					</div>
-				{/each}
+				</Masonry>
 			</div>
 		</div>
 	</div>
