@@ -10,5 +10,4 @@
   - tabelle auswählbar mit Checkbox machen
   - alter im Zeltlager
 
-- Todo Reiter einbauen
 - Logs: Revisions von gleicher Person gruppieren
