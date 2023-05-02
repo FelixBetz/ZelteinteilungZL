@@ -44,15 +44,38 @@
 	}
 </script>
 
-<input
-	bind:value={serachString}
-	on:keyup={onSearch}
-	type="search"
-	placeholder="Search"
-	class="ms-auto w-auto form-control bg-dark text-white"
-	style="margin-right: 20px"
-/>
-
+<div class="hstack">
+	<div class="">
+		<div class="">
+			<strong>Ausgewählte Elemente: </strong>
+			{filterdData.length}
+		</div>
+	</div>
+	<div class="ms-auto">
+		<div class="input-group">
+			<input
+				class="form-control border-end-0 border ms-auto w-auto form-control bg-dark text-white"
+				id="exampleFormControlInput2"
+				bind:value={serachString}
+				on:keyup={onSearch}
+				type="search"
+				placeholder="Search"
+			/>
+			<span class="input-group-append">
+				<button
+					class="btn btn-dark border-start-0 border rounded-0 rounded-end"
+					type="button"
+					on:click={() => {
+						serachString = '';
+						onSearch();
+					}}
+				>
+					<i class="bi bi-x-circle" />
+				</button>
+			</span>
+		</div>
+	</div>
+</div>
 <table class="table table-striped table-dark">
 	<thead>
 		<tr>

@@ -3,9 +3,8 @@
 - docu
 - tent allocation:
   - csv liste generieren
-  - map für jedes Zelt generiren
+  - map für jedes Zelt generieren
   - Voreinteilung der Stübis
-  - Durchsnittsalter pro Zelt
 
 - Stübis
   - tabelle auswählbar mit Checkbox machen
