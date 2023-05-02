@@ -18,12 +18,9 @@
 	let isOpen = false;
 </script>
 
-<nav class="navbar navbar-dark navbar-expand-md bg-dark bg-gradient fixed-top" style="height: 50px">
+<nav class="navbar navbar-dark  navbar-expand-md bg-dark fixed-top">
 	<div class="container-fluid">
-		<a class="navbar-brand" href="/">
-			<img src="favicon.png" class="img-fluid" style="height: 50px" alt="..." />
-			LaleControl
-		</a>
+		<a class="navbar-brand" href="/"> LaleControl </a>
 
 		<button
 			class="navbar-toggler"
