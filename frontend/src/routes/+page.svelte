@@ -409,9 +409,13 @@
 				<div class="col-sm-12">
 					<DashboardCard title={'Durchschnittsalter Zelte'} icon="bi-bar-chart">
 						<ul>
-							{#each tentAvgAge as avg}
-								<li>Zelt {avg.tentNumber} ({Math.round((100 * avg.avg) / avg.num) / 100})</li>
-							{/each}
+							<div class="row">
+								{#each tentAvgAge as avg}
+									<div class="col-sm-3">
+										<li>Zelt {avg.tentNumber} ({Math.round((100 * avg.avg) / avg.num) / 100})</li>
+									</div>
+								{/each}
+							</div>
 						</ul>
 					</DashboardCard>
 				</div>
@@ -549,13 +553,15 @@
 						title={'Letztes Jahr angemeldet: ' + lastYearRegistered.length}
 						icon="bi-person-x"
 					>
-						<div class="row">
-							{#each lastYearRegistered as name}
-								<div class="col-sm-4">
-									<li><strong>{name}</strong></li>
-								</div>
-							{/each}
-						</div>
+						<ul>
+							<div class="row">
+								{#each lastYearRegistered as name}
+									<div class="col-sm-4">
+										<li><strong>{name}</strong></li>
+									</div>
+								{/each}
+							</div>
+						</ul>
 					</DashboardCard>
 				</div>
 				<div class="col-sm-6">
