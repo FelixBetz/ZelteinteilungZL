@@ -47,7 +47,7 @@
 <div class="hstack">
 	<div class="">
 		<div class="">
-			<strong>Ausgewählte Elemente: </strong>
+			<strong>Angezeigte Elemente: </strong>
 			{filterdData.length}
 		</div>
 	</div>
