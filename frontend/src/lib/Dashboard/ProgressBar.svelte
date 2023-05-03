@@ -9,7 +9,7 @@
 
 <div class="progress {classes}" style="height:{height}px">
 	<div
-		class="progress-bar {bgColor}"
+		class="progress-bar overflow-visible {bgColor}"
 		role="progressbar"
 		style="width: {percentage}%; font-size: 200%"
 	>
