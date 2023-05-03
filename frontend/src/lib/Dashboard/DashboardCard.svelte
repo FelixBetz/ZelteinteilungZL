@@ -6,7 +6,7 @@
 	export let isSmallTitle = false;
 </script>
 
-<div class="card {color} ">
+<div class="card {color} shadow-lg">
 	<div class="card-header {bgColor}" style="--bs-bg-opacity: 0.7;">
 		{#if isSmallTitle}
 			<h5>
@@ -30,6 +30,3 @@
 		<slot />
 	</div>
 </div>
-
-<style>
-</style>
