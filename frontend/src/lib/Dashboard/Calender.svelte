@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { getDaysDelta, getStrOneDecimal } from '$lib/helpers';
 	import ICAL from 'ical.js';
 	import { onMount } from 'svelte';
 
@@ -16,13 +17,22 @@
 	let events: Event[] = [];
 	let nextEventIdx = -1;
 
-	export let color = 'secondary';
+	export let color = 'danger';
 
 	$: nextEventIdx = getClosestDateIdx(events);
 
 	$: getCalender(calenderUrl);
 
 	let isFetchAllowed = false;
+
+	function toBeautyDeltaStr(): string {
+		let days = getDaysDelta(new Date(Date.now()), events[nextEventIdx].start);
+		if (days <= 6) {
+			return 'noch ' + days + ' Tage';
+		}
+
+		return 'noch ' + getStrOneDecimal(days / 7) + ' Wochen';
+	}
 
 	onMount(() => {
 		isFetchAllowed = true;
@@ -100,8 +110,9 @@
 				<span class="highlight-container" style="--color: var(--bs-{color}-rgb)">
 					<span class="highlight">
 						<li class="mt-2 mb-2">
-							<strong> {toLocleDateStr(event.start)}: </strong> <i>(noch 2.5 Wochen)</i><br />
-							<i> {event.name} </i>
+							<strong> {toLocleDateStr(event.start)}: </strong><br />
+							<i> {event.name} </i><br />
+							<strong><i>({toBeautyDeltaStr()})</i></strong>
 						</li>
 					</span>
 				</span>

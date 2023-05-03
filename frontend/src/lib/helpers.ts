@@ -20,6 +20,9 @@ export function getWeekdayString(pDate: Date) {
 export function getStrTwoDecimal(age: number): number {
 	return Math.round(age * 100) / 100;
 }
+export function getStrOneDecimal(age: number): number {
+	return Math.round(age * 10) / 10;
+}
 
 export interface DateGraphData {
 	date: Date;
@@ -34,4 +37,13 @@ export function getGermanDateString(pDate: string) {
 export interface BarplotData {
 	label: string;
 	value: number;
+}
+
+export function getDaysDelta(pDateA: Date, pDateB: Date): number {
+	const diffTime = Math.abs(pDateA.getTime() - pDateB.getTime());
+	const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+	console.log(diffDays); // Output: 9
+
+	return diffDays;
 }
