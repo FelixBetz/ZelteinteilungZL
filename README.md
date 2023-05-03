@@ -9,3 +9,5 @@
 - Stübis
   - tabelle auswählbar mit Checkbox machen
   - alter im Zeltlager
+  
+ - on save: Bestätigungsnachricht

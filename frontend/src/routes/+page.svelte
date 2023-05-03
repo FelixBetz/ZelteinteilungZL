@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Calender from './../lib/Dashboard/Calender.svelte';
 	import DashboardCard from '$lib/Dashboard/DashboardCard.svelte';
 	import { apiGetLogs, type Logs } from '$lib/api/apiLogs';
 	import { apiGetTentLeader, type cTentLeader } from '$lib/api/apiTentleader';
@@ -388,7 +389,7 @@
 	<title>Home</title>
 </svelte:head>
 
-<div class="container-fluid">
+<div class="container-fluid mb-5">
 	<div class="row gx-3 gy-3">
 		<div class="col-sm-4">
 			<div class="row gx-3 gy-3">
@@ -444,12 +445,24 @@
 						{/if}
 					</DashboardCard>
 				</div>
+				<div class="col-sm-6"><i>empty</i></div>
+				<div class="col-sm-6">
+					<DashboardCard
+						title={'Termine'}
+						icon="bi-calendar4"
+						bgColor={'bg-secondary'}
+						isSmallTitle={true}
+					>
+						<Calender calenderUrl={configs.calenderUrl} />
+					</DashboardCard>
+				</div>
 
-				<div class="col-sm-12">
+				<div class="col-sm-6">
 					<DashboardCard
 						title={'Durchschnittsalter Zelte'}
 						icon="bi-bar-chart"
 						bgColor={'bg-secondary'}
+						isSmallTitle={true}
 					>
 						<ul>
 							<li>zu einem Zelt zugeteilt: {assignedParticipants}/{participants.length}</li>
@@ -463,7 +476,7 @@
 
 							<div class="row">
 								{#each tentAvgAge as avg}
-									<div class="col-sm-3">
+									<div class="col-sm-12">
 										<li>Zelt {avg.tentNumber} ({Math.round((100 * avg.avg) / avg.num) / 100})</li>
 									</div>
 								{/each}
