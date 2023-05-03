@@ -391,6 +391,7 @@
 
 <div class="container-fluid mb-5">
 	<div class="row gx-3 gy-3">
+		<!--1. column-->
 		<div class="col-sm-4">
 			<div class="row gx-3 gy-3">
 				<div class="col-sm-12">
@@ -435,19 +436,6 @@
 
 				<div class="col-sm-6">
 					<DashboardCard
-						title={'Anmeldungen pro Monat'}
-						icon="bi-bar-chart"
-						bgColor={'bg-success'}
-						isSmallTitle={true}
-					>
-						{#if registeredDistibution.length > 0}
-							<Barplot data={registeredDistibution} color={'#198754'} />
-						{/if}
-					</DashboardCard>
-				</div>
-				<div class="col-sm-6"><i>empty</i></div>
-				<div class="col-sm-6">
-					<DashboardCard
 						title={'Termine'}
 						icon="bi-calendar4"
 						bgColor={'bg-secondary'}
@@ -487,6 +475,7 @@
 			</div>
 		</div>
 
+		<!--2. column-->
 		<div class="col-sm-4">
 			<div class="row gx-3 gy-3">
 				<div class="col-sm-12">
@@ -526,6 +515,7 @@
 						title={'keine Fotos: ' + noPhotosAllowed.length}
 						icon="bi-camera-video-off"
 						bgColor={'bg-warning'}
+						isSmallTitle={true}
 					>
 						{#if noPhotosAllowed.length == 0}
 							<i>niemand</i>
@@ -544,6 +534,7 @@
 						title={'Vegetarisch: ' + vegetarians.length}
 						icon="bi-piggy-bank"
 						bgColor={'bg-warning'}
+						isSmallTitle={true}
 					>
 						{#if vegetarians.length == 0}
 							<i>niemand</i>
@@ -562,6 +553,7 @@
 						title={'Bezahlt: ' + (participants.length - notPaid.length) + '/' + participants.length}
 						icon="bi-currency-euro"
 						bgColor={'bg-danger'}
+						isSmallTitle={true}
 					>
 						<ProgressBar
 							bgColor={'bg-danger'}
@@ -586,8 +578,22 @@
 						</ul>
 					</DashboardCard>
 				</div>
+				<div class="col-sm-6">
+					<DashboardCard
+						title={'Anmeldungen pro Monat'}
+						icon="bi-bar-chart"
+						bgColor={'bg-success'}
+						isSmallTitle={true}
+					>
+						{#if registeredDistibution.length > 0}
+							<Barplot data={registeredDistibution} color={'#198754'} />
+						{/if}
+					</DashboardCard>
+				</div>
 			</div>
 		</div>
+
+		<!--3. column-->
 		<div class="col-sm-4">
 			<div class="row gx-3 gy-3">
 				<div class="col-sm-12">
@@ -621,7 +627,12 @@
 					</DashboardCard>
 				</div>
 				<div class="col-sm-6">
-					<DashboardCard title={'Logs'} icon="bi-card-text" bgColor={'bg-secondary'}>
+					<DashboardCard
+						title={'Logs'}
+						icon="bi-card-text"
+						bgColor={'bg-secondary'}
+						isSmallTitle={true}
+					>
 						<ul>
 							<a href="/logs">
 								<li>Error Logs: <span class="badge bg-danger">{logs.errors.length}</span></li>
@@ -633,7 +644,12 @@
 					</DashboardCard>
 				</div>
 				<div class="col-sm-6">
-					<DashboardCard title={'Configs'} icon="bi-gear" bgColor={'bg-secondary'}>
+					<DashboardCard
+						title={'Configs'}
+						icon="bi-gear"
+						bgColor={'bg-secondary'}
+						isSmallTitle={true}
+					>
 						<ul>
 							<li>Anzahl Zelte: {configs.numTents}</li>
 							<li>Start des Zeltlagers: {getGermanDateString(configs.zlStart)}</li>
