@@ -30,3 +30,8 @@ export function getGermanDateString(pDate: string) {
 	const [y, m, d] = pDate.split('-');
 	return d + '.' + m + '.' + y;
 }
+
+export interface BarplotData {
+	label: string;
+	value: number;
+}

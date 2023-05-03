@@ -68,7 +68,6 @@
 			.append('g')
 			.attr('class', 'grid')
 			.call(d3.axisLeft(y).tickSize(-0).tickFormat('').ticks(5))
-
 			.selectAll('line')
 			.attr('x2', width) // extend the lines to the edge of the chart
 			.attr('stroke-dasharray', '1 1') // make all lines dotted*/

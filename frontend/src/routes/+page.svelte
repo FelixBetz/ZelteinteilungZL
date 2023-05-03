@@ -9,11 +9,17 @@
 		type cTentParticipant
 	} from '$lib/api/apiParticipants';
 
-	import { getWeekdayString, type DateGraphData, getGermanDateString } from '$lib/helpers';
+	import {
+		getWeekdayString,
+		type DateGraphData,
+		getGermanDateString,
+		type BarplotData
+	} from '$lib/helpers';
 	import { type Configs, apiGetConfigs } from '$lib/api/apiConfig';
 	import { onMount } from 'svelte';
 	import DateGraph from '$lib/chart/DateGraph.svelte';
 	import ProgressBar from '$lib/Dashboard/ProgressBar.svelte';
+	import Barplot from '$lib/chart/Barplot.svelte';
 
 	interface TentAvg {
 		avg: number;
@@ -60,6 +66,7 @@
 	let vegetarians: string[] = [];
 
 	let loopedDates: DateGraphData[] = [];
+	let registeredDistibution: BarplotData[] = [];
 
 	let showNotPaid = false;
 	let showTeamMembers = false;
@@ -70,22 +77,35 @@
 	$: assignedParticipants = caluclateAssignedParticipants(participants);
 	$: calculateBirthdayKids(participants, tentLeaders, configs.zlStart);
 	$: calculateStats(participants);
-	$: calcRegisteredGraph(participants);
+	$: calcRegisteredGraphs(participants);
 
 	$: onMount(() => {
 		getParticipants();
 	});
 
-	function calcRegisteredGraph(pParticipants: cTentParticipant[]) {
+	function calcRegisteredGraphs(pParticipants: cTentParticipant[]) {
 		let parsedDates: Date[] = [];
+
+		let byMonth: BarplotData[] = [];
+		for (let i = 0; i < 12; i++) {
+			byMonth.push({ value: 0, label: '' });
+		}
+
 		if (pParticipants.length == 0) {
 			return;
 		}
 		pParticipants.forEach((p) => {
 			let datetime = new Date(p.registered);
 			parsedDates.push(new Date(datetime.toDateString()));
+			//increase by month counter
+			let idx = datetime.getMonth();
+			byMonth[idx].value += 1;
+			byMonth[idx].label = datetime.toLocaleString('default', { month: 'short' });
 		});
 		parsedDates.push(new Date(Date.now()));
+
+		//remove month with no registrations
+		registeredDistibution = byMonth.filter((x) => x.value > 0);
 
 		//parsedDates = parsedDates.sort();
 		parsedDates = parsedDates.sort((a, b) => a.getTime() - b.getTime());
@@ -408,6 +428,19 @@
 					>
 						{#if loopedDates.length > 0}
 							<DateGraph data={loopedDates} color={'#198754'} />
+						{/if}
+					</DashboardCard>
+				</div>
+
+				<div class="col-sm-6">
+					<DashboardCard
+						title={'Anmeldungen pro Monat'}
+						icon="bi-bar-chart"
+						bgColor={'bg-success'}
+						isSmallTitle={true}
+					>
+						{#if registeredDistibution.length > 0}
+							<Barplot data={registeredDistibution} color={'#198754'} />
 						{/if}
 					</DashboardCard>
 				</div>
