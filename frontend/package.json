@@ -31,6 +31,7 @@
 	"dependencies": {
 		"@types/d3": "^7.4.0",
 		"d3": "^7.8.4",
+		"ical.js": "^1.5.0",
 		"svelte-bricks": "^0.1.7",
 		"sveltestrap": "^5.10.0"
 	}

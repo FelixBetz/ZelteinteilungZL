@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { type Configs, apiGetConfigs, apiPostConfigs } from '$lib/api/apiConfig';
 
-	let configs: Configs = { numTents: 9999, zlStart: '1970-08-12' };
+	let configs: Configs = { numTents: 9999, zlStart: '1970-08-12', calenderUrl: '' };
 
 	async function getConfigs() {
 		configs = await apiGetConfigs();
@@ -59,6 +59,20 @@
 				<label for="start">Start des Zeltlagers</label>
 			</div>
 		</div>
+
+		<div class="mb-3">
+			<label for="calenderUrl" class="form-label">Anzahl Zelte:</label>
+			<div class="form-floating">
+				<input
+					class="form-control"
+					id="calenderUrl"
+					placeholder="Enter url"
+					bind:value={configs.calenderUrl}
+				/>
+				<label for="calenderUrl">Kalender URL</label>
+			</div>
+		</div>
+
 		<div class="mb-3">
 			<button class="btn btn-primary btn-lg w-100" on:click={postConfigs}>Save</button>
 		</div>

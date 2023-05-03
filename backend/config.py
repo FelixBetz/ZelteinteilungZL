@@ -9,6 +9,7 @@ class Config:
         self.filepath = arg_filepath
         self.num_tents = 15
         self.zl_start = "2021-08-01"
+        self.calender_url = "https://invalid-calender.de"
         self.errors = []
 
     def __str__(self):
@@ -17,6 +18,7 @@ class Config:
             "Configs: \n"
             "  num_tents: " + str(self.num_tents) + "\n" +
             "  zl_start: " + str(self.zl_start) + "\n" +
+            "  calender_url: " + str(self.calender_url) + "\n" +
             "---------------------------"
         )
         return ret_str
@@ -26,6 +28,7 @@ class Config:
         loc_dict = {}
         loc_dict["numTents"] = self.num_tents
         loc_dict["zlStart"] = self.zl_start
+        loc_dict["calenderUrl"] = self.calender_url
 
         return loc_dict
 
@@ -53,3 +56,10 @@ class Config:
                 self.zl_start = loc_config["zlStart"]
             except KeyError:
                 self.errors.append("Config ERROR: \"zlStart\" nicht gefunden")
+
+            # parse calender url
+            try:
+                self.calender_url = loc_config["calenderUrl"]
+            except KeyError:
+                self.errors.append(
+                    "Config ERROR: \"calenderUrl\" nicht gefunden")

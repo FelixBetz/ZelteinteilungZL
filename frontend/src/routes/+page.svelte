@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Calender from './../lib/Dashboard/Calender.svelte';
 	import DashboardCard from '$lib/Dashboard/DashboardCard.svelte';
 	import { apiGetLogs, type Logs } from '$lib/api/apiLogs';
 	import { apiGetTentLeader, type cTentLeader } from '$lib/api/apiTentleader';
@@ -47,7 +48,7 @@
 	let birthDayKids: BirthdayKid[] = [];
 	let tentLeaders: cTentLeader[] = [];
 	let logs: Logs = { errors: [], revisions: [] };
-	let configs: Configs = { numTents: 9999, zlStart: '1970-08-12' };
+	let configs: Configs = { numTents: 9999, zlStart: '1970-08-12', calenderUrl: '' };
 
 	let friendsNotRegistered: FriendsNotRegistered[] = [];
 	let lastYearRegistered: string[] = [];
@@ -388,8 +389,9 @@
 	<title>Home</title>
 </svelte:head>
 
-<div class="container-fluid">
+<div class="container-fluid mb-5">
 	<div class="row gx-3 gy-3">
+		<!--1. column-->
 		<div class="col-sm-4">
 			<div class="row gx-3 gy-3">
 				<div class="col-sm-12">
@@ -434,22 +436,21 @@
 
 				<div class="col-sm-6">
 					<DashboardCard
-						title={'Anmeldungen pro Monat'}
-						icon="bi-bar-chart"
-						bgColor={'bg-success'}
+						title={'Termine'}
+						icon="bi-calendar4"
+						bgColor={'bg-secondary'}
 						isSmallTitle={true}
 					>
-						{#if registeredDistibution.length > 0}
-							<Barplot data={registeredDistibution} color={'#198754'} />
-						{/if}
+						<Calender calenderUrl={configs.calenderUrl} />
 					</DashboardCard>
 				</div>
 
-				<div class="col-sm-12">
+				<div class="col-sm-6">
 					<DashboardCard
 						title={'Durchschnittsalter Zelte'}
 						icon="bi-bar-chart"
 						bgColor={'bg-secondary'}
+						isSmallTitle={true}
 					>
 						<ul>
 							<li>zu einem Zelt zugeteilt: {assignedParticipants}/{participants.length}</li>
@@ -463,7 +464,7 @@
 
 							<div class="row">
 								{#each tentAvgAge as avg}
-									<div class="col-sm-3">
+									<div class="col-sm-12">
 										<li>Zelt {avg.tentNumber} ({Math.round((100 * avg.avg) / avg.num) / 100})</li>
 									</div>
 								{/each}
@@ -474,6 +475,7 @@
 			</div>
 		</div>
 
+		<!--2. column-->
 		<div class="col-sm-4">
 			<div class="row gx-3 gy-3">
 				<div class="col-sm-12">
@@ -513,6 +515,7 @@
 						title={'keine Fotos: ' + noPhotosAllowed.length}
 						icon="bi-camera-video-off"
 						bgColor={'bg-warning'}
+						isSmallTitle={true}
 					>
 						{#if noPhotosAllowed.length == 0}
 							<i>niemand</i>
@@ -531,6 +534,7 @@
 						title={'Vegetarisch: ' + vegetarians.length}
 						icon="bi-piggy-bank"
 						bgColor={'bg-warning'}
+						isSmallTitle={true}
 					>
 						{#if vegetarians.length == 0}
 							<i>niemand</i>
@@ -549,6 +553,7 @@
 						title={'Bezahlt: ' + (participants.length - notPaid.length) + '/' + participants.length}
 						icon="bi-currency-euro"
 						bgColor={'bg-danger'}
+						isSmallTitle={true}
 					>
 						<ProgressBar
 							bgColor={'bg-danger'}
@@ -573,8 +578,22 @@
 						</ul>
 					</DashboardCard>
 				</div>
+				<div class="col-sm-6">
+					<DashboardCard
+						title={'Anmeldungen pro Monat'}
+						icon="bi-bar-chart"
+						bgColor={'bg-success'}
+						isSmallTitle={true}
+					>
+						{#if registeredDistibution.length > 0}
+							<Barplot data={registeredDistibution} color={'#198754'} />
+						{/if}
+					</DashboardCard>
+				</div>
 			</div>
 		</div>
+
+		<!--3. column-->
 		<div class="col-sm-4">
 			<div class="row gx-3 gy-3">
 				<div class="col-sm-12">
@@ -608,7 +627,12 @@
 					</DashboardCard>
 				</div>
 				<div class="col-sm-6">
-					<DashboardCard title={'Logs'} icon="bi-card-text" bgColor={'bg-secondary'}>
+					<DashboardCard
+						title={'Logs'}
+						icon="bi-card-text"
+						bgColor={'bg-secondary'}
+						isSmallTitle={true}
+					>
 						<ul>
 							<a href="/logs">
 								<li>Error Logs: <span class="badge bg-danger">{logs.errors.length}</span></li>
@@ -620,10 +644,16 @@
 					</DashboardCard>
 				</div>
 				<div class="col-sm-6">
-					<DashboardCard title={'Configs'} icon="bi-gear" bgColor={'bg-secondary'}>
+					<DashboardCard
+						title={'Configs'}
+						icon="bi-gear"
+						bgColor={'bg-secondary'}
+						isSmallTitle={true}
+					>
 						<ul>
 							<li>Anzahl Zelte: {configs.numTents}</li>
 							<li>Start des Zeltlagers: {getGermanDateString(configs.zlStart)}</li>
+							<li><a href={configs.calenderUrl} target="_blank"> Kalender URL</a></li>
 						</ul>
 					</DashboardCard>
 				</div>

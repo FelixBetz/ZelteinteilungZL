@@ -184,7 +184,6 @@ def parse_paid(arg_participants):
 def parse_participants_last_year(arg_file_name):
     """parses zeltlager participants from input csv file"""
 
-    error_logs.clear()
     loc_participants = []
 
     if not os.path.isfile(arg_file_name):
@@ -215,8 +214,12 @@ def parse_participants_last_year(arg_file_name):
 
 def parse_participants(arg_file_name):
     """parses zeltlager participants from input csv file"""
+    global error_logs, configs_d
 
     error_logs.clear()
+    for error in configs_d.errors:
+        print("!:", error)
+        error_logs.append(error)
     loc_participants = []
 
     if not os.path.isfile(arg_file_name):
@@ -614,6 +617,7 @@ def get_configs():
         req = request.get_json()
         configs_d.num_tents = req["numTents"]
         configs_d.zl_start = req["zlStart"]
+        configs_d.calender_url = req["calenderUrl"]
         configs_d.save()
     return jsonify(configs_d.get_dict())
 
@@ -625,9 +629,10 @@ def get_participants_last_year():
 
 
 if __name__ == "__main__":
+    configs_d.load()
+
     participants_d = parse_participants(INPUT_PARICIPANT_PATH)
     tent_leaders = parse_tent_leader(INPUT_TENT_LEADER_PATH)
     participants_last_year = parse_participants_last_year(INPUT_LAST_YEAR_PATH)
-    configs_d.load()
 
     app.run(host="0.0.0.0", port=8080, debug=True)

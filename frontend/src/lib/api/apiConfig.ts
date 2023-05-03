@@ -3,6 +3,7 @@ import { BASE_URL } from './api';
 export interface Configs {
 	numTents: number;
 	zlStart: string;
+	calenderUrl: string;
 }
 
 export async function apiGetConfigs(): Promise<Configs> {
@@ -13,7 +14,7 @@ export async function apiGetConfigs(): Promise<Configs> {
 		})
 		.catch((error: Error) => {
 			console.error(error);
-			const ret: Configs = { numTents: 9999, zlStart: '1970-08-12' };
+			const ret: Configs = { numTents: 9999, zlStart: '1970-08-12', calenderUrl: '' };
 			return ret;
 		});
 
@@ -34,7 +35,7 @@ export async function apiPostConfigs(pConfigs: Configs): Promise<Configs> {
 		})
 		.catch((error: Error) => {
 			console.error(error);
-			const ret: Configs = { numTents: 9999, zlStart: '1970-08-12' };
+			const ret: Configs = { numTents: 9999, zlStart: '1970-08-12', calenderUrl: '' };
 			return ret;
 		});
 
