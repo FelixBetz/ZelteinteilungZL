@@ -47,7 +47,7 @@
 	let birthDayKids: BirthdayKid[] = [];
 	let tentLeaders: cTentLeader[] = [];
 	let logs: Logs = { errors: [], revisions: [] };
-	let configs: Configs = { numTents: 9999, zlStart: '1970-08-12' };
+	let configs: Configs = { numTents: 9999, zlStart: '1970-08-12', calenderUrl: '' };
 
 	let friendsNotRegistered: FriendsNotRegistered[] = [];
 	let lastYearRegistered: string[] = [];
@@ -624,6 +624,7 @@
 						<ul>
 							<li>Anzahl Zelte: {configs.numTents}</li>
 							<li>Start des Zeltlagers: {getGermanDateString(configs.zlStart)}</li>
+							<li><a href={configs.calenderUrl} target="_blank"> Kalender URL</a></li>
 						</ul>
 					</DashboardCard>
 				</div>

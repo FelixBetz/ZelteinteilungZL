@@ -85,7 +85,7 @@
 		avg: number;
 	}
 	let teams: Team[] = [];
-	let configs: Configs = { numTents: 9999, zlStart: '1970-08-12' };
+	let configs: Configs = { numTents: 9999, zlStart: '1970-08-12', calenderUrl: '' };
 	function parseJobs() {
 		let mats: Job = { name: 'Mat Warts', indices: [] };
 		let sukus: Job = { name: 'Suppenkutscher', indices: [] };

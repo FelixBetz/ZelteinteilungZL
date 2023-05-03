@@ -11,7 +11,7 @@
 	import { type Configs, apiGetConfigs } from '$lib/api/apiConfig';
 	import { getStrTwoDecimal } from '$lib/helpers';
 
-	let configs: Configs = { numTents: 9999, zlStart: '1970-08-12' };
+	let configs: Configs = { numTents: 9999, zlStart: '1970-08-12', calenderUrl: '' };
 	interface Basket {
 		name: string;
 		items: number[];
