@@ -68,6 +68,7 @@
 
 	let loopedDates: DateGraphData[] = [];
 	let registeredDistibution: BarplotData[] = [];
+	let ageDestirbution: BarplotData[] = [];
 
 	let showNotPaid = false;
 	let showTeamMembers = false;
@@ -316,11 +317,47 @@
 		});
 	}
 
+	function calcAgeDistribution(pParticipants: cTentParticipant[]) {
+		ageDestirbution = [
+			{ label: '<10', value: 0 },
+			{ label: '10', value: 0 },
+			{ label: '11', value: 0 },
+			{ label: '12', value: 0 },
+			{ label: '13', value: 0 },
+			{ label: '14', value: 0 },
+			{ label: '15', value: 0 },
+			{ label: '≥16', value: 0 }
+		];
+
+		pParticipants.forEach((participant) => {
+			if (participant.age < 10) {
+				ageDestirbution[0].value += 1; // < 10
+			} else if (participant.age < 11) {
+				ageDestirbution[1].value += 1; //10
+			} else if (participant.age < 12) {
+				ageDestirbution[2].value += 1; //11
+			} else if (participant.age < 13) {
+				ageDestirbution[3].value += 1; //12
+			} else if (participant.age < 14) {
+				ageDestirbution[4].value += 1; //13
+			} else if (participant.age < 15) {
+				ageDestirbution[5].value += 1; //14
+			} else if (participant.age < 16) {
+				ageDestirbution[6].value += 1; //15
+			} else {
+				ageDestirbution[7].value += 1; //>=16
+			}
+		});
+
+		ageDestirbution = ageDestirbution;
+	}
+
 	async function getParticipants() {
 		configs = await apiGetConfigs();
 		logs = await apiGetLogs();
 		participants = await apiGetParticipants();
 		lastYearRegistered = await apiGetParticipantsLastYear();
+		calcAgeDistribution(participants);
 
 		lastYearRegistered = lastYearRegistered.sort((a, b) => {
 			let lastNameA = a.split(' ')[1];
@@ -587,6 +624,18 @@
 					>
 						{#if registeredDistibution.length > 0}
 							<Barplot data={registeredDistibution} color={'#198754'} />
+						{/if}
+					</DashboardCard>
+				</div>
+				<div class="col-sm-12">
+					<DashboardCard
+						title={'Altersverteilung'}
+						icon="bi-bar-chart"
+						bgColor={'bg-primary'}
+						isSmallTitle={true}
+					>
+						{#if ageDestirbution.length > 0}
+							<Barplot data={ageDestirbution} color={'#0d6efd'} xLabel={'Alter'} />
 						{/if}
 					</DashboardCard>
 				</div>

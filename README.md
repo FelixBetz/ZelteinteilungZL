@@ -11,4 +11,3 @@
   - alter im Zeltlager
   
  - on save: Bestätigungsnachricht
- - progess bar % anzeige

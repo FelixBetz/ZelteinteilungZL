@@ -7,6 +7,7 @@
 	export let color = 'steelblue';
 
 	let textSize = 30;
+	export let xLabel = '';
 
 	$: maxValue = calcMaxValue(data);
 
@@ -23,7 +24,7 @@
 	let container: SVGSVGElement;
 
 	onMount(() => {
-		const margin = { top: 30, right: 0, bottom: 45, left: 45 };
+		const margin = { top: 30, right: 0, bottom: xLabel != '' ? 45 + textSize : 45, left: 45 };
 		let width = 500;
 		let height = 300 - margin.top - margin.bottom;
 
@@ -61,6 +62,16 @@
 			.attr('transform', `translate(0,${height})`)
 			.call(d3.axisBottom(x))
 			.attr('font-size', textSize + 'px');
+
+		if (xLabel != '') {
+			svg
+				.append('text')
+				.attr('x', width / 2)
+				.attr('y', height + 2 * textSize)
+				.text(xLabel)
+				.attr('font-style', 'italic')
+				.attr('font-size', textSize + 'px');
+		}
 
 		svg
 			.append('g')
