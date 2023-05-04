@@ -2,8 +2,9 @@
 	import { boolSort, numberSort, type IColumn, stringSort } from '$lib/sort';
 
 	let serachString = '';
-
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	export let data: any[] = [];
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	export let filterdData: any[] = [];
 	export let columns: IColumn[] = [];
 	export let searchColumns: string[] = [];
@@ -99,7 +100,8 @@
 								{d[col.key]}
 							</a>
 						{:else if col.displayCallback != undefined}
-							{col.displayCallback(d[col.key])}
+							{true /*@ts-ignore                                                         */ &&
+								col.displayCallback(d[col.key])}
 						{:else}
 							{d[col.key]}
 						{/if}

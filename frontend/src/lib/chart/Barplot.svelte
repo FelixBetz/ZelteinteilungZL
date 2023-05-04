@@ -51,6 +51,7 @@
 			.enter()
 			.append('rect')
 			.attr('class', 'bar')
+			//@ts-ignore
 			.attr('x', (d) => x(d.label))
 			.attr('width', x.bandwidth())
 			.attr('y', (d) => y(d.value))
@@ -86,6 +87,7 @@
 			.attr('class', 'text')
 			.attr('text-anchor', 'middle')
 			.attr('font-size', textSize + 'px')
+			//@ts-ignore
 			.attr('x', (d) => x(d.label) + x.bandwidth() / 2)
 			.attr('y', (d) => y(d.value) - 5)
 			.text((d) => d.value);

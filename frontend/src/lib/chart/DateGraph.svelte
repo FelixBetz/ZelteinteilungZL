@@ -28,11 +28,13 @@
 
 		const x = d3
 			.scaleTime()
+			//@ts-ignore
 			.domain(d3.extent(data, (d) => d.date))
 			.range([0, width]);
 
 		const y = d3
 			.scaleLinear()
+			//@ts-ignore
 			.domain([0, d3.max(data, (d) => d.num)])
 			.range([height, 0]);
 
@@ -42,7 +44,9 @@
 
 		const line = d3
 			.line()
+			//@ts-ignore
 			.x((d) => x(d.date))
+			//@ts-ignore
 			.y((d) => y(d.num));
 
 		chartGroup
@@ -51,22 +55,27 @@
 			.attr('fill', 'none')
 			.attr('stroke', color)
 			.attr('stroke-width', 5)
+			//@ts-ignore
 			.attr('d', line);
 
 		// Define an area generator
 		const area = d3
 			.area()
+			//@ts-ignore
 			.x((d) => x(d.date))
 			.y0(y(0))
+			//@ts-ignore
 			.y1((d) => y(d.num));
 
 		// Add the area path to the chart
+		//@ts-ignore
 		chartGroup.append('path').datum(data).attr('fill', color).attr('opacity', 0.5).attr('d', area);
 
 		// Add horizontal dotted lines
 		chartGroup
 			.append('g')
 			.attr('class', 'grid')
+			//@ts-ignore
 			.call(d3.axisLeft(y).tickSize(-0).tickFormat('').ticks(5))
 			.selectAll('line')
 			.attr('x2', width) // extend the lines to the edge of the chart

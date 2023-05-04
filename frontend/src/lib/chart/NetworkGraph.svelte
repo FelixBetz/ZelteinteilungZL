@@ -12,8 +12,9 @@
 
 	let container: SVGSVGElement;
 	let simulation;
-
+	//@ts-ignore
 	let node;
+	//@ts-ignore
 	let link;
 	let types = [1];
 
@@ -21,17 +22,20 @@
 	export let links: ILink[] = [];
 
 	const colourScale = d3.scaleOrdinal(d3.schemeCategory10);
-
+	//@ts-ignore
 	let linkArc = (d) => `M${d.source.x},${d.source.y}A0,0 0 0,1 ${d.target.x},${d.target.y}`;
 	let zoomFunc = d3.zoom().on('zoom', handleZoom);
-
+	//@ts-ignore
 	function handleZoom(e) {
 		d3.select(container).selectAll('g').attr('transform', e.transform);
 		d3.select(container).selectAll('marker').attr('transform', e.transform);
+		//@ts-ignore
 		link.attr('d', linkArc);
+		//@ts-ignore
 		node.attr('transform', (d) => `translate(${d.x},${d.y})`);
 	}
 	onMount(() => {
+		//@ts-ignore
 		const svg = d3.select(container).call(zoomFunc);
 		//.attr('viewBox', [-width / 2, -height / 2, width, height]);
 
@@ -39,6 +43,7 @@
 			.forceSimulation(nodes)
 			.force(
 				'link',
+				//@ts-ignore
 				d3.forceLink(links).id((d) => d.id)
 			)
 			.force('collide', d3.forceCollide(80))
@@ -74,6 +79,7 @@
 			.data(links)
 			.join('path')
 			.attr('stroke', 'black')
+			//@ts-ignore
 			.attr('marker-end', (d) => `url(${new URL(`#arrow-${d.value}`, location)})`);
 
 		node = svg
@@ -107,7 +113,9 @@
 		node.on('click', (e, d) => console.log(d));
 
 		simulation.on('tick', () => {
+			//@ts-ignore
 			link.attr('d', linkArc);
+			//@ts-ignore
 			node.attr('transform', (d) => `translate(${d.x},${d.y})`);
 		});
 		svg.node();

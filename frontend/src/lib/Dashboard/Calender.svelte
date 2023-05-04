@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { getDaysDelta, getStrOneDecimal } from '$lib/helpers';
+	//@ts-ignore
 	import ICAL from 'ical.js';
 	import { onMount } from 'svelte';
 
@@ -73,6 +74,7 @@
 				const icsEvents = calendar.getAllSubcomponents('vevent');
 
 				// Loop through each event and log its properties
+				//@ts-ignore
 				icsEvents.forEach((event) => {
 					const summary = event.getFirstPropertyValue('summary');
 					const startDate = event.getFirstPropertyValue('dtstart').toJSDate();

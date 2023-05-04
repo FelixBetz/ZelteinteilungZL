@@ -17,11 +17,11 @@ export function getWeekdayString(pDate: Date) {
 	return WEEKDAYS[pDate.getDay()] + ' ' + date;
 }
 
-export function getStrTwoDecimal(age: number): number {
-	return Math.round(age * 100) / 100;
+export function getStrTwoDecimal(age: number): string {
+	return (Math.round(age * 100) / 100).toString();
 }
-export function getStrOneDecimal(age: number): number {
-	return Math.round(age * 10) / 10;
+export function getStrOneDecimal(age: number): string {
+	return (Math.round(age * 10) / 10).toString();
 }
 
 export interface DateGraphData {
