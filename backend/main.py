@@ -8,7 +8,7 @@ from flask_cors import CORS
 from flask import Flask, abort, jsonify, request, send_from_directory
 import file_indices as IDX
 from helpers import parse_yes_no, strip_row, is_paided, props
-from participants.participants import check_if_participant_file_valid
+from participants.participants import check_if_participant_file_valid, get_paticipant_by_id
 from tent_leader import TentLeader
 from participants.participant import Participant, particpant_object_to_class
 from maps import generate_maps
@@ -320,14 +320,6 @@ def parse_tent_leader(arg_file_name):
 
         print("parsed input file: ", arg_file_name)
     return loc_tent_leaders
-
-
-def get_paticipant_by_id(arg_participants, arg_id):
-    """returns participant by given id"""
-    for loc_participant in arg_participants:
-        if loc_participant.identifier == arg_id:
-            return loc_participant
-    return None
 
 
 def apply_participants_revisons(arg_participants):
