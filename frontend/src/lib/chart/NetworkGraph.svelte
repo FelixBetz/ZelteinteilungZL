@@ -112,14 +112,13 @@
 		});
 		svg.node();
 	});
-	function resetZoom(e: KeyboardEvent) {
+	/*function resetZoom(e: KeyboardEvent) {
 		if (e.key == 'Escape') {
 			d3.select(container).transition().call(zoomFunc.scaleTo, 1);
 		}
-	}
+	}*/
 </script>
 
-<svelte:window on:keydown|preventDefault={resetZoom} />
 <div
 	bind:clientWidth={width}
 	bind:clientHeight={height}

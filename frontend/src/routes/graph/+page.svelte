@@ -2,6 +2,7 @@
 	import { apiGetGraph, type GraphInput, type IData } from '$lib/api/apiGraphs';
 	import { onMount } from 'svelte';
 	import NetworkGraph from '../../lib/chart/NetworkGraph.svelte';
+	import CircleList from '$lib/chart/CircleList.svelte';
 
 	function hasIntersection(setA: Set<string>, setB: Set<string>): boolean {
 		for (let elem of setB) {
@@ -98,11 +99,11 @@
 				containerHeight={'85vh'}
 			/>
 		{:else}
-			<NetworkGraph
+			<CircleList
 				nodes={data.nodes}
-				links={data.links}
 				containerWidth={'20%'}
 				containerHeight={'85vh'}
+				title={'Keine Freunde 😔:'}
 			/>
 		{/if}
 	{/each}
