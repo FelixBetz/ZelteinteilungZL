@@ -1,28 +1,18 @@
 """main file of ZelteinteilungZL"""
-
-import time
-import csv
-import os
-
-
-from datetime import datetime
-
 import json
-from flask import Flask, abort, jsonify, request, send_from_directory
+import os
+import csv
+import time
+from datetime import datetime
 from flask_cors import CORS
-
-
-from mailing import mailing_routes
-
-from config import Config
-from maps import generate_maps
-from participant import Participant, particpant_object_to_class
-from tent_leader import TentLeader
-
-from helpers import parse_yes_no, strip_row, is_paided, props
-
-
+from flask import Flask, abort, jsonify, request, send_from_directory
 import file_indices as IDX
+from helpers import parse_yes_no, strip_row, is_paided, props
+from tent_leader import TentLeader
+from participant import Participant, particpant_object_to_class
+from maps import generate_maps
+from config import Config
+from mailing.mailing import mailing_routes
 
 INPUT_FILE_PATH = r"..\\input\\"
 INPUT_FILE_NAME = "2023_teilnehmer_input.csv"
