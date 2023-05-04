@@ -8,6 +8,7 @@ from flask_cors import CORS
 from flask import Flask, abort, jsonify, request, send_from_directory
 import file_indices as IDX
 from helpers import parse_yes_no, strip_row, is_paided, props
+from participants.participants import check_if_participant_file_valid
 from tent_leader import TentLeader
 from participants.participant import Participant, particpant_object_to_class
 from maps import generate_maps
@@ -44,16 +45,6 @@ cors = CORS(app)
 app.register_blueprint(mailing_routes)
 
 app.config["MAPS_OUTPUT"] = "output_maps"
-
-
-def check_if_participant_file_valid(arg_input_file):
-    """check_if_participant_file_valid"""
-    # check number of semicolons
-    with open(arg_input_file, newline="", encoding="utf-8") as csvfile:
-        for check_row in csvfile:
-            cnt_semicolon = check_row.count(";")
-            if cnt_semicolon != IDX.ROWS_PARP:
-                raise Exception("ERROR at row:" + str(check_row))
 
 
 def save_data(arg_participants, arg_tent_leaders, arg_revisions):
