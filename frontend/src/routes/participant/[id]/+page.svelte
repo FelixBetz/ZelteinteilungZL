@@ -10,6 +10,8 @@
 	let participant: cTentParticipant | null = null;
 	let inputRegisteredValue: string;
 
+	let isPostRequest = false;
+
 	function parseDatimeTimeStr(argParticipant: cTentParticipant | null): string {
 		if (argParticipant == null) {
 			return '';
@@ -24,7 +26,16 @@
 	}
 
 	async function postParticipant() {
-		participant = await apiPostParticipant(participant);
+		isPostRequest = true;
+		participant = await apiPostParticipant(participant)
+			.then((res) => {
+				isPostRequest = false;
+				return res;
+			})
+			.catch((error) => {
+				console.error(error);
+				return null;
+			});
 	}
 
 	onMount(() => {
@@ -39,7 +50,11 @@
 	};
 </script>
 
-{#if participant != null}
+{#if participant == null}
+	<div class="position-relativ alert alert-danger" role="alert">
+		<div class="m-0 p-0">Teilnehmer konnte nicht geladen werden</div>
+	</div>
+{:else}
 	<div class="container">
 		<form>
 			<div class="row">
@@ -319,9 +334,17 @@
 		</form>
 		<div class="row" style="margin-top: 20px">
 			<div class="col-sm-12">
-				<div class="btn btn-primary w-100" on:click={postParticipant} on:keydown={postParticipant}>
+				<button
+					class="btn btn-primary w-100"
+					type="button"
+					on:click={postParticipant}
+					on:keydown={postParticipant}
+				>
 					Save
-				</div>
+					{#if isPostRequest}
+						<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" />
+					{/if}
+				</button>
 			</div>
 		</div>
 	</div>

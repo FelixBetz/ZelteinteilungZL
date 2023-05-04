@@ -10,7 +10,7 @@
 	import TentParticipant from '$lib/TentParticipant.svelte';
 	import { type Configs, apiGetConfigs } from '$lib/api/apiConfig';
 	import { getStrTwoDecimal } from '$lib/helpers';
-
+	let isPostRequest = false;
 	let configs: Configs = { numTents: 9999, zlStart: '1970-08-12', calenderUrl: '' };
 	interface Basket {
 		name: string;
@@ -103,6 +103,7 @@
 	}
 
 	async function saveParticipants() {
+		isPostRequest = true;
 		for (let i = 0; i < baskets.length; i++) {
 			for (let k = 0; k < baskets[i].items.length; k++) {
 				let id = baskets[i].items[k];
@@ -113,9 +114,17 @@
 				}
 			}
 		}
-		let unsortedParticipants = await apiPostParticipants(participants);
+		let unsortedParticipants = await apiPostParticipants(participants)
+			.then((res) => {
+				return res;
+			})
+			.catch((error) => {
+				console.error(error);
+				return [];
+			});
 		let tentLeaders = await apiGetTentLeader();
 		distributePartiscipantsToBaskets(unsortedParticipants, tentLeaders);
+		isPostRequest = false;
 	}
 
 	onMount(() => {
@@ -161,11 +170,14 @@
 		<div class="col-sm-12">
 			<button
 				class="btn btn-primary w-100"
-				color="primary"
+				type="button"
 				on:click={saveParticipants}
 				on:keydown={saveParticipants}
 			>
 				Save
+				{#if isPostRequest}
+					<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" />
+				{/if}
 			</button>
 		</div>
 	</div>

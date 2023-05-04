@@ -25,6 +25,7 @@
 	let warnings: Warning[] = [];
 
 	let isMapRequest = false;
+	let isPostRequest = false;
 
 	function getFriendsString(friends: string[]) {
 		return friends.filter((friend) => friend != '').join(', ');
@@ -63,12 +64,22 @@
 	});
 
 	async function getParticipants() {
+		participants = [];
 		participants = await apiGetParticipants();
 		filterdParticipants = participants;
 	}
 
 	async function saveParticipants() {
-		participants = await apiPostParticipants(participants);
+		isPostRequest = true;
+		participants = await apiPostParticipants(participants)
+			.then((res) => {
+				isPostRequest = false;
+				return res;
+			})
+			.catch((error) => {
+				console.error(error);
+				return [];
+			});
 	}
 
 	async function getMaps() {
@@ -130,9 +141,17 @@
 				Refresh
 			</div>
 
-			<div class="btn btn-primary" on:click={saveParticipants} on:keydown={saveParticipants}>
+			<button
+				class="btn btn-primary"
+				type="button"
+				on:click={saveParticipants}
+				on:keydown={saveParticipants}
+			>
 				Save
-			</div>
+				{#if isPostRequest}
+					<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" />
+				{/if}
+			</button>
 
 			<button class="btn btn-primary" type="button" on:click={getMaps} on:keydown={getMaps}>
 				generate Maps
