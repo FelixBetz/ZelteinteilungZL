@@ -22,15 +22,7 @@ from tent_leader import TentLeader
 from helpers import parse_yes_no, strip_row, is_paided, props
 
 
-from file_indices import IDX_PARP_FIRST_NAME, IDX_PARP_LAST_NAME, IDX_PARP_REGISTER_DATE, \
-    IDX_PARP_STREET,\
-    IDX_PARP_ZIP_CODE, IDX_PARP_VILLAGE,   IDX_PARP_MAIL, IDX_PARP_BIRTHDATE,\
-    IDX_PARP_PHONE, IDX_PARP_EMERCENCY_CONTACT, IDX_PARP_EMERCENCY_PHONE,\
-    IDX_PARP_REDUCED, IDX_PARP_VEGETARIAN, IDX_PARP_NEWSLETTER, IDX_PARP_FRIEND1,\
-    IDX_PARP_FRIEND2, IDX_PARP_OTHER, IDX_PARP_PHOTO_ALLOWED, IDX_PARP_ID, \
-    IDX_LEAD_JOB, IDX_LEAD_LAST_NAME, IDX_LEAD_FIRST_NAME, IDX_LEAD_STREET,\
-    IDX_LEAD_ZIP_CODE, IDX_LEAD_VILLAGE, IDX_LEAD_PHONE, IDX_LEAD_HANDY,\
-    IDX_LEAD_MAIL, IDX_LEAD_BIRTHDATE, IDX_LEAD_TENT, IDX_LEAD_TEAM, IDX_LEAD_COMMENT
+import file_indices as IDX
 
 INPUT_FILE_PATH = r"..\\input\\"
 INPUT_FILE_NAME = "2023_teilnehmer_input.csv"
@@ -70,7 +62,7 @@ def check_if_participant_file_valid(arg_input_file):
     with open(arg_input_file, newline="", encoding="utf-8") as csvfile:
         for check_row in csvfile:
             cnt_semicolon = check_row.count(";")
-            if cnt_semicolon != 24:
+            if cnt_semicolon != IDX.ROWS_PARP:
                 raise Exception("ERROR at row:" + str(check_row))
 
 
@@ -211,12 +203,12 @@ def parse_participants(arg_file_name):
             if i >= 1:
                 strip_row(row)
 
-                loc_lastname = row[IDX_PARP_LAST_NAME]
-                loc_firstname = row[IDX_PARP_FIRST_NAME]
+                loc_lastname = row[IDX.PARP_LAST_NAME]
+                loc_firstname = row[IDX.PARP_FIRST_NAME]
 
                 # parse zip code
                 try:
-                    loc_zipcode = int(row[IDX_PARP_ZIP_CODE])
+                    loc_zipcode = int(row[IDX.PARP_ZIP_CODE])
                 except:
                     print("ERROR: failed to parse zip coce: i: ", i,
                           loc_firstname, " ", loc_lastname,)
@@ -224,7 +216,7 @@ def parse_participants(arg_file_name):
 
                 try:
                     loc_time_string = datetime.strptime(
-                        row[IDX_PARP_BIRTHDATE], "%Y-%m-%d"
+                        row[IDX.PARP_BIRTHDATE], "%Y-%m-%d"
                     ).date()
                     loc_tuple = loc_time_string.timetuple()
                     timestamp = time.mktime(loc_tuple)
@@ -234,33 +226,33 @@ def parse_participants(arg_file_name):
                     print("failed to parse birthdate: i: ",
                           i, loc_firstname, " ", loc_lastname)
                     raise
-                loc_birthdate = row[IDX_PARP_BIRTHDATE]
+                loc_birthdate = row[IDX.PARP_BIRTHDATE]
 
                 loc_participant = Participant(
-                    int(row[IDX_PARP_ID]),
+                    int(row[IDX.PARP_ID]),
                     # will be overwritten by parse_paid()
                     is_paided("false"),
                     loc_lastname,
                     loc_firstname,
-                    row[IDX_PARP_STREET],
+                    row[IDX.PARP_STREET],
                     loc_zipcode,
-                    row[IDX_PARP_VILLAGE],
+                    row[IDX.PARP_VILLAGE],
                     loc_birthdate,
-                    row[IDX_PARP_PHONE],
-                    row[IDX_PARP_MAIL],
-                    row[IDX_PARP_EMERCENCY_CONTACT],
-                    row[IDX_PARP_EMERCENCY_PHONE],
-                    parse_yes_no(row[IDX_PARP_REDUCED]),
-                    parse_yes_no(row[IDX_PARP_PHOTO_ALLOWED]),
-                    parse_yes_no(row[IDX_PARP_VEGETARIAN]),
-                    parse_yes_no(row[IDX_PARP_NEWSLETTER]),
-                    row[IDX_PARP_OTHER],
+                    row[IDX.PARP_PHONE],
+                    row[IDX.PARP_MAIL],
+                    row[IDX.PARP_EMERCENCY_CONTACT],
+                    row[IDX.PARP_EMERCENCY_PHONE],
+                    parse_yes_no(row[IDX.PARP_REDUCED]),
+                    parse_yes_no(row[IDX.PARP_PHOTO_ALLOWED]),
+                    parse_yes_no(row[IDX.PARP_VEGETARIAN]),
+                    parse_yes_no(row[IDX.PARP_NEWSLETTER]),
+                    row[IDX.PARP_OTHER],
                     9999,  # will be overwritten by parse_tent_numbers()
-                    row[IDX_PARP_REGISTER_DATE]
+                    row[IDX.PARP_REGISTER_DATE]
                 )
 
                 loc_participant.set_friends(
-                    [row[IDX_PARP_FRIEND1], row[IDX_PARP_FRIEND2]]
+                    [row[IDX.PARP_FRIEND1], row[IDX.PARP_FRIEND2]]
                 )
 
                 loc_participants.append(loc_participant)
@@ -291,31 +283,31 @@ def parse_tent_leader(arg_file_name):
             if i >= 1:
                 strip_row(row)
 
-                loc_lastname = row[IDX_LEAD_LAST_NAME]
-                loc_firstname = row[IDX_LEAD_FIRST_NAME]
+                loc_lastname = row[IDX.LEAD_LAST_NAME]
+                loc_firstname = row[IDX.LEAD_FIRST_NAME]
 
                 # parse zip code
                 try:
-                    loc_zipcode = int(row[IDX_LEAD_ZIP_CODE])
+                    loc_zipcode = int(row[IDX.LEAD_ZIP_CODE])
                 except:
                     print("ERROR: failed to parse zip code: i: ",
                           i, loc_firstname, " ", loc_lastname,)
                     raise
 
                 # parse tent number
-                if row[IDX_LEAD_TENT] == "":
+                if row[IDX.LEAD_TENT] == "":
                     loc_tent = 9999
                 else:
                     try:
-                        loc_tent = int(row[IDX_LEAD_TENT])
+                        loc_tent = int(row[IDX.LEAD_TENT])
                     except:
                         print("ERROR: failed to parse tent number: ",
-                              row[IDX_LEAD_TENT], "row: ", row,)
+                              row[IDX.LEAD_TENT], "row: ", row,)
                         raise
                 loc_birthdate = ""
                 try:
                     loc_time_string = datetime.strptime(
-                        row[IDX_LEAD_BIRTHDATE], "%d.%m.%Y"
+                        row[IDX.LEAD_BIRTHDATE], "%d.%m.%Y"
                     ).date()
                     _ = loc_time_string.timetuple()
                     loc_birthdate = str(loc_time_string)
@@ -327,19 +319,19 @@ def parse_tent_leader(arg_file_name):
 
                 loc_tent_leader = TentLeader(
                     loc_id,
-                    row[IDX_LEAD_JOB],
+                    row[IDX.LEAD_JOB],
                     loc_lastname,
                     loc_firstname,
-                    row[IDX_LEAD_STREET],
+                    row[IDX.LEAD_STREET],
                     loc_zipcode,
-                    row[IDX_LEAD_VILLAGE],
-                    row[IDX_LEAD_PHONE],
-                    row[IDX_LEAD_HANDY],
-                    row[IDX_LEAD_MAIL],
+                    row[IDX.LEAD_VILLAGE],
+                    row[IDX.LEAD_PHONE],
+                    row[IDX.LEAD_HANDY],
+                    row[IDX.LEAD_MAIL],
                     loc_birthdate,
                     loc_tent,
-                    row[IDX_LEAD_TEAM],
-                    row[IDX_LEAD_COMMENT],
+                    row[IDX.LEAD_TEAM],
+                    row[IDX.LEAD_COMMENT],
                 )
                 loc_id += 1
 
