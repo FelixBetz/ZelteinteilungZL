@@ -2,6 +2,36 @@
 from person import Person
 
 
+def particpant_object_to_class(arg_p, arg_o):
+    """converts dict object to participant object"""
+
+    revisions = []
+
+    revisions.append(arg_p.set_firstname(arg_o["firstname"]))
+    arg_p.paid = arg_o["paid"]
+    revisions.append(arg_p.set_lastname(arg_o["lastname"]))
+    revisions.append(arg_p.set_birthdate(arg_o["birthdate"]))
+    revisions.append(arg_p.set_street(arg_o["street"]))
+    revisions.append(arg_p.set_zipcode(arg_o["zipcode"]))
+    revisions.append(arg_p.set_village(arg_o["village"]))
+    revisions.append(arg_p.set_phone(arg_o["phone"]))
+    revisions.append(arg_p.set_mail(arg_o["mail"]))
+    revisions.append(arg_p.set_emergency_contact(arg_o["emergency_contact"]))
+    revisions.append(arg_p.set_emergency_phone(arg_o["emergency_phone"]))
+    revisions.append(arg_p.set_is_vegetarian(arg_o["is_vegetarian"]))
+    revisions.append(arg_p.set_is_reduced(arg_o["is_reduced"]))
+    revisions.append(arg_p.set_is_event_mail(arg_o["is_event_mail"]))
+    revisions.append(arg_p.set_friend1(arg_o["friends"][0]))
+    revisions.append(arg_p.set_friend2(arg_o["friends"][1]))
+    revisions.append(arg_p.set_is_photo_allowed(arg_o["is_photo_allowed"]))
+    revisions.append(arg_p.set_other(arg_o["other"]))
+    revisions.append(arg_p.set_registered(arg_o["registered"]))
+    arg_p.tent = arg_o["tent"]
+
+    revisions = list(filter(lambda x: x != "", revisions))
+    return revisions
+
+
 class Participant(Person):
     """represents data of a zeltlager participant"""
     # pylint: disable=too-many-instance-attributes

@@ -29,7 +29,8 @@
 		if (e.target !== null) {
 			const formData = new FormData(e.target);
 			formData.append('content', editor.getHtmlString());
-			formData.append('csvFile', csvFile);
+			//todo formData.append('csvFile', csvFile);
+			formData.append('mail', 'betz.felix@web.de');
 			formData.append('mailType', selectedMailType.id.toString());
 
 			/*const data: any = {};
@@ -39,6 +40,7 @@
 			}
 			console.log(data);
 			return;*/
+			//todo
 			const res = await fetch('http://127.0.0.1:8080/api/test', {
 				method: 'POST',
 				body: formData

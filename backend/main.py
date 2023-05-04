@@ -3,21 +3,23 @@
 import time
 import csv
 import os
-import subprocess
+
 
 from datetime import datetime
-import inspect
+
 import json
 from flask import Flask, abort, jsonify, request, send_from_directory
 from flask_cors import CORS
-from mailmerge import MailMerge
-from docx2pdf import convert
 
-from typedefs import MailType
+
+from mailing import mailing_routes
+
 from config import Config
 from maps import generate_maps
-from participant import Participant
+from participant import Participant, particpant_object_to_class
 from tent_leader import TentLeader
+
+from helpers import parse_yes_no, strip_row, is_paided, props
 
 
 from file_indices import IDX_PARP_FIRST_NAME, IDX_PARP_LAST_NAME, IDX_PARP_REGISTER_DATE, \
@@ -57,44 +59,9 @@ revison_logs = []
 app = Flask(__name__)
 cors = CORS(app)
 
-THUNDERBIRD_PATH = "C:\\Program Files (x86)\\Mozilla Thunderbird\\thunderbird.exe"
+app.register_blueprint(mailing_routes)
 
 app.config["MAPS_OUTPUT"] = "output_maps"
-
-
-def strip_row(arg_row):
-    """strip_row"""
-    for i, col in enumerate(arg_row):
-        arg_row[i] = col.replace('"', "").strip()
-
-
-def parse_yes_no(arg_string):
-    """parses formular ja/zugestimmt to boolean"""
-    arg_string = arg_string.strip().lower()
-    if arg_string in ("ja", "zugestimmt", "vegetarisch", "ermäßigt", "erlaubt"):
-        return True
-    return False
-
-
-def bool_to_tex_yes_no(arg_bool):
-    """parse bool to 'ja' or 'nein' string"""
-    if arg_bool:
-        return "ja"
-    return "nein"
-
-
-def bool_to_text_zugestimmt(arg_bool):
-    """parse bool to 'zugestimmt' or 'nein' nicht zugestimmt"""
-    if arg_bool:
-        return "zugestimmt"
-    return "nicht zugestimmt"
-
-
-def is_paided(arg_paided):
-    """is paided"""
-    if arg_paided in ["true", "True"]:
-        return True
-    return False
 
 
 def check_if_participant_file_valid(arg_input_file):
@@ -382,46 +349,6 @@ def parse_tent_leader(arg_file_name):
     return loc_tent_leaders
 
 
-def props(obj):
-    """converts class object into an dictonary"""
-    props_dict = {}
-    for name in dir(obj):
-        value = getattr(obj, name)
-        if not name.startswith("__") and not inspect.ismethod(value):
-            props_dict[name] = value
-    return props_dict
-
-
-def particpant_object_to_class(arg_p, arg_o):
-    """converts dict object to participant object"""
-
-    revisions = []
-
-    revisions.append(arg_p.set_firstname(arg_o["firstname"]))
-    arg_p.paid = arg_o["paid"]
-    revisions.append(arg_p.set_lastname(arg_o["lastname"]))
-    revisions.append(arg_p.set_birthdate(arg_o["birthdate"]))
-    revisions.append(arg_p.set_street(arg_o["street"]))
-    revisions.append(arg_p.set_zipcode(arg_o["zipcode"]))
-    revisions.append(arg_p.set_village(arg_o["village"]))
-    revisions.append(arg_p.set_phone(arg_o["phone"]))
-    revisions.append(arg_p.set_mail(arg_o["mail"]))
-    revisions.append(arg_p.set_emergency_contact(arg_o["emergency_contact"]))
-    revisions.append(arg_p.set_emergency_phone(arg_o["emergency_phone"]))
-    revisions.append(arg_p.set_is_vegetarian(arg_o["is_vegetarian"]))
-    revisions.append(arg_p.set_is_reduced(arg_o["is_reduced"]))
-    revisions.append(arg_p.set_is_event_mail(arg_o["is_event_mail"]))
-    revisions.append(arg_p.set_friend1(arg_o["friends"][0]))
-    revisions.append(arg_p.set_friend2(arg_o["friends"][1]))
-    revisions.append(arg_p.set_is_photo_allowed(arg_o["is_photo_allowed"]))
-    revisions.append(arg_p.set_other(arg_o["other"]))
-    revisions.append(arg_p.set_registered(arg_o["registered"]))
-    arg_p.tent = arg_o["tent"]
-
-    revisions = list(filter(lambda x: x != "", revisions))
-    return revisions
-
-
 def get_paticipant_by_id(arg_participants, arg_id):
     """returns participant by given id"""
     for loc_participant in arg_participants:
@@ -634,104 +561,6 @@ def get_configs():
 def get_participants_last_year():
     """returns all participants as json"""
     return jsonify(participants_last_year)
-
-
-def send_mail(arg_mails, arg_mail_mode, arg_subject, arg_content, arg_attachments):
-    """send mail"""
-    execute_thunderbird = (
-        THUNDERBIRD_PATH
-        + " -compose "
-        + arg_mail_mode
-        + "='"
-        + ",".join(arg_mails)
-        + "',"
-        + "subject='"
-        + arg_subject
-        + "',"
-        + "body='"
-        + arg_content
-        + "',"
-        # + "attachment='"
-        # + anhang
-        # + "'"
-    )
-
-    subprocess.Popen(execute_thunderbird)
-
-
-def send_massmail(arg_mails, arg_mail_mode, arg_subject, arg_content, arg_attachments):
-    """send massmail"""
-    send_mail(arg_mails, arg_mail_mode, arg_subject,
-              arg_content, arg_attachments)
-
-
-def send_personalized_mail(arg_csv_file, arg_mails,  arg_subject, arg_content, arg_attachments):
-    """send personalized mail"""
-    csv_cols = arg_csv_file[0].split(";")
-    for mail_index, mail in enumerate(arg_mails):
-        tmp_content = arg_content
-        for col_index, col in enumerate(csv_cols):
-
-            tmp_content = tmp_content.replace(
-                "[$$$"+col+"$$$]", arg_csv_file[mail_index+1].split(";")[col_index])
-
-        send_mail([mail], "to", arg_subject, tmp_content, arg_attachments)
-
-
-def send_template_mail(arg_csv_file, arg_mails,  arg_subject, arg_content, arg_attachments):
-    """send mail based on a word template"""
-    csv_cols = arg_csv_file[0].split(";")
-    for mail_index, mail in enumerate(arg_mails):
-        template_file = r"..\template.docx"
-
-        output_dir = "..\\"
-        output_name = str(mail_index)+"test"
-        output_docx = output_name + ".docx"
-        output_pdf = output_name + ".pdf"
-
-        document = MailMerge(template_file)
-
-        for col_index, col in enumerate(csv_cols):
-            splitted_row = arg_csv_file[mail_index+1].split(";")
-            document.merge_templates(
-                [{col: splitted_row[col_index]}], separator='page_break')
-
-        document.write(output_dir + output_docx)
-        convert(output_dir + output_docx)
-        anhang = os.getcwd() + "\\..\\" + output_pdf
-        send_personalized_mail(arg_csv_file, arg_mails,
-                               arg_subject, arg_content, arg_attachments)
-
-
-@ app.route("/api/test", methods=["POST"])
-def merge_docx():
-    """returns all participants as json"""
-
-    mail_type = MailType(int(request.form.get("mailType")))
-    subject = request.form.get("subject")
-    content = request.form.get("content")
-
-    csv_filehandle = request.files["csvFile"]
-    return jsonify("ok")
-    csv_file = csv_filehandle.read().decode("utf8").split("\r\n")
-    mail_index = csv_file[0].split(";").index("mail")
-    mails = []
-    for i, row in enumerate(csv_file):
-        if i > 0 and row is not None and row != "":
-            mail = row.split(";")[mail_index]
-            mails.append(mail)
-
-    if mail_type == MailType.MASS_MAIL:
-        mail_mode = "bcc"
-        if request.form.get("isBcc") is None:
-            mail_mode = "to"
-        send_massmail(mails, mail_mode, subject, content, [])
-    elif mail_type == MailType.PERSONALIZED_MAIL:
-        send_personalized_mail(csv_file, mails,  subject, content, [])
-    elif mail_type == MailType.TEMPLATE_MAIL:
-        send_template_mail(csv_file, mails,  subject, content, [])
-
-    return jsonify("ok")
 
 
 if __name__ == "__main__":
