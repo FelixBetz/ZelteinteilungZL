@@ -47,9 +47,7 @@ app.config["MAPS_OUTPUT"] = "output_maps"
 
 def save_data(arg_participants, arg_leaders, arg_revisions, arg_errors, arg_configs):
     """save participants tent numbers, revisions, paid"""
-    global revison_logs
     # save tent numbers
-
     tent_numbers = [{"id": p.identifier, "tent": p.tent}
                     for p in arg_participants]
     with open(I_TENT_NUMBERS, "w", encoding="utf-8") as tent_number_file:
@@ -75,7 +73,7 @@ def save_data(arg_participants, arg_leaders, arg_revisions, arg_errors, arg_conf
 
     arg_errors.clear()
     arg_errors += arg_configs.errors
-    arg_participants, revison_logs = parse_participants(
+    arg_participants, arg_revisions = parse_participants(
         I_PARICIPANT, I_TENT_NUMBERS, I_REVISION, I_PAID, arg_errors)
     arg_leaders = parse_tent_leader(I_TENT_LEADER, arg_errors)
 
