@@ -5,6 +5,7 @@
   - csv liste generieren
   - map für jedes Zelt generieren
   - Voreinteilung der Stübis
+  - suchefeld in backlog
 
 - Stübis
   - tabelle auswählbar mit Checkbox machen

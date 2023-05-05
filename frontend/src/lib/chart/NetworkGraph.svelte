@@ -40,12 +40,10 @@
 			case 1:
 				return 'black';
 			case 2:
-				console.log('green');
 				return 'green';
 			case 3:
 				return 'red';
 			default:
-				console.log(pVal);
 				return 'black';
 		}
 	}

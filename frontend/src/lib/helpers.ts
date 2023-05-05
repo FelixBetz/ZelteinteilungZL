@@ -42,8 +42,5 @@ export interface BarplotData {
 export function getDaysDelta(pDateA: Date, pDateB: Date): number {
 	const diffTime = Math.abs(pDateA.getTime() - pDateB.getTime());
 	const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-	console.log(diffDays); // Output: 9
-
 	return diffDays;
 }

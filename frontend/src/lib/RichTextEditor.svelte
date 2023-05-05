@@ -33,7 +33,6 @@
 	});
 	export function getHtmlString() {
 		let htmlString = editor.getHTML();
-		console.log(htmlString);
 		return htmlString;
 	}
 </script>
