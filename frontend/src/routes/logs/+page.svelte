@@ -98,12 +98,15 @@
 						>
 							<div class="text-white">
 								<strong>
-									ID {item.id}
-									<i>
-										{logs.revisions[item.indices[0]].fullname
-											? '(' + logs.revisions[item.indices[0]].fullname + ')'
-											: ''}
-									</i>
+									<a class="link-light" href="/participant/{item.id}" target="_blanks"
+										>ID {item.id}
+
+										<i>
+											{logs.revisions[item.indices[0]].fullname
+												? '(' + logs.revisions[item.indices[0]].fullname + ')'
+												: ''}
+										</i></a
+									>
 								</strong>
 							</div>
 						</div>
