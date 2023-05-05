@@ -3,6 +3,7 @@
 sveltestrap: https://sveltestrap.js.org/?path=/story/components--get-started
 https://icons.getbootstrap.com/
 https://getbootstrap.com/docs/5.3/getting-started/introduction/
+https://tiptap.dev/installation/svelte
 
 ## workaround when running npm run dev
 
