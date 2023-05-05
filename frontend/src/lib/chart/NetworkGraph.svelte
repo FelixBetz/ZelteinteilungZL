@@ -16,7 +16,7 @@
 	let node;
 	//@ts-ignore
 	let link;
-	let types = [1];
+	let types = [0, 1, 2, 3];
 
 	export let nodes: INode[] = [];
 	export let links: ILink[] = [];
@@ -34,6 +34,22 @@
 		//@ts-ignore
 		node.attr('transform', (d) => `translate(${d.x},${d.y})`);
 	}
+
+	function getLinksColor(pVal: number) {
+		switch (pVal) {
+			case 1:
+				return 'black';
+			case 2:
+				console.log('green');
+				return 'green';
+			case 3:
+				return 'red';
+			default:
+				console.log(pVal);
+				return 'black';
+		}
+	}
+
 	onMount(() => {
 		//@ts-ignore
 		const svg = d3.select(container).call(zoomFunc);
@@ -68,7 +84,7 @@
 			.attr('markerHeight', 6)
 			.attr('orient', 'auto')
 			.append('path')
-			.attr('fill', 'black')
+			.attr('fill', (d) => getLinksColor(d))
 			.attr('d', 'M0,-5L10,0L0,5');
 
 		link = svg
@@ -78,7 +94,7 @@
 			.selectAll('path')
 			.data(links)
 			.join('path')
-			.attr('stroke', 'black')
+			.attr('stroke', (d) => getLinksColor(d.value))
 			//@ts-ignore
 			.attr('marker-end', (d) => `url(${new URL(`#arrow-${d.value}`, location)})`);
 
