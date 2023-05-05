@@ -76,24 +76,24 @@ def save_data(arg_participants, arg_tent_leaders, arg_revisions):
         for revision in arg_revisions:
             revision_file.write(revision + "\n")
 
-    arg_participants = parse_participants(INPUT_PARICIPANT_PATH)
+    arg_participants = parse_participants(INPUT_PARICIPANT_PATH, error_logs)
     arg_tent_leaders = parse_tent_leader(INPUT_TENT_LEADER_PATH, error_logs)
 
     return arg_participants, arg_tent_leaders
 
 
-def parse_participants(arg_file_name):
+def parse_participants(arg_file_name, arg_errors):
     """parses zeltlager participants from input csv file"""
-    global error_logs, configs_d, revison_logs
+    global configs_d, revison_logs
+    arg_errors.clear()
 
-    error_logs.clear()
     for error in configs_d.errors:
         print("!:", error)
-        error_logs.append(error)
+        arg_errors.append(error)
     loc_participants = []
 
     if not os.path.isfile(arg_file_name):
-        error_logs.append("ERROR: " + arg_file_name + " existiert nicht")
+        arg_errors.append("ERROR: " + arg_file_name + " existiert nicht")
         print("ERROR: " + arg_file_name + " existiert nicht")
         return loc_participants
 
@@ -162,12 +162,12 @@ def parse_participants(arg_file_name):
 
         print("parsed input file: ", arg_file_name)
         loc_participants, revison_logs = apply_participants_revisons(
-            loc_participants, INPUT_REVISION_PATH, error_logs)
+            loc_participants, INPUT_REVISION_PATH, arg_errors)
 
         loc_participants = parse_tent_numbers(
-            loc_participants, INPUT_TENT_NUMBERS_PATH, error_logs)
+            loc_participants, INPUT_TENT_NUMBERS_PATH, arg_errors)
         loc_participants = parse_paid(
-            loc_participants, INPUT_PAID_PATH, error_logs)
+            loc_participants, INPUT_PAID_PATH, arg_errors)
 
     return loc_participants
 
@@ -313,7 +313,7 @@ def get_participants_last_year():
 if __name__ == "__main__":
     configs_d.load()
 
-    participants_d = parse_participants(INPUT_PARICIPANT_PATH)
+    participants_d = parse_participants(INPUT_PARICIPANT_PATH, error_logs)
     tent_leaders = parse_tent_leader(INPUT_TENT_LEADER_PATH, error_logs)
     participants_last_year = parse_participants_last_year(
         INPUT_LAST_YEAR_PATH, participants_d, error_logs)
