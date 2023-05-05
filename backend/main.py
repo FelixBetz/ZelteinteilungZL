@@ -9,8 +9,8 @@ from flask import Flask, abort, jsonify, request, send_from_directory
 import file_indices as IDX
 from helpers import parse_yes_no, strip_row, is_paided, props
 from participants.participants import check_if_participant_file_valid, get_paticipant_by_id
-from tent_leader import TentLeader
-from participants.participant import Participant, particpant_object_to_class
+from participants.participant_c import Participant, particpant_object_to_class
+from tent_leaders.tent_leader_c import TentLeader
 from maps import generate_maps
 from config import Config
 from mailing.mailing import mailing_routes

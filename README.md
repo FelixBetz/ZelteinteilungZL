@@ -15,3 +15,4 @@
 	- Schnellbausteine
 	- Feld
 	- Merge Field
+- Graph zugewiesen grün markieren
