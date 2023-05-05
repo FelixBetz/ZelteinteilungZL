@@ -2,7 +2,7 @@
 	import * as d3 from 'd3';
 	import { drag } from 'd3';
 	import { onMount } from 'svelte';
-	import type { ILink, INode } from '$lib/api/apiGraphs';
+	import { GraphColor, type ILink, type INode } from '$lib/api/apiGraphs';
 
 	let width = 1800;
 	let height = 800;
@@ -16,7 +16,7 @@
 	let node;
 	//@ts-ignore
 	let link;
-	let types = [0, 1, 2, 3];
+	let types = Object.values(GraphColor);
 
 	export let nodes: INode[] = [];
 	export let links: ILink[] = [];
@@ -33,19 +33,6 @@
 		link.attr('d', linkArc);
 		//@ts-ignore
 		node.attr('transform', (d) => `translate(${d.x},${d.y})`);
-	}
-
-	function getLinksColor(pVal: number) {
-		switch (pVal) {
-			case 1:
-				return 'black';
-			case 2:
-				return 'green';
-			case 3:
-				return 'red';
-			default:
-				return 'black';
-		}
 	}
 
 	onMount(() => {
@@ -82,7 +69,7 @@
 			.attr('markerHeight', 6)
 			.attr('orient', 'auto')
 			.append('path')
-			.attr('fill', (d) => getLinksColor(d))
+			.attr('fill', (d) => d)
 			.attr('d', 'M0,-5L10,0L0,5');
 
 		link = svg
@@ -92,9 +79,9 @@
 			.selectAll('path')
 			.data(links)
 			.join('path')
-			.attr('stroke', (d) => getLinksColor(d.value))
+			.attr('stroke', (d) => d.color)
 			//@ts-ignore
-			.attr('marker-end', (d) => `url(${new URL(`#arrow-${d.value}`, location)})`);
+			.attr('marker-end', (d) => `url(${new URL(`#arrow-${d.color}`, location)})`);
 
 		node = svg
 			.append('g')

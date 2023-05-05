@@ -39,7 +39,7 @@ export interface INode {
 export interface ILink {
 	source: string;
 	target: string;
-	value: number;
+	color: GraphColor;
 }
 
 export interface IData {
@@ -58,4 +58,10 @@ export async function apiGetGraph(): Promise<GraphInput[]> {
 		});
 
 	return response;
+}
+
+export enum GraphColor {
+	BLACK = 'black',
+	GREEN = 'green',
+	RED = 'red'
 }

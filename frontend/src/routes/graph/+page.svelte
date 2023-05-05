@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { apiGetGraph, type GraphInput, type IData } from '$lib/api/apiGraphs';
+	import { apiGetGraph, GraphColor, type GraphInput, type IData } from '$lib/api/apiGraphs';
 	import { onMount } from 'svelte';
 	import NetworkGraph from '../../lib/chart/NetworkGraph.svelte';
 	import CircleList from '$lib/chart/CircleList.svelte';
@@ -68,10 +68,20 @@
 					chartData[chartIndex].nodes.push({ id: loc_element.name, group: i.toString() });
 
 					for (let k = 0; k < loc_element.friends.length; k++) {
+						let loc_friend = getByName(loc_element.friends[k], graphData);
+						let colorValue: GraphColor = GraphColor.BLACK;
+						if (loc_element.tent == 9999 && loc_friend !== undefined && loc_friend.tent == 9999) {
+							colorValue = GraphColor.BLACK;
+						} else if (loc_friend !== undefined && loc_element.tent == loc_friend.tent) {
+							colorValue = GraphColor.GREEN;
+						} else {
+							colorValue = GraphColor.RED;
+						}
+
 						chartData[chartIndex].links.push({
 							source: name,
 							target: loc_element.friends[k],
-							value: 1
+							color: colorValue
 						});
 					}
 				}
