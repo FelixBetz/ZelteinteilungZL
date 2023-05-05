@@ -2,7 +2,10 @@
 import os
 import csv
 import file_indices as IDX
-from helpers import is_paided, strip_row
+from helpers import is_paided, parse_yes_no, strip_row
+from participants.participant_c import Participant
+from datetime import datetime
+import time
 
 
 def check_if_participant_file_valid(arg_input_file):
@@ -168,3 +171,87 @@ def parse_tent_numbers(arg_participants, arg_path, arg_errors):
             else:
                 loc_participant.tent = loc_tent_number
     return arg_participants
+
+
+def parse_participants(arg_file_name, arg_tent_path, arg_rev_path, arg_paid_path, arg_errors):
+    """parses zeltlager participants from input csv file"""
+    loc_participants = []
+
+    if not os.path.isfile(arg_file_name):
+        arg_errors.append("ERROR: " + arg_file_name + " existiert nicht")
+        print("ERROR: " + arg_file_name + " existiert nicht")
+        return loc_participants
+
+    check_if_participant_file_valid(arg_file_name)
+
+    with open(arg_file_name, newline="", encoding="utf-8") as csvfile:
+        spamreader = csv.reader(csvfile, delimiter=";", quotechar="|")
+
+        for i, row in enumerate(spamreader):
+            if i >= 1:
+                strip_row(row)
+
+                loc_lastname = row[IDX.PARP_LAST_NAME]
+                loc_firstname = row[IDX.PARP_FIRST_NAME]
+
+                # parse zip code
+                try:
+                    loc_zipcode = int(row[IDX.PARP_ZIP_CODE])
+                except:
+                    print("ERROR: failed to parse zip coce: i: ", i,
+                          loc_firstname, " ", loc_lastname,)
+                    raise
+
+                try:
+                    loc_time_string = datetime.strptime(
+                        row[IDX.PARP_BIRTHDATE], "%Y-%m-%d"
+                    ).date()
+                    loc_tuple = loc_time_string.timetuple()
+                    timestamp = time.mktime(loc_tuple)
+                    loc_birthdate = timestamp
+
+                except:
+                    print("failed to parse birthdate: i: ",
+                          i, loc_firstname, " ", loc_lastname)
+                    raise
+                loc_birthdate = row[IDX.PARP_BIRTHDATE]
+
+                loc_participant = Participant(
+                    int(row[IDX.PARP_ID]),
+                    # will be overwritten by parse_paid()
+                    is_paided("false"),
+                    loc_lastname,
+                    loc_firstname,
+                    row[IDX.PARP_STREET],
+                    loc_zipcode,
+                    row[IDX.PARP_VILLAGE],
+                    loc_birthdate,
+                    row[IDX.PARP_PHONE],
+                    row[IDX.PARP_MAIL],
+                    row[IDX.PARP_EMERCENCY_CONTACT],
+                    row[IDX.PARP_EMERCENCY_PHONE],
+                    parse_yes_no(row[IDX.PARP_REDUCED]),
+                    parse_yes_no(row[IDX.PARP_PHOTO_ALLOWED]),
+                    parse_yes_no(row[IDX.PARP_VEGETARIAN]),
+                    parse_yes_no(row[IDX.PARP_NEWSLETTER]),
+                    row[IDX.PARP_OTHER],
+                    9999,  # will be overwritten by parse_tent_numbers()
+                    row[IDX.PARP_REGISTER_DATE]
+                )
+
+                loc_participant.set_friends(
+                    [row[IDX.PARP_FRIEND1], row[IDX.PARP_FRIEND2]]
+                )
+
+                loc_participants.append(loc_participant)
+
+        print("parsed input file: ", arg_file_name)
+        loc_participants, loc_revisions = apply_participants_revisons(
+            loc_participants,  arg_rev_path, arg_errors)
+
+        loc_participants = parse_tent_numbers(
+            loc_participants, arg_tent_path, arg_errors)
+        loc_participants = parse_paid(
+            loc_participants, arg_paid_path, arg_errors)
+
+    return loc_participants, loc_revisions

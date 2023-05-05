@@ -1,16 +1,12 @@
 """main file of ZelteinteilungZL"""
 import json
-import os
-import csv
-import time
-from datetime import datetime
+
 from flask_cors import CORS
 from flask import Flask, abort, jsonify, request, send_from_directory
-import file_indices as IDX
-from helpers import parse_yes_no, strip_row, is_paided, props
-from participants.participants import apply_participants_revisons, check_if_participant_file_valid,\
-    get_paticipant_by_id, parse_paid, parse_participants_last_year, parse_tent_numbers
-from participants.participant_c import Participant, particpant_object_to_class
+from helpers import props
+from participants.participants import get_paticipant_by_id, parse_participants,\
+    parse_participants_last_year
+from participants.participant_c import particpant_object_to_class
 
 from maps import generate_maps
 from config import Config
@@ -51,7 +47,7 @@ app.config["MAPS_OUTPUT"] = "output_maps"
 
 def save_data(arg_participants, arg_tent_leaders, arg_revisions):
     """save participants tent numbers, revisions, paid"""
-    global error_logs
+    global error_logs, revison_logs
     # save tent numbers
     tent_numbers = [{"id": p.identifier, "tent": p.tent}
                     for p in arg_participants]
@@ -76,100 +72,14 @@ def save_data(arg_participants, arg_tent_leaders, arg_revisions):
         for revision in arg_revisions:
             revision_file.write(revision + "\n")
 
-    arg_participants = parse_participants(INPUT_PARICIPANT_PATH, error_logs)
+    error_logs.clear()
+    error_logs += configs_d.errors
+    arg_participants, revison_logs = parse_participants(
+        INPUT_PARICIPANT_PATH, INPUT_TENT_NUMBERS_PATH,
+        INPUT_REVISION_PATH, INPUT_PAID_PATH, error_logs)
     arg_tent_leaders = parse_tent_leader(INPUT_TENT_LEADER_PATH, error_logs)
 
     return arg_participants, arg_tent_leaders
-
-
-def parse_participants(arg_file_name, arg_errors):
-    """parses zeltlager participants from input csv file"""
-    global configs_d, revison_logs
-    arg_errors.clear()
-
-    for error in configs_d.errors:
-        print("!:", error)
-        arg_errors.append(error)
-    loc_participants = []
-
-    if not os.path.isfile(arg_file_name):
-        arg_errors.append("ERROR: " + arg_file_name + " existiert nicht")
-        print("ERROR: " + arg_file_name + " existiert nicht")
-        return loc_participants
-
-    check_if_participant_file_valid(arg_file_name)
-
-    with open(arg_file_name, newline="", encoding="utf-8") as csvfile:
-        spamreader = csv.reader(csvfile, delimiter=";", quotechar="|")
-
-        for i, row in enumerate(spamreader):
-            if i >= 1:
-                strip_row(row)
-
-                loc_lastname = row[IDX.PARP_LAST_NAME]
-                loc_firstname = row[IDX.PARP_FIRST_NAME]
-
-                # parse zip code
-                try:
-                    loc_zipcode = int(row[IDX.PARP_ZIP_CODE])
-                except:
-                    print("ERROR: failed to parse zip coce: i: ", i,
-                          loc_firstname, " ", loc_lastname,)
-                    raise
-
-                try:
-                    loc_time_string = datetime.strptime(
-                        row[IDX.PARP_BIRTHDATE], "%Y-%m-%d"
-                    ).date()
-                    loc_tuple = loc_time_string.timetuple()
-                    timestamp = time.mktime(loc_tuple)
-                    loc_birthdate = timestamp
-
-                except:
-                    print("failed to parse birthdate: i: ",
-                          i, loc_firstname, " ", loc_lastname)
-                    raise
-                loc_birthdate = row[IDX.PARP_BIRTHDATE]
-
-                loc_participant = Participant(
-                    int(row[IDX.PARP_ID]),
-                    # will be overwritten by parse_paid()
-                    is_paided("false"),
-                    loc_lastname,
-                    loc_firstname,
-                    row[IDX.PARP_STREET],
-                    loc_zipcode,
-                    row[IDX.PARP_VILLAGE],
-                    loc_birthdate,
-                    row[IDX.PARP_PHONE],
-                    row[IDX.PARP_MAIL],
-                    row[IDX.PARP_EMERCENCY_CONTACT],
-                    row[IDX.PARP_EMERCENCY_PHONE],
-                    parse_yes_no(row[IDX.PARP_REDUCED]),
-                    parse_yes_no(row[IDX.PARP_PHOTO_ALLOWED]),
-                    parse_yes_no(row[IDX.PARP_VEGETARIAN]),
-                    parse_yes_no(row[IDX.PARP_NEWSLETTER]),
-                    row[IDX.PARP_OTHER],
-                    9999,  # will be overwritten by parse_tent_numbers()
-                    row[IDX.PARP_REGISTER_DATE]
-                )
-
-                loc_participant.set_friends(
-                    [row[IDX.PARP_FRIEND1], row[IDX.PARP_FRIEND2]]
-                )
-
-                loc_participants.append(loc_participant)
-
-        print("parsed input file: ", arg_file_name)
-        loc_participants, revison_logs = apply_participants_revisons(
-            loc_participants, INPUT_REVISION_PATH, arg_errors)
-
-        loc_participants = parse_tent_numbers(
-            loc_participants, INPUT_TENT_NUMBERS_PATH, arg_errors)
-        loc_participants = parse_paid(
-            loc_participants, INPUT_PAID_PATH, arg_errors)
-
-    return loc_participants
 
 
 @ app.route("/api/participants", methods=["GET", "POST"])
@@ -313,7 +223,10 @@ def get_participants_last_year():
 if __name__ == "__main__":
     configs_d.load()
 
-    participants_d = parse_participants(INPUT_PARICIPANT_PATH, error_logs)
+    error_logs.clear()
+    participants_d, revison_logs = parse_participants(
+        INPUT_PARICIPANT_PATH, INPUT_TENT_NUMBERS_PATH,
+        INPUT_REVISION_PATH, INPUT_PAID_PATH, error_logs)
     tent_leaders = parse_tent_leader(INPUT_TENT_LEADER_PATH, error_logs)
     participants_last_year = parse_participants_last_year(
         INPUT_LAST_YEAR_PATH, participants_d, error_logs)
