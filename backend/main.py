@@ -12,27 +12,11 @@ from maps import generate_maps
 from config import Config
 from mailing.mailing import mailing_routes
 from tent_leaders.tent_leaders import parse_tent_leader
-
-INPUT_FILE_PATH = r"..\\input\\"
-INPUT_FILE_NAME = "2023_teilnehmer_input.csv"
-INPUT_TENT_LEADER_FILE_NAME = "2023_leitungsteam_anfrage.csv"
-INPUT_REVISION_FILE_NAME = "revisions.txt"
-INPUT_TENT_NUMBERS_FILE_NAME = "tent_numbers.txt"
-INPUT_PAID_FILE_NAME = "paid.txt"
-INPUT_CONFIG_FILE_NAME = "config.txt"
-INPUT_LAST_YEAR_FILE_NAME = "2022_zl_tn_out.csv"
-
-I_PARICIPANT = INPUT_FILE_PATH + INPUT_FILE_NAME
-I_TENT_LEADER = INPUT_FILE_PATH + INPUT_TENT_LEADER_FILE_NAME
-I_REVISION = INPUT_FILE_PATH + INPUT_REVISION_FILE_NAME
-I_TENT_NUMBERS = INPUT_FILE_PATH + INPUT_TENT_NUMBERS_FILE_NAME
-I_PAID = INPUT_FILE_PATH + INPUT_PAID_FILE_NAME
-I_CONFIG = INPUT_FILE_PATH + INPUT_CONFIG_FILE_NAME
-I_LAST_YEAR = INPUT_FILE_PATH + INPUT_LAST_YEAR_FILE_NAME
+import pathes as PATH
 
 tent_leaders = []
 participants_d = []
-configs_d = Config(I_CONFIG)
+configs_d = Config(PATH.CONFIG)
 
 error_logs = []
 revison_logs = []
@@ -50,7 +34,7 @@ def save_data(arg_participants, arg_leaders, arg_revisions, arg_errors):
     # save tent numbers
     tent_numbers = [{"id": p.identifier, "tent": p.tent}
                     for p in arg_participants]
-    with open(I_TENT_NUMBERS, "w", encoding="utf-8") as tent_number_file:
+    with open(PATH.TENT_NUMBERS, "w", encoding="utf-8") as tent_number_file:
         for number in tent_numbers:
             if number["tent"] != 9999:
                 tent_number_file.write(
@@ -60,21 +44,21 @@ def save_data(arg_participants, arg_leaders, arg_revisions, arg_errors):
     # save paid
     paid_obj = [{"id": p.identifier, "paid": p.paid} for p in arg_participants]
 
-    with open(I_PAID, "w", encoding="utf-8") as paid_file:
+    with open(PATH.PAID, "w", encoding="utf-8") as paid_file:
         for obj in paid_obj:
             if obj["paid"] is True:
                 paid_file.write(str(obj["id"]) + ";" + str(obj["paid"]) + "\n")
 
     # save revisions todo
 
-    with open(I_REVISION, "a", encoding="utf-8") as revision_file:
+    with open(PATH.REVISION, "a", encoding="utf-8") as revision_file:
         for revision in arg_revisions:
             revision_file.write(revision + "\n")
 
     arg_errors.clear()
     arg_participants, arg_revisions = parse_participants(
-        I_PARICIPANT, I_TENT_NUMBERS, I_REVISION, I_PAID, arg_errors)
-    arg_leaders = parse_tent_leader(I_TENT_LEADER, arg_errors)
+        PATH.PARICIPANT, PATH.TENT_NUMBERS, PATH.REVISION, PATH.PAID, arg_errors)
+    arg_leaders = parse_tent_leader(PATH.TENT_LEADER, arg_errors)
 
     return arg_participants, arg_leaders
 
@@ -82,7 +66,7 @@ def save_data(arg_participants, arg_leaders, arg_revisions, arg_errors):
 @ app.route("/api/participants", methods=["GET", "POST"])
 def get_participants():
     """returns all participants as json"""
-    global participants_d, tent_leaders, error_logs
+    global participants_d, tent_leaders
     if request.method == "POST":
         req = request.form.get("participants")
         req = json.loads(req)
@@ -222,10 +206,10 @@ if __name__ == "__main__":
 
     configs_d.load()
     participants_d, revison_logs = parse_participants(
-        I_PARICIPANT, I_TENT_NUMBERS,
-        I_REVISION, I_PAID, error_logs)
-    tent_leaders = parse_tent_leader(I_TENT_LEADER, error_logs)
+        PATH.PARICIPANT, PATH.TENT_NUMBERS,
+        PATH.REVISION, PATH.PAID, error_logs)
+    tent_leaders = parse_tent_leader(PATH.TENT_LEADER, error_logs)
     participants_last_year = parse_participants_last_year(
-        I_LAST_YEAR, participants_d, error_logs)
+        PATH.LAST_YEAR, participants_d, error_logs)
 
     app.run(host="0.0.0.0", port=8080, debug=True)

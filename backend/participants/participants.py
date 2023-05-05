@@ -203,12 +203,11 @@ def parse_participants(arg_file_name, arg_tent_path, arg_rev_path, arg_paid_path
                     raise
 
                 try:
-                    loc_time_string = datetime.strptime(
-                        row[IDX.PARP_BIRTHDATE], "%Y-%m-%d"
-                    ).date()
-                    loc_tuple = loc_time_string.timetuple()
-                    timestamp = time.mktime(loc_tuple)
-                    loc_birthdate = timestamp
+                    # check if birthdate is valid
+                    time.mktime(
+                        datetime.strptime(row[IDX.PARP_BIRTHDATE], "%Y-%m-%d")
+                        .date()
+                        .timetuple())
 
                 except:
                     print("failed to parse birthdate: i: ",
