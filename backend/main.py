@@ -10,10 +10,11 @@ import file_indices as IDX
 from helpers import parse_yes_no, strip_row, is_paided, props
 from participants.participants import check_if_participant_file_valid, get_paticipant_by_id
 from participants.participant_c import Participant, particpant_object_to_class
-from tent_leaders.tent_leader_c import TentLeader
+
 from maps import generate_maps
 from config import Config
 from mailing.mailing import mailing_routes
+from tent_leaders.tent_leaders import parse_tent_leader
 
 INPUT_FILE_PATH = r"..\\input\\"
 INPUT_FILE_NAME = "2023_teilnehmer_input.csv"
@@ -49,6 +50,7 @@ app.config["MAPS_OUTPUT"] = "output_maps"
 
 def save_data(arg_participants, arg_tent_leaders, arg_revisions):
     """save participants tent numbers, revisions, paid"""
+    global error_logs
     # save tent numbers
     tent_numbers = [{"id": p.identifier, "tent": p.tent}
                     for p in arg_participants]
@@ -74,7 +76,10 @@ def save_data(arg_participants, arg_tent_leaders, arg_revisions):
             revision_file.write(revision + "\n")
 
     arg_participants = parse_participants(INPUT_PARICIPANT_PATH)
-    arg_tent_leaders = parse_tent_leader(INPUT_TENT_LEADER_PATH)
+    arg_tent_leaders, loc_tent_leader_errors = parse_tent_leader(
+        INPUT_TENT_LEADER_PATH)
+
+    error_logs += loc_tent_leader_errors
 
     return arg_participants, arg_tent_leaders
 
@@ -244,82 +249,6 @@ def parse_participants(arg_file_name):
         loc_participants = parse_paid(loc_participants)
 
     return loc_participants
-
-
-def parse_tent_leader(arg_file_name):
-    """parses zeltlager tent leader from input csv file"""
-
-    loc_tent_leaders = []
-
-    if not os.path.isfile(INPUT_TENT_LEADER_PATH):
-        error_logs.append(
-            "ERROR: " + INPUT_TENT_LEADER_PATH + " existiert nicht")
-        print("ERROR: " + INPUT_TENT_LEADER_PATH + " existiert nicht")
-        return loc_tent_leaders
-
-    with open(arg_file_name, newline="", encoding="utf-8") as csvfile:
-        spamreader = csv.reader(csvfile, delimiter=";", quotechar="|")
-        loc_id = 0
-        for i, row in enumerate(spamreader):
-            if i >= 1:
-                strip_row(row)
-
-                loc_lastname = row[IDX.LEAD_LAST_NAME]
-                loc_firstname = row[IDX.LEAD_FIRST_NAME]
-
-                # parse zip code
-                try:
-                    loc_zipcode = int(row[IDX.LEAD_ZIP_CODE])
-                except:
-                    print("ERROR: failed to parse zip code: i: ",
-                          i, loc_firstname, " ", loc_lastname,)
-                    raise
-
-                # parse tent number
-                if row[IDX.LEAD_TENT] == "":
-                    loc_tent = 9999
-                else:
-                    try:
-                        loc_tent = int(row[IDX.LEAD_TENT])
-                    except:
-                        print("ERROR: failed to parse tent number: ",
-                              row[IDX.LEAD_TENT], "row: ", row,)
-                        raise
-                loc_birthdate = ""
-                try:
-                    loc_time_string = datetime.strptime(
-                        row[IDX.LEAD_BIRTHDATE], "%d.%m.%Y"
-                    ).date()
-                    _ = loc_time_string.timetuple()
-                    loc_birthdate = str(loc_time_string)
-
-                except:
-                    print("failed to parse birthdate: i: ",
-                          i, loc_firstname, " ", loc_lastname, loc_birthdate)
-                    raise
-
-                loc_tent_leader = TentLeader(
-                    loc_id,
-                    row[IDX.LEAD_JOB],
-                    loc_lastname,
-                    loc_firstname,
-                    row[IDX.LEAD_STREET],
-                    loc_zipcode,
-                    row[IDX.LEAD_VILLAGE],
-                    row[IDX.LEAD_PHONE],
-                    row[IDX.LEAD_HANDY],
-                    row[IDX.LEAD_MAIL],
-                    loc_birthdate,
-                    loc_tent,
-                    row[IDX.LEAD_TEAM],
-                    row[IDX.LEAD_COMMENT],
-                )
-                loc_id += 1
-
-                loc_tent_leaders.append(loc_tent_leader)
-
-        print("parsed input file: ", arg_file_name)
-    return loc_tent_leaders
 
 
 def apply_participants_revisons(arg_participants):
@@ -532,7 +461,9 @@ if __name__ == "__main__":
     configs_d.load()
 
     participants_d = parse_participants(INPUT_PARICIPANT_PATH)
-    tent_leaders = parse_tent_leader(INPUT_TENT_LEADER_PATH)
+    tent_leaders, loc_leader_errors = parse_tent_leader(INPUT_TENT_LEADER_PATH)
     participants_last_year = parse_participants_last_year(INPUT_LAST_YEAR_PATH)
+
+    error_logs += loc_leader_errors
 
     app.run(host="0.0.0.0", port=8080, debug=True)
