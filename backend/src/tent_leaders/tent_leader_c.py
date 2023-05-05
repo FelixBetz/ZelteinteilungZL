@@ -1,7 +1,7 @@
 """implementations of the class TentLeader"""
 
 
-from person import Person
+from src.lib.person import Person
 
 
 class TentLeader(Person):

@@ -17,3 +17,4 @@
 	- Merge Field
 - Graph zugewiesen grün markieren
 - logs: revison link to participant
+- maps output folder

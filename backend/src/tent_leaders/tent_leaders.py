@@ -2,7 +2,7 @@
 import os
 import csv
 from datetime import datetime
-from helpers import strip_row
+from src.lib.helpers import strip_row
 import pathes as PATH
 import file_indices as IDX
 from .tent_leader_c import TentLeader

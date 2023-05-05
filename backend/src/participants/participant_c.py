@@ -1,5 +1,5 @@
 """implementations of the class Participant"""
-from person import Person
+from src.lib.person import Person
 
 
 def particpant_object_to_class(arg_p, arg_o):

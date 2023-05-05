@@ -3,15 +3,15 @@ import json
 
 from flask_cors import CORS
 from flask import Flask, abort, jsonify, request, send_from_directory
-from helpers import props
-from participants.participants import get_paticipant_by_id, parse_participants,\
+from src.lib.helpers import props
+from src.participants.participants import get_paticipant_by_id, parse_participants,\
     parse_participants_last_year, save_data
-from participants.participant_c import particpant_object_to_class
+from src.participants.participant_c import particpant_object_to_class
 
-from maps import generate_maps
-from config import Config
-from mailing.mailing import mailing_routes
-from tent_leaders.tent_leaders import parse_tent_leader
+from src.maps import generate_maps
+from src.config import Config
+from src.mailing import mailing_routes
+from src.tent_leaders.tent_leaders import parse_tent_leader
 import pathes as PATH
 
 tent_leaders = []

@@ -4,8 +4,8 @@ import csv
 import time
 from datetime import datetime
 import file_indices as IDX
-from helpers import is_paided, parse_yes_no, strip_row
-from participants.participant_c import Participant
+from src.lib.helpers import is_paided, parse_yes_no, strip_row
+from src.participants.participant_c import Participant
 import pathes as PATH
 
 

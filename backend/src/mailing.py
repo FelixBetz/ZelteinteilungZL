@@ -4,7 +4,7 @@ import subprocess
 from flask import Blueprint, jsonify, request
 from mailmerge import MailMerge
 from docx2pdf import convert
-from helpers import MailType
+from src.lib.helpers import MailType
 
 THUNDERBIRD_PATH = "C:\\Program Files\\Mozilla Thunderbird\\thunderbird.exe"
 
