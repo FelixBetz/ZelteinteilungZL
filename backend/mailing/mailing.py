@@ -8,7 +8,7 @@ from helpers import MailType
 
 THUNDERBIRD_PATH = "C:\\Program Files\\Mozilla Thunderbird\\thunderbird.exe"
 
-mailing_routes = Blueprint('simple_page', __name__, )
+mailing_routes = Blueprint('mailing_routes', __name__, )
 
 
 def send_mail(arg_mails, arg_mail_mode, arg_subject, arg_content, arg_attachments):
