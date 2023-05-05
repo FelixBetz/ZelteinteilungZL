@@ -18,7 +18,9 @@ tent_leaders = []
 participants_d = []
 configs_d = Config(PATH.CONFIG)
 
-error_logs = []
+particpant_errors = []
+tent_leader_errors = []
+last_year_errors = []
 revison_logs = []
 
 app = Flask(__name__)
@@ -29,7 +31,7 @@ app.register_blueprint(mailing_routes)
 app.config["MAPS_OUTPUT"] = "output_maps"
 
 
-def save_data(arg_participants, arg_leaders, arg_revisions, arg_errors):
+def save_data(arg_participants,  arg_revisions, arg_errors):
     """save participants tent numbers, revisions, paid"""
     # save tent numbers
     tent_numbers = [{"id": p.identifier, "tent": p.tent}
@@ -57,15 +59,13 @@ def save_data(arg_participants, arg_leaders, arg_revisions, arg_errors):
 
     arg_errors.clear()
     arg_participants, arg_revisions = parse_participants(arg_errors)
-    arg_leaders = parse_tent_leader(arg_errors)
 
-    return arg_participants, arg_leaders
+    return arg_participants
 
 
 @ app.route("/api/participants", methods=["GET", "POST"])
 def get_participants():
     """returns all participants as json"""
-    global participants_d, tent_leaders
     if request.method == "POST":
         req = request.form.get("participants")
         req = json.loads(req)
@@ -78,8 +78,7 @@ def get_participants():
             loc_revisions += particpant_object_to_class(
                 loc_particpant, loc_object)
 
-        participants_d, tent_leaders = save_data(
-            participants_d, tent_leaders, loc_revisions, error_logs)
+        save_data(participants_d,  loc_revisions, particpant_errors)
 
     ret = []
     for loc_participant in participants_d:
@@ -90,7 +89,6 @@ def get_participants():
 @ app.route("/api/participant", methods=["GET", "POST"])
 def get_participant():
     """returns participant by given id as json"""
-    global participants_d, tent_leaders
     ret = {}
     try:
         if request.method == "POST":
@@ -104,8 +102,7 @@ def get_participant():
 
             loc_revisions = particpant_object_to_class(loc_participant, req)
 
-            participants_d, tent_leaders = save_data(
-                participants_d, tent_leaders, loc_revisions, error_logs)
+            save_data(participants_d,  loc_revisions, particpant_errors)
             loc_participant = get_paticipant_by_id(participants_d, loc_id)
             ret = props(loc_participant)
 
@@ -177,7 +174,8 @@ def get_graph():
 def get_logs():
     """returns logs"""
     ret = {}
-    ret["errors"] = error_logs + configs_d.errors
+    ret["errors"] = particpant_errors + configs_d.errors + \
+        tent_leader_errors + last_year_errors
     ret["revisions"] = revison_logs
     return jsonify(ret)
 
@@ -201,12 +199,10 @@ def get_participants_last_year():
 
 
 if __name__ == "__main__":
-    error_logs.clear()
-
     configs_d.load()
-    participants_d, revison_logs = parse_participants(error_logs)
-    tent_leaders = parse_tent_leader(error_logs)
+    participants_d, revison_logs = parse_participants(particpant_errors)
+    tent_leaders = parse_tent_leader(tent_leader_errors)
     participants_last_year = parse_participants_last_year(
-        participants_d, error_logs)
+        participants_d, last_year_errors)
 
     app.run(host="0.0.0.0", port=8080, debug=True)
