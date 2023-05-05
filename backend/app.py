@@ -27,7 +27,7 @@ app = Flask(__name__)
 cors = CORS(app)
 
 app.register_blueprint(mailing_routes)
-app.config["MAPS_OUTPUT"] = "output_maps"
+app.config["MAPS_OUTPUT"] = "../output/output_maps"
 
 
 @ app.route("/api/participants", methods=["GET", "POST"])

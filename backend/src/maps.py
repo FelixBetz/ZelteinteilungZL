@@ -8,7 +8,7 @@ from folium import plugins
 import pgeocode
 from geopy.geocoders import Nominatim
 
-OUTPUT_DIR_PATH = "./output_maps/"
+OUTPUT_DIR_PATH = "../output/output_maps/"
 
 
 def calc_middle_point(arg_locations):
