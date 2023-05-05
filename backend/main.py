@@ -5,7 +5,7 @@ from flask_cors import CORS
 from flask import Flask, abort, jsonify, request, send_from_directory
 from helpers import props
 from participants.participants import get_paticipant_by_id, parse_participants,\
-    parse_participants_last_year
+    parse_participants_last_year, save_data
 from participants.participant_c import particpant_object_to_class
 
 from maps import generate_maps
@@ -27,40 +27,7 @@ app = Flask(__name__)
 cors = CORS(app)
 
 app.register_blueprint(mailing_routes)
-
 app.config["MAPS_OUTPUT"] = "output_maps"
-
-
-def save_data(arg_participants,  arg_revisions, arg_errors):
-    """save participants tent numbers, revisions, paid"""
-    # save tent numbers
-    tent_numbers = [{"id": p.identifier, "tent": p.tent}
-                    for p in arg_participants]
-    with open(PATH.TENT_NUMBERS, "w", encoding="utf-8") as tent_number_file:
-        for number in tent_numbers:
-            if number["tent"] != 9999:
-                tent_number_file.write(
-                    str(number["id"]) + ";" + str(number["tent"]) + "\n"
-                )
-
-    # save paid
-    paid_obj = [{"id": p.identifier, "paid": p.paid} for p in arg_participants]
-
-    with open(PATH.PAID, "w", encoding="utf-8") as paid_file:
-        for obj in paid_obj:
-            if obj["paid"] is True:
-                paid_file.write(str(obj["id"]) + ";" + str(obj["paid"]) + "\n")
-
-    # save revisions todo
-
-    with open(PATH.REVISION, "a", encoding="utf-8") as revision_file:
-        for revision in arg_revisions:
-            revision_file.write(revision + "\n")
-
-    arg_errors.clear()
-    arg_participants, arg_revisions = parse_participants(arg_errors)
-
-    return arg_participants
 
 
 @ app.route("/api/participants", methods=["GET", "POST"])

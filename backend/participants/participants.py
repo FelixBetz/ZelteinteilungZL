@@ -253,3 +253,35 @@ def parse_participants(arg_errors):
         loc_participants = parse_paid(loc_participants,  arg_errors)
 
     return loc_participants, loc_revisions
+
+
+def save_data(arg_participants,  arg_revisions, arg_errors):
+    """save participants tent numbers, revisions, paid"""
+    # save tent numbers
+    tent_numbers = [{"id": p.identifier, "tent": p.tent}
+                    for p in arg_participants]
+    with open(PATH.TENT_NUMBERS, "w", encoding="utf-8") as tent_number_file:
+        for number in tent_numbers:
+            if number["tent"] != 9999:
+                tent_number_file.write(
+                    str(number["id"]) + ";" + str(number["tent"]) + "\n"
+                )
+
+    # save paid
+    paid_obj = [{"id": p.identifier, "paid": p.paid} for p in arg_participants]
+
+    with open(PATH.PAID, "w", encoding="utf-8") as paid_file:
+        for obj in paid_obj:
+            if obj["paid"] is True:
+                paid_file.write(str(obj["id"]) + ";" + str(obj["paid"]) + "\n")
+
+    # save revisions todo
+
+    with open(PATH.REVISION, "a", encoding="utf-8") as revision_file:
+        for revision in arg_revisions:
+            revision_file.write(revision + "\n")
+
+    arg_errors.clear()
+    arg_participants, arg_revisions = parse_participants(arg_errors)
+
+    return arg_participants
