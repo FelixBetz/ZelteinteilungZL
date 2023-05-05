@@ -45,10 +45,11 @@ app.register_blueprint(mailing_routes)
 app.config["MAPS_OUTPUT"] = "output_maps"
 
 
-def save_data(arg_participants, arg_tent_leaders, arg_revisions):
+def save_data(arg_participants, arg_leaders, arg_revisions, arg_errors, arg_configs):
     """save participants tent numbers, revisions, paid"""
-    global error_logs, revison_logs
+    global revison_logs
     # save tent numbers
+
     tent_numbers = [{"id": p.identifier, "tent": p.tent}
                     for p in arg_participants]
     with open(I_TENT_NUMBERS, "w", encoding="utf-8") as tent_number_file:
@@ -68,23 +69,23 @@ def save_data(arg_participants, arg_tent_leaders, arg_revisions):
 
     # save revisions todo
 
-    with open(INPUT_REVISION_PATH, "a", encoding="utf-8") as revision_file:
+    with open(I_REVISION, "a", encoding="utf-8") as revision_file:
         for revision in arg_revisions:
             revision_file.write(revision + "\n")
 
-    error_logs.clear()
-    error_logs += configs_d.errors
+    arg_errors.clear()
+    arg_errors += arg_configs.errors
     arg_participants, revison_logs = parse_participants(
-        I_PARICIPANT, I_TENT_NUMBERS, I_REVISION, I_PAID, error_logs)
-    arg_tent_leaders = parse_tent_leader(I_TENT_LEADER, error_logs)
+        I_PARICIPANT, I_TENT_NUMBERS, I_REVISION, I_PAID, arg_errors)
+    arg_leaders = parse_tent_leader(I_TENT_LEADER, arg_errors)
 
-    return arg_participants, arg_tent_leaders
+    return arg_participants, arg_leaders
 
 
 @ app.route("/api/participants", methods=["GET", "POST"])
 def get_participants():
     """returns all participants as json"""
-    global participants_d, tent_leaders
+    global participants_d, tent_leaders, error_logs, configs_d
     if request.method == "POST":
         req = request.form.get("participants")
         req = json.loads(req)
@@ -98,7 +99,7 @@ def get_participants():
                 loc_particpant, loc_object)
 
         participants_d, tent_leaders = save_data(
-            participants_d, tent_leaders, loc_revisions)
+            participants_d, tent_leaders, loc_revisions, error_logs, configs_d)
 
     ret = []
     for loc_participant in participants_d:
@@ -109,7 +110,7 @@ def get_participants():
 @ app.route("/api/participant", methods=["GET", "POST"])
 def get_participant():
     """returns participant by given id as json"""
-    global participants_d, tent_leaders
+    global participants_d, tent_leaders, configs_d
     ret = {}
     try:
         if request.method == "POST":
@@ -124,7 +125,7 @@ def get_participant():
             loc_revisions = particpant_object_to_class(loc_participant, req)
 
             participants_d, tent_leaders = save_data(
-                participants_d, tent_leaders, loc_revisions)
+                participants_d, tent_leaders, loc_revisions, error_logs, configs_d)
             loc_participant = get_paticipant_by_id(participants_d, loc_id)
             ret = props(loc_participant)
 
