@@ -7,14 +7,12 @@ import file_indices as IDX
 from .tent_leader_c import TentLeader
 
 
-def parse_tent_leader(arg_file_name):
+def parse_tent_leader(arg_file_name, arg_errors):
     """parses zeltlager tent leader from input csv file"""
-
     loc_tent_leaders = []
-    loc_errors = []
 
     if not os.path.isfile(arg_file_name):
-        loc_errors.append(
+        arg_errors.append(
             "ERROR: " + arg_file_name + " existiert nicht")
         print("ERROR: " + arg_file_name + " existiert nicht")
         return loc_tent_leaders
@@ -81,4 +79,4 @@ def parse_tent_leader(arg_file_name):
                 loc_tent_leaders.append(loc_tent_leader)
 
         print("parsed input file: ", arg_file_name)
-    return loc_tent_leaders, loc_errors
+    return loc_tent_leaders

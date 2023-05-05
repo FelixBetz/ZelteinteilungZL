@@ -8,8 +8,8 @@ from flask_cors import CORS
 from flask import Flask, abort, jsonify, request, send_from_directory
 import file_indices as IDX
 from helpers import parse_yes_no, strip_row, is_paided, props
-from participants.participants import check_if_participant_file_valid,\
-    get_paticipant_by_id, parse_paid, parse_participants_last_year
+from participants.participants import apply_participants_revisons, check_if_participant_file_valid,\
+    get_paticipant_by_id, parse_paid, parse_participants_last_year, parse_tent_numbers
 from participants.participant_c import Participant, particpant_object_to_class
 
 from maps import generate_maps
@@ -77,43 +77,14 @@ def save_data(arg_participants, arg_tent_leaders, arg_revisions):
             revision_file.write(revision + "\n")
 
     arg_participants = parse_participants(INPUT_PARICIPANT_PATH)
-    arg_tent_leaders, loc_tent_leader_errors = parse_tent_leader(
-        INPUT_TENT_LEADER_PATH)
-
-    error_logs += loc_tent_leader_errors
+    arg_tent_leaders = parse_tent_leader(INPUT_TENT_LEADER_PATH, error_logs)
 
     return arg_participants, arg_tent_leaders
 
 
-def parse_tent_numbers(arg_participants):
-    """parse tent numbers"""
-    if not os.path.isfile(INPUT_TENT_NUMBERS_PATH):
-        return arg_participants
-
-    with open(INPUT_TENT_NUMBERS_PATH, encoding="utf8") as tent_numbers_file:
-        for row in tent_numbers_file:
-            splitted_row = row.split(";")
-            loc_id = int(splitted_row[0].strip())
-            loc_tent_number = int(splitted_row[1].strip())
-
-            loc_participant = get_paticipant_by_id(arg_participants, loc_id)
-            if loc_participant is None:
-                print("ERROR parse tent number: participant not found")
-                error_logs.append(
-                    'Teilnehmer mit Id "'
-                    + str(loc_id)
-                    + '" wurde nicht gefunden. Zeltnummer "'
-                    + str(loc_tent_number)
-                    + '" konnte nicht zugewiesen werden!'
-                )
-            else:
-                loc_participant.tent = loc_tent_number
-    return arg_participants
-
-
 def parse_participants(arg_file_name):
     """parses zeltlager participants from input csv file"""
-    global error_logs, configs_d
+    global error_logs, configs_d, revison_logs
 
     error_logs.clear()
     for error in configs_d.errors:
@@ -190,80 +161,15 @@ def parse_participants(arg_file_name):
                 loc_participants.append(loc_participant)
 
         print("parsed input file: ", arg_file_name)
-        loc_participants = apply_participants_revisons(loc_participants)
-        loc_participants = parse_tent_numbers(loc_participants)
-        loc_participants, loc_errors = parse_paid(
-            loc_participants, INPUT_PAID_PATH)
-        error_logs += loc_errors
+        loc_participants, revison_logs = apply_participants_revisons(
+            loc_participants, INPUT_REVISION_PATH, error_logs)
+
+        loc_participants = parse_tent_numbers(
+            loc_participants, INPUT_TENT_NUMBERS_PATH, error_logs)
+        loc_participants = parse_paid(
+            loc_participants, INPUT_PAID_PATH, error_logs)
+
     return loc_participants
-
-
-def apply_participants_revisons(arg_participants):
-    """apply_participants_revisons"""
-
-    revison_logs.clear()
-
-    if not os.path.isfile(INPUT_REVISION_PATH):
-        error_logs.append("ERROR: " + INPUT_REVISION_PATH + " existiert nicht")
-        print("ERROR: " + INPUT_REVISION_PATH + " existiert nicht")
-        return arg_participants
-
-    with open(INPUT_REVISION_PATH, encoding="utf8") as revision_file:
-        for row in revision_file:
-            if row.strip() == "":
-                continue
-            splitted_row = row.split(";")
-
-            loc_id = int(splitted_row[0].strip())
-            loc_property = splitted_row[1].strip()
-            loc_value = splitted_row[2].strip()
-
-            loc_participant = get_paticipant_by_id(arg_participants, loc_id)
-
-            loc_revision = {}
-            loc_revision["id"] = loc_id
-            loc_revision["property"] = loc_property
-            loc_revision["newValue"] = loc_value
-
-            # participant not found
-            if loc_participant is None:
-                # cereate log string
-                loc_revision["isError"] = True
-                loc_revision["fullname"] = ""
-                loc_revision["oldValue"] = ""
-                loc_revision["errorMessage"] = "ID not found"
-
-                revison_logs.append(loc_revision)
-
-            else:
-
-                loc_old_value = loc_participant.set_by_string_prop(
-                    loc_property, loc_value)
-                # failed to find property
-                if loc_old_value is None:
-                    loc_revision["isError"] = True
-                    loc_revision["fullname"] = loc_participant.get_fullname()
-                    loc_revision["oldValue"] = ""
-                    loc_revision["errorMessage"] = "Eigenschaft \"" + \
-                        loc_property + "\"existiert nicht"
-                # failed to parse property
-                elif loc_old_value == "ERROR":
-                    loc_revision["isError"] = True
-                    loc_revision["fullname"] = loc_participant.get_fullname()
-                    loc_revision["oldValue"] = ""
-                    loc_revision["errorMessage"] = "Wert \"" + \
-                        loc_value + "\"konnte nicht geparsed werden"
-
-                 # revision was sucessfull
-                else:
-                    loc_revision["isError"] = False
-                    loc_revision["fullname"] = loc_participant.get_fullname()
-                    loc_revision["oldValue"] = loc_old_value
-                    loc_revision["errorMessage"] = loc_value
-
-                revison_logs.append(loc_revision)
-
-    return arg_participants
 
 
 @ app.route("/api/participants", methods=["GET", "POST"])
@@ -408,12 +314,8 @@ if __name__ == "__main__":
     configs_d.load()
 
     participants_d = parse_participants(INPUT_PARICIPANT_PATH)
-
-    tent_leaders, loc_errors = parse_tent_leader(INPUT_TENT_LEADER_PATH)
-    error_logs += loc_errors
-
-    participants_last_year, loc_errors = parse_participants_last_year(
-        INPUT_LAST_YEAR_PATH, participants_d)
-    error_logs += loc_errors
+    tent_leaders = parse_tent_leader(INPUT_TENT_LEADER_PATH, error_logs)
+    participants_last_year = parse_participants_last_year(
+        INPUT_LAST_YEAR_PATH, participants_d, error_logs)
 
     app.run(host="0.0.0.0", port=8080, debug=True)
