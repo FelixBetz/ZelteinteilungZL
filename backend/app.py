@@ -132,7 +132,7 @@ def get_graph():
                 loc_friends.append(loc_friend)
 
         loc_stuebis.append(
-            {"name": participant.get_fullname(), "friends": loc_friends})
+            {"name": participant.get_fullname(), "friends": loc_friends, "tent": participant.tent})
 
     return jsonify(loc_stuebis)
 

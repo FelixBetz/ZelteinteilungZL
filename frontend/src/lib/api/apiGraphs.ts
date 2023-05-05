@@ -27,6 +27,7 @@ export async function apiGetMaps(zipCodes: ZipCodes[]): Promise<string[]> {
 export interface GraphInput {
 	friends: string[];
 	name: string;
+	tent: number;
 }
 
 export interface INode {
