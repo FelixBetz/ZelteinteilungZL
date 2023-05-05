@@ -3,21 +3,22 @@ import os
 import csv
 from datetime import datetime
 from helpers import strip_row
+import pathes as PATH
 import file_indices as IDX
 from .tent_leader_c import TentLeader
 
 
-def parse_tent_leader(arg_file_name, arg_errors):
+def parse_tent_leader(arg_errors):
     """parses zeltlager tent leader from input csv file"""
     loc_tent_leaders = []
 
-    if not os.path.isfile(arg_file_name):
+    if not os.path.isfile(PATH.TENT_LEADER):
         arg_errors.append(
-            "ERROR: " + arg_file_name + " existiert nicht")
-        print("ERROR: " + arg_file_name + " existiert nicht")
+            "ERROR: " + PATH.TENT_LEADER + " existiert nicht")
+        print("ERROR: " + PATH.TENT_LEADER + " existiert nicht")
         return loc_tent_leaders
 
-    with open(arg_file_name, newline="", encoding="utf-8") as csvfile:
+    with open(PATH.TENT_LEADER, newline="", encoding="utf-8") as csvfile:
         spamreader = csv.reader(csvfile, delimiter=";", quotechar="|")
         loc_id = 0
         for i, row in enumerate(spamreader):
@@ -78,5 +79,5 @@ def parse_tent_leader(arg_file_name, arg_errors):
 
                 loc_tent_leaders.append(loc_tent_leader)
 
-        print("parsed input file: ", arg_file_name)
+        print("parsed input file: ", PATH.TENT_LEADER)
     return loc_tent_leaders

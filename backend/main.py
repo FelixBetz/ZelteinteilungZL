@@ -56,9 +56,8 @@ def save_data(arg_participants, arg_leaders, arg_revisions, arg_errors):
             revision_file.write(revision + "\n")
 
     arg_errors.clear()
-    arg_participants, arg_revisions = parse_participants(
-        PATH.PARICIPANT, PATH.TENT_NUMBERS, PATH.REVISION, PATH.PAID, arg_errors)
-    arg_leaders = parse_tent_leader(PATH.TENT_LEADER, arg_errors)
+    arg_participants, arg_revisions = parse_participants(arg_errors)
+    arg_leaders = parse_tent_leader(arg_errors)
 
     return arg_participants, arg_leaders
 
@@ -205,11 +204,9 @@ if __name__ == "__main__":
     error_logs.clear()
 
     configs_d.load()
-    participants_d, revison_logs = parse_participants(
-        PATH.PARICIPANT, PATH.TENT_NUMBERS,
-        PATH.REVISION, PATH.PAID, error_logs)
-    tent_leaders = parse_tent_leader(PATH.TENT_LEADER, error_logs)
+    participants_d, revison_logs = parse_participants(error_logs)
+    tent_leaders = parse_tent_leader(error_logs)
     participants_last_year = parse_participants_last_year(
-        PATH.LAST_YEAR, participants_d, error_logs)
+        participants_d, error_logs)
 
     app.run(host="0.0.0.0", port=8080, debug=True)

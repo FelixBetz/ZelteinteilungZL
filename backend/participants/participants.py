@@ -6,6 +6,7 @@ from datetime import datetime
 import file_indices as IDX
 from helpers import is_paided, parse_yes_no, strip_row
 from participants.participant_c import Participant
+import pathes as PATH
 
 
 def check_if_participant_file_valid(arg_input_file):
@@ -26,16 +27,16 @@ def get_paticipant_by_id(arg_participants, arg_id):
     return None
 
 
-def parse_participants_last_year(arg_file_name, arg_participants, arg_errors):
+def parse_participants_last_year(arg_participants, arg_errors):
     """parses zeltlager participants from input csv file"""
     loc_participants = []
 
-    if not os.path.isfile(arg_file_name):
-        arg_errors.append("ERROR: " + arg_file_name + " existiert nicht")
-        print("ERROR: " + arg_file_name + " existiert nicht")
+    if not os.path.isfile(PATH.LAST_YEAR):
+        arg_errors.append("ERROR: " + PATH.LAST_YEAR + " existiert nicht")
+        print("ERROR: " + PATH.LAST_YEAR + " existiert nicht")
         return loc_participants
 
-    with open(arg_file_name, newline="", encoding="utf-8") as csvfile:
+    with open(PATH.LAST_YEAR, newline="", encoding="utf-8") as csvfile:
         spamreader = csv.reader(csvfile, delimiter=";", quotechar="|")
 
         for i, row in enumerate(spamreader):
@@ -56,12 +57,12 @@ def parse_participants_last_year(arg_file_name, arg_participants, arg_errors):
     return ret
 
 
-def parse_paid(arg_participants, arg_path, arg_errors):
+def parse_paid(arg_participants, arg_errors):
     """parse paid participants"""
-    if not os.path.isfile(arg_path):
+    if not os.path.isfile(PATH.PAID):
         return arg_participants
 
-    with open(arg_path, encoding="utf8") as paid_file:
+    with open(PATH.PAID, encoding="utf8") as paid_file:
         for row in paid_file:
             splitted_row = row.split(";")
             loc_id = int(splitted_row[0].strip())
@@ -80,16 +81,16 @@ def parse_paid(arg_participants, arg_path, arg_errors):
     return arg_participants
 
 
-def apply_participants_revisons(arg_participants, arg_path, arg_errors):
+def apply_participants_revisons(arg_participants,  arg_errors):
     """apply_participants_revisons"""
     loc_revisions = []
 
-    if not os.path.isfile(arg_path):
-        arg_errors.append("ERROR: " + arg_path + " existiert nicht")
-        print("ERROR: " + arg_path + " existiert nicht")
+    if not os.path.isfile(PATH.REVISION):
+        arg_errors.append("ERROR: " + PATH.REVISION + " existiert nicht")
+        print("ERROR: " + PATH.REVISION + " existiert nicht")
         return arg_participants
 
-    with open(arg_path, encoding="utf8") as revision_file:
+    with open(PATH.REVISION, encoding="utf8") as revision_file:
         for row in revision_file:
             if row.strip() == "":
                 continue
@@ -147,12 +148,12 @@ def apply_participants_revisons(arg_participants, arg_path, arg_errors):
     return arg_participants, loc_revisions
 
 
-def parse_tent_numbers(arg_participants, arg_path, arg_errors):
+def parse_tent_numbers(arg_participants, arg_errors):
     """parse tent numbers"""
-    if not os.path.isfile(arg_path):
+    if not os.path.isfile(PATH.TENT_NUMBERS):
         return arg_participants
 
-    with open(arg_path, encoding="utf8") as tent_numbers_file:
+    with open(PATH.TENT_NUMBERS, encoding="utf8") as tent_numbers_file:
         for row in tent_numbers_file:
             splitted_row = row.split(";")
             loc_id = int(splitted_row[0].strip())
@@ -173,18 +174,18 @@ def parse_tent_numbers(arg_participants, arg_path, arg_errors):
     return arg_participants
 
 
-def parse_participants(arg_file_name, arg_tent_path, arg_rev_path, arg_paid_path, arg_errors):
+def parse_participants(arg_errors):
     """parses zeltlager participants from input csv file"""
     loc_participants = []
 
-    if not os.path.isfile(arg_file_name):
-        arg_errors.append("ERROR: " + arg_file_name + " existiert nicht")
-        print("ERROR: " + arg_file_name + " existiert nicht")
+    if not os.path.isfile(PATH.PARICIPANT):
+        arg_errors.append("ERROR: " + PATH.PARICIPANT + " existiert nicht")
+        print("ERROR: " + PATH.PARICIPANT + " existiert nicht")
         return loc_participants
 
-    check_if_participant_file_valid(arg_file_name)
+    check_if_participant_file_valid(PATH.PARICIPANT)
 
-    with open(arg_file_name, newline="", encoding="utf-8") as csvfile:
+    with open(PATH.PARICIPANT, newline="", encoding="utf-8") as csvfile:
         spamreader = csv.reader(csvfile, delimiter=";", quotechar="|")
 
         for i, row in enumerate(spamreader):
@@ -244,13 +245,11 @@ def parse_participants(arg_file_name, arg_tent_path, arg_rev_path, arg_paid_path
 
                 loc_participants.append(loc_participant)
 
-        print("parsed input file: ", arg_file_name)
+        print("parsed input file: ", PATH.PARICIPANT)
         loc_participants, loc_revisions = apply_participants_revisons(
-            loc_participants,  arg_rev_path, arg_errors)
+            loc_participants,   arg_errors)
 
-        loc_participants = parse_tent_numbers(
-            loc_participants, arg_tent_path, arg_errors)
-        loc_participants = parse_paid(
-            loc_participants, arg_paid_path, arg_errors)
+        loc_participants = parse_tent_numbers(loc_participants,  arg_errors)
+        loc_participants = parse_paid(loc_participants,  arg_errors)
 
     return loc_participants, loc_revisions
