@@ -22,17 +22,17 @@ INPUT_PAID_FILE_NAME = "paid.txt"
 INPUT_CONFIG_FILE_NAME = "config.txt"
 INPUT_LAST_YEAR_FILE_NAME = "2022_zl_tn_out.csv"
 
-INPUT_PARICIPANT_PATH = INPUT_FILE_PATH + INPUT_FILE_NAME
-INPUT_TENT_LEADER_PATH = INPUT_FILE_PATH + INPUT_TENT_LEADER_FILE_NAME
-INPUT_REVISION_PATH = INPUT_FILE_PATH + INPUT_REVISION_FILE_NAME
-INPUT_TENT_NUMBERS_PATH = INPUT_FILE_PATH + INPUT_TENT_NUMBERS_FILE_NAME
-INPUT_PAID_PATH = INPUT_FILE_PATH + INPUT_PAID_FILE_NAME
-INPUT_CONFIG_PATH = INPUT_FILE_PATH + INPUT_CONFIG_FILE_NAME
-INPUT_LAST_YEAR_PATH = INPUT_FILE_PATH + INPUT_LAST_YEAR_FILE_NAME
+I_PARICIPANT = INPUT_FILE_PATH + INPUT_FILE_NAME
+I_TENT_LEADER = INPUT_FILE_PATH + INPUT_TENT_LEADER_FILE_NAME
+I_REVISION = INPUT_FILE_PATH + INPUT_REVISION_FILE_NAME
+I_TENT_NUMBERS = INPUT_FILE_PATH + INPUT_TENT_NUMBERS_FILE_NAME
+I_PAID = INPUT_FILE_PATH + INPUT_PAID_FILE_NAME
+I_CONFIG = INPUT_FILE_PATH + INPUT_CONFIG_FILE_NAME
+I_LAST_YEAR = INPUT_FILE_PATH + INPUT_LAST_YEAR_FILE_NAME
 
 tent_leaders = []
 participants_d = []
-configs_d = Config(INPUT_CONFIG_PATH)
+configs_d = Config(I_CONFIG)
 
 error_logs = []
 revison_logs = []
@@ -51,7 +51,7 @@ def save_data(arg_participants, arg_tent_leaders, arg_revisions):
     # save tent numbers
     tent_numbers = [{"id": p.identifier, "tent": p.tent}
                     for p in arg_participants]
-    with open(INPUT_TENT_NUMBERS_PATH, "w", encoding="utf-8") as tent_number_file:
+    with open(I_TENT_NUMBERS, "w", encoding="utf-8") as tent_number_file:
         for number in tent_numbers:
             if number["tent"] != 9999:
                 tent_number_file.write(
@@ -61,7 +61,7 @@ def save_data(arg_participants, arg_tent_leaders, arg_revisions):
     # save paid
     paid_obj = [{"id": p.identifier, "paid": p.paid} for p in arg_participants]
 
-    with open(INPUT_PAID_PATH, "w", encoding="utf-8") as paid_file:
+    with open(I_PAID, "w", encoding="utf-8") as paid_file:
         for obj in paid_obj:
             if obj["paid"] is True:
                 paid_file.write(str(obj["id"]) + ";" + str(obj["paid"]) + "\n")
@@ -75,9 +75,8 @@ def save_data(arg_participants, arg_tent_leaders, arg_revisions):
     error_logs.clear()
     error_logs += configs_d.errors
     arg_participants, revison_logs = parse_participants(
-        INPUT_PARICIPANT_PATH, INPUT_TENT_NUMBERS_PATH,
-        INPUT_REVISION_PATH, INPUT_PAID_PATH, error_logs)
-    arg_tent_leaders = parse_tent_leader(INPUT_TENT_LEADER_PATH, error_logs)
+        I_PARICIPANT, I_TENT_NUMBERS, I_REVISION, I_PAID, error_logs)
+    arg_tent_leaders = parse_tent_leader(I_TENT_LEADER, error_logs)
 
     return arg_participants, arg_tent_leaders
 
@@ -225,10 +224,10 @@ if __name__ == "__main__":
 
     error_logs.clear()
     participants_d, revison_logs = parse_participants(
-        INPUT_PARICIPANT_PATH, INPUT_TENT_NUMBERS_PATH,
-        INPUT_REVISION_PATH, INPUT_PAID_PATH, error_logs)
-    tent_leaders = parse_tent_leader(INPUT_TENT_LEADER_PATH, error_logs)
+        I_PARICIPANT, I_TENT_NUMBERS,
+        I_REVISION, I_PAID, error_logs)
+    tent_leaders = parse_tent_leader(I_TENT_LEADER, error_logs)
     participants_last_year = parse_participants_last_year(
-        INPUT_LAST_YEAR_PATH, participants_d, error_logs)
+        I_LAST_YEAR, participants_d, error_logs)
 
     app.run(host="0.0.0.0", port=8080, debug=True)

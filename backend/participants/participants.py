@@ -1,11 +1,11 @@
 """functions related to participants"""
 import os
 import csv
+import time
+from datetime import datetime
 import file_indices as IDX
 from helpers import is_paided, parse_yes_no, strip_row
 from participants.participant_c import Participant
-from datetime import datetime
-import time
 
 
 def check_if_participant_file_valid(arg_input_file):
