@@ -12,9 +12,14 @@
 	import { getStrTwoDecimal } from '$lib/helpers';
 	let isPostRequest = false;
 	let configs: Configs = { numTents: 9999, zlStart: '1970-08-12', calenderUrl: '' };
+
+	interface Item {
+		id: number;
+		isShow: boolean;
+	}
 	interface Basket {
 		name: string;
-		items: number[];
+		items: Item[];
 		tentLeaders: string[];
 		age: number;
 	}
@@ -50,7 +55,7 @@
 		pBaskets.forEach((b) => {
 			let avgAge = 0;
 			b.items.forEach((p) => {
-				avgAge += participants[p].age;
+				avgAge += participants[p.id].age;
 			});
 			b.age = avgAge / b.items.length;
 		});
@@ -66,6 +71,9 @@
 		return 0;
 	}
 
+	function compareBasketByAge(a: Item, b: Item) {
+		return compareByAge(participants[a.id], participants[b.id]);
+	}
 	let hoveringOverBasket: string;
 
 	function distributePartiscipantsToBaskets(
@@ -79,9 +87,9 @@
 		for (let i = 0; i < participants.length; i++) {
 			let tentNumber = participants[i].tent;
 			if (tentNumber <= configs.numTents) {
-				baskets[tentNumber].items[baskets[tentNumber].items.length] = i;
+				baskets[tentNumber].items[baskets[tentNumber].items.length] = { id: i, isShow: true };
 			} else {
-				baskets[0].items[baskets[0].items.length] = i;
+				baskets[0].items[baskets[0].items.length] = { id: i, isShow: true };
 			}
 		}
 
@@ -106,7 +114,7 @@
 		isPostRequest = true;
 		for (let i = 0; i < baskets.length; i++) {
 			for (let k = 0; k < baskets[i].items.length; k++) {
-				let id = baskets[i].items[k];
+				let id = baskets[i].items[k].id;
 				if (i == 0) {
 					participants[id].tent = 9999;
 				} else {
@@ -160,6 +168,21 @@
 
 		hoveringOverBasket = '';
 	}
+
+	let searchString = '';
+
+	function onBasketChange(pBasket: Basket, pSearchString: string) {
+		pBasket.items.forEach((item) => {
+			let itemName = participants[item.id].getFullname().toLowerCase();
+			item.isShow = itemName.includes(pSearchString.trim().toLowerCase());
+		});
+
+		pBasket.items.sort(compareBasketByAge);
+		return pBasket;
+	}
+
+	let filterdBacklog: Basket;
+	$: filterdBacklog = onBasketChange(baskets[0], searchString);
 </script>
 
 <svelte:head>
@@ -221,7 +244,7 @@
 									<div class="row">
 										{#each b.items as item, itemIndex}
 											<TentParticipant
-												participant={participants[item]}
+												participant={participants[item.id]}
 												on:dragstart={(event) => dragStart(event, basketIndex, itemIndex)}
 											/>
 										{/each}
@@ -244,16 +267,42 @@
 				on:dragover={(event) => event.preventDefault()}
 			>
 				<div class="card-header">
-					<h5 class="card-title">Backlog</h5>
+					<div class="d-flex justify-content-between">
+						<h5 class="card-title">Backlog</h5>
+						<div>
+							<div class="input-group ms-auto">
+								<input
+									class="form-control border-end-0 border form-control"
+									id="exampleFormControlInput2"
+									bind:value={searchString}
+									type="search"
+									placeholder="Search"
+								/>
+								<span class="input-group-append">
+									<button
+										class="btn btn-light border-start-0 border rounded-0 rounded-end"
+										type="button"
+										on:click={() => {
+											searchString = '';
+										}}
+									>
+										<i class="bi bi-x-circle" />
+									</button>
+								</span>
+							</div>
+						</div>
+					</div>
 				</div>
 
 				<div class="card-body">
 					<div class="row">
-						{#each baskets[0].items as item, itemIndex}
-							<TentParticipant
-								participant={participants[item]}
-								on:dragstart={(event) => dragStart(event, 0, itemIndex)}
-							/>
+						{#each filterdBacklog.items as item, itemIndex}
+							{#if item.isShow}
+								<TentParticipant
+									participant={participants[item.id]}
+									on:dragstart={(event) => dragStart(event, 0, itemIndex)}
+								/>
+							{/if}
 						{/each}
 					</div>
 				</div>
