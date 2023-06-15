@@ -4,6 +4,7 @@
 - tent allocation:
   - csv liste generieren
   - map für jedes Zelt generieren
+  - scrolleffekt in Backlog und Zeltzuweisung
 
 - Stübis
   - tabelle auswählbar mit Checkbox machen

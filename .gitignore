@@ -1,2 +1,4 @@
 input/
 output_maps/
+node_modules/
+.coverage

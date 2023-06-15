@@ -1,0 +1,14 @@
+{
+  "name": "your-app-name",
+  "version": "1.0.0",
+  "description": "Your app description",
+  "scripts": {
+    "start": "npm-run-all -p start:**",
+    "start:python": "cd backend && python app.py",
+    "start:svelte": "cd frontend && npm run build && npm run preview",
+	"start:firefox": "timeout /t 15 &&start firefox http://localhost:4173/"
+  },
+  "dependencies": {
+    "npm-run-all": "^4.1.5"
+  }
+}
