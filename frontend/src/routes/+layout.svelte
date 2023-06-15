@@ -1,11 +1,11 @@
 <script lang="ts">
 	import Navbar from '$lib/Navbar.svelte';
-	import { Styles } from 'sveltestrap';
 
+	import 'bootstrap/dist/css/bootstrap.min.css';
+	import 'bootstrap-icons/font/bootstrap-icons.min.css';
 	import '../app.css';
 </script>
 
-<Styles />
 <Navbar />
 
 <main>
