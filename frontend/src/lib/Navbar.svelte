@@ -18,7 +18,7 @@
 	let isOpen = false;
 </script>
 
-<nav class="navbar navbar-dark navbar-expand-md bg-dark fixed-top">
+<nav class="navbar navbar-dark navbar-expand-md bg-dark bg-gradient fixed-top">
 	<div class="container-fluid">
 		<a class="navbar-brand" href="/"> LaleControl </a>
 

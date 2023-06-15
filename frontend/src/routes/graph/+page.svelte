@@ -106,13 +106,13 @@
 				nodes={data.nodes}
 				links={data.links}
 				containerWidth={'80%'}
-				containerHeight={'85vh'}
+				containerHeight={'90vh'}
 			/>
 		{:else}
 			<CircleList
 				nodes={data.nodes}
 				containerWidth={'20%'}
-				containerHeight={'85vh'}
+				containerHeight={'90vh'}
 				title={'Keine Freunde 😔:'}
 			/>
 		{/if}

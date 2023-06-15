@@ -211,7 +211,7 @@
 					{#if basketIndex > 0}
 						<div class="col-sm-6">
 							<div
-								class="card position-relative"
+								class="card position-relative shadow-lg"
 								class:hovering={hoveringOverBasket === b.name}
 								on:dragenter={() => (hoveringOverBasket = b.name)}
 								on:dragleave={() => (hoveringOverBasket = '')}
@@ -259,7 +259,7 @@
 
 		<div class="col-sm-4" style="overflow-y: scroll;">
 			<div
-				class="card"
+				class="card shadow-lg"
 				class:hovering={hoveringOverBasket === baskets[0].name}
 				on:dragenter={() => (hoveringOverBasket = baskets[0].name)}
 				on:dragleave={() => (hoveringOverBasket = '')}

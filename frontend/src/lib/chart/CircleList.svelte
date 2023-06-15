@@ -57,6 +57,7 @@
 	bind:clientWidth={width}
 	bind:clientHeight={height}
 	style="height: {containerHeight}; width:{containerWidth}; 	float: left; border: 1px black solid"
+	class="bg-dark text-white"
 >
 	{#if title != ''}
 		<h3>{title}</h3>

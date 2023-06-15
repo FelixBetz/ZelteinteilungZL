@@ -462,7 +462,7 @@
 				<div class="col-sm-12">
 					<DashboardCard
 						title={'Anmeldeverlauf (' + participants.length + ' Anmeldungen)'}
-						icon="bi-graph-up"
+						icon="bi-activity"
 						bgColor={'bg-success'}
 					>
 						{#if loopedDates.length > 0}

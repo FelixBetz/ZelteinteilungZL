@@ -166,7 +166,7 @@
 	<title>Team</title>
 </svelte:head>
 
-<div class="container-fluid">
+<div class="container-fluid text-white">
 	<div class="row">
 		<div class="col">
 			<h3>Leitungsteam</h3>
