@@ -55,7 +55,7 @@
 		<div class="m-0 p-0">Teilnehmer konnte nicht geladen werden</div>
 	</div>
 {:else}
-	<div class="container">
+	<div class="container text-white">
 		<form>
 			<div class="row">
 				<div class="col">
@@ -256,7 +256,7 @@
 								id="is_reduced"
 								bind:checked={participant.is_reduced}
 							/>
-							<label for="is_reduced">ermäßigt</label>
+							<label class="text-white" for="is_reduced">ermäßigt</label>
 						</div>
 						<div class="col-sm-auto">
 							<input
@@ -265,7 +265,7 @@
 								id="is_photo_allowed"
 								bind:checked={participant.is_photo_allowed}
 							/>
-							<label for="is_photo_allowed">fotografieren</label>
+							<label class="text-white" for="is_photo_allowed">fotografieren</label>
 						</div>
 						<div class="col-sm-auto">
 							<input
@@ -274,7 +274,7 @@
 								id="is_vegetarian"
 								bind:checked={participant.is_vegetarian}
 							/>
-							<label for="is_vegetarian">Vegetarisch</label>
+							<label class="text-white" for="is_vegetarian">Vegetarisch</label>
 						</div>
 						<div class="col-sm-auto">
 							<input
@@ -283,7 +283,7 @@
 								id="is_event_mail"
 								bind:checked={participant.is_event_mail}
 							/>
-							<label for="is_event_mail">Verteiler</label>
+							<label class="text-white" for="is_event_mail">Verteiler</label>
 						</div>
 						<div class="col-sm-auto">
 							<input
@@ -292,7 +292,7 @@
 								id="paid"
 								bind:checked={participant.paid}
 							/>
-							<label for="paid">bezahlt</label>
+							<label class="text-white" for="paid">bezahlt</label>
 						</div>
 					</div>
 
@@ -349,3 +349,9 @@
 		</div>
 	</div>
 {/if}
+
+<style>
+	label {
+		color: var(--bs-dark);
+	}
+</style>

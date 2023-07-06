@@ -47,7 +47,7 @@
 	<title>Logs</title>
 </svelte:head>
 
-<div class="container-fluid">
+<div class="container-fluid text-white">
 	<h1>Logs</h1>
 	<div class="row">
 		<div class="col-sm-2">
@@ -75,8 +75,8 @@
 			{/if}
 			<div class="row">
 				<Masonry items={revisionIdx} minColWidth={500} maxColWidth={500} gap={6} let:item>
-					<div class="card border-dark border-2 border mb-1 position-relative">
-						<div class="text-right text-white position-absolute top-0 end-0 me-2">
+					<div class="card border-light bg-dark border-2 border mb-1 position-relative">
+						<div class="text-right position-absolute top-0 end-0 me-2">
 							<i>
 								{item.indices.length > 1 ? 'Revisions' : 'Revision'}
 								{#each item.indices as num, idx}
@@ -89,14 +89,14 @@
 							</i>
 						</div>
 						<div
-							class="card-header {item.indices.reduce(
+							class="card-header bg-dark {item.indices.reduce(
 								(acc, val) => acc || logs.revisions[val].isError,
 								false
 							)
 								? ' bg-danger '
-								: ' bg-info'} p-1 rounded-top border-2 border-bottom border-dark"
+								: ' bg-info'} p-1 rounded-top border-2 border-bottom border-light"
 						>
-							<div class="text-white">
+							<div>
 								<strong>
 									<a class="link-light" href="/participant/{item.id}" target="_blanks"
 										>ID {item.id}
@@ -114,8 +114,8 @@
 							{#each item.indices as revsionIdx, idx}
 								<div
 									class="bg-info ps-3 pe-1
-									{logs.revisions[revsionIdx].isError ? ' bg-danger' : 'bg-info'} 
-									{idx == item.indices.length - 1 ? ' rounded-bottom' : 'border-dark border-1 border-bottom'}"
+									{logs.revisions[revsionIdx].isError ? ' bg-danger' : 'bg-dark'} 
+									{idx == item.indices.length - 1 ? ' rounded-bottom' : 'border-light border-1 border-bottom'}"
 								>
 									<!--Revision Error-->
 									{#if logs.revisions[revsionIdx].isError}
