@@ -32,6 +32,7 @@ cors = CORS(app)
 
 app.register_blueprint(mailing_routes)
 app.config["MAPS_OUTPUT"] = "../output/output_maps"
+app.config["LISTS_OUTPUT"] = PATH.OUTPUT_DIR_LISTS
 
 
 @ app.route("/api/participants", methods=["GET", "POST"])
@@ -175,7 +176,7 @@ def create_list_output_if_not_exist():
         os.makedirs(PATH.OUTPUT_DIR_LISTS)
 
 
-@ app.route("/api/lists/overall", methods=["GET"])
+@ app.route("/api/lists/generate/overall", methods=["GET"])
 def generate_overall_list():
     """generate overall list"""
     with app.app_context():
@@ -225,10 +226,27 @@ def generate_overall_list():
             csv_rows.append(";".join(p_row) + "\n")
 
         csv_path = PATH.OUTPUT_DIR_LISTS + output_docx.replace("docx", "csv")
-        with open(csv_path, encoding="utf-8" "w") as outfile:
+        with open(csv_path, "w", encoding="utf-8") as outfile:
             outfile.writelines(csv_rows)
 
     return jsonify("ok")
+
+
+@ app.route("/api/lists", methods=["GET"])
+def get_lists():
+    """get lists download lists"""
+    files = []
+    for filename in os.listdir(PATH.OUTPUT_DIR_LISTS):
+        if os.path.isfile(os.path.join(PATH.OUTPUT_DIR_LISTS, filename)):
+            files.append({"name": filename, "link": "/lists/"+filename})
+    print(files)
+    return jsonify(files)
+
+
+@ app.route("/api/lists/<path:filename>")
+def download_list_file(filename):
+    """returns map file by filename"""
+    return send_from_directory(app.config["LISTS_OUTPUT"], filename)
 
 
 if __name__ == "__main__":
