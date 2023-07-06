@@ -1,4 +1,4 @@
 input/
-output_maps/
+output/
 node_modules/
 .coverage

@@ -11,6 +11,7 @@
 		{ label: 'Team', route: '/team' },
 		{ label: 'Zelteinteilung', route: '/tentAllocation' },
 		{ label: 'Graph', route: '/graph' },
+		{ label: 'Lists', route: '/lists' },
 		{ label: 'Logs', route: '/logs' },
 		{ label: 'Configs', route: '/configs' }
 	];

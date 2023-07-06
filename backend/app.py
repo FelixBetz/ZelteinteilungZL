@@ -1,8 +1,11 @@
 """main file of ZelteinteilungZL"""
 import json
+import os
 
 from flask_cors import CORS
 from flask import Flask, abort, jsonify, request, send_from_directory
+from mailmerge import MailMerge
+from docx2pdf import convert
 from src.lib.helpers import props
 from src.participants.participants import get_paticipant_by_id, parse_participants,\
     parse_participants_last_year, save_data
@@ -13,6 +16,7 @@ from src.config import Config
 from src.mailing import mailing_routes
 from src.tent_leaders.tent_leaders import parse_tent_leader
 import pathes as PATH
+
 
 tent_leaders = []
 participants_d = []
@@ -163,6 +167,68 @@ def get_configs():
 def get_participants_last_year():
     """returns all participants as json"""
     return jsonify(participants_last_year)
+
+
+def create_list_output_if_not_exist():
+    """create templatesl lists output dir"""
+    if not os.path.exists(PATH.OUTPUT_DIR_LISTS):
+        os.makedirs(PATH.OUTPUT_DIR_LISTS)
+
+
+@ app.route("/api/lists/overall", methods=["GET"])
+def generate_overall_list():
+    """generate overall list"""
+    with app.app_context():
+        create_list_output_if_not_exist()
+
+        output_name = "2023_zeltlager_gesamtliste"
+        output_docx = output_name + ".docx"
+        document = MailMerge(PATH.LIST_TEMPLATE_DIR + "gesamtliste.docx")
+
+        merge_rows = []
+
+        loc_sorted_participants = sorted(
+            participants_d, key=lambda x: x.lastname, reverse=False)
+
+        for part in loc_sorted_participants:
+            loc_row = {'tent': str(part.tent),
+                       'lastname': part.lastname, 'firstname': part.firstname,
+                       'birthdate': part.birthdate,
+                       'street': part.street,
+                       'zipcode': str(part.zipcode), 'village': part.village,
+                       'emergencyContact': part.emergency_contact,
+                       'emergencyNumber': part.emergency_phone,
+                       'other': part.other}
+            merge_rows.append(loc_row)
+
+        for leader in tent_leaders:
+            loc_row = {'tent': str(leader.job),
+                       'lastname': leader.lastname, 'firstname': leader.firstname,
+                       'birthdate': leader.birthdate,
+                       'street': leader.street,
+                       'zipcode': str(leader.zipcode), 'village': leader.village,
+                       'emergencyContact': "", 'emergencyNumber': "", 'other': leader.comment}
+            merge_rows.append(loc_row)
+        document.merge_rows('tent', merge_rows)
+
+        document.write(PATH.OUTPUT_DIR_LISTS + output_docx)
+        convert(PATH.OUTPUT_DIR_LISTS + output_docx)
+
+        # generate addresslist csv
+
+        csv_rows = []
+        csv_header = ["#", "Zelt", "Name", "Vorname", "Straße", "PLZ", "Ort"]
+        csv_rows.append(";".join(csv_header)+"\n")
+        for i, part in enumerate(loc_sorted_participants):
+            p_row = [str(i+1), str(part.tent), str(part.lastname),
+                     str(part.firstname), str(part.street), str(part.zipcode), str(part.village)]
+            csv_rows.append(";".join(p_row) + "\n")
+
+        csv_path = PATH.OUTPUT_DIR_LISTS + output_docx.replace("docx", "csv")
+        with open(csv_path, encoding="utf-8" "w") as outfile:
+            outfile.writelines(csv_rows)
+
+    return jsonify("ok")
 
 
 if __name__ == "__main__":
