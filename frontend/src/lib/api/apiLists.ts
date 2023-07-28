@@ -4,7 +4,7 @@ export interface List {
 	link: string;
 }
 export async function apiGetGenerateOverallList(): Promise<string> {
-	const response = await fetch(BASE_URL + '/lists/generate/overall')
+	const response = await fetch(BASE_URL + '/lists/generate/all')
 		.then((res) => res.json())
 		.then((res: string) => {
 			return res;

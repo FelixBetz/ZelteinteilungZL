@@ -16,7 +16,7 @@ from src.config import Config
 from src.mailing import mailing_routes
 from src.tent_leaders.tent_leaders import parse_tent_leader
 import pathes as PATH
-
+import shutil
 
 tent_leaders = []
 participants_d = []
@@ -172,63 +172,112 @@ def get_participants_last_year():
 
 def create_list_output_if_not_exist():
     """create templatesl lists output dir"""
-    if not os.path.exists(PATH.OUTPUT_DIR_LISTS):
-        os.makedirs(PATH.OUTPUT_DIR_LISTS)
+    if os.path.exists(PATH.OUTPUT_DIR_LISTS):
+        shutil.rmtree(PATH.OUTPUT_DIR_LISTS)
+    os.makedirs(PATH.OUTPUT_DIR_LISTS)
 
 
-@ app.route("/api/lists/generate/overall", methods=["GET"])
+def generate_docx_and_pdf(arg_name, arg_template_name, arg_rows):
+    """write docx, pdf and csv file"""
+    output_name = arg_name
+    output_docx = output_name + ".docx"
+    document = MailMerge(PATH.LIST_TEMPLATE_DIR + arg_template_name)
+
+    document.merge_rows('tent', arg_rows)
+
+    document.write(PATH.OUTPUT_DIR_LISTS + output_docx)
+    convert(PATH.OUTPUT_DIR_LISTS + output_docx)
+
+
+def generate_participants_array(arg_participants):
+    """generate participants rows"""
+    ret_rows = []
+
+    for part in arg_participants:
+        loc_row = {'tent': str(part.tent),
+                   'lastname': part.lastname, 'firstname': part.firstname,
+                   'birthdate': part.birthdate,
+                   'street': part.street,
+                   'zipcode': str(part.zipcode), 'village': part.village,
+                   'emergencyContact': part.emergency_contact,
+                   'emergencyNumber': part.emergency_phone,
+                   'other': part.other}
+        ret_rows.append(loc_row)
+
+    return ret_rows
+
+
+def generate_leader_array(arg_leader):
+    """generate leader rows"""
+    ret_rows = []
+    for leader in arg_leader:
+        loc_row = {'tent': str(leader.job),
+                   'lastname': leader.lastname, 'firstname': leader.firstname,
+                   'birthdate': leader.birthdate,
+                   'street': leader.street,
+                   'zipcode': str(leader.zipcode), 'village': leader.village,
+                   'emergencyContact': "", 'emergencyNumber': "", 'other': leader.comment}
+        ret_rows.append(loc_row)
+
+    return ret_rows
+
+
+def generate_csv(arg_name, arg_data):
+    """generate csv file"""
+    # generate addresslist csv
+    csv_rows = []
+    csv_header = ["#", "Zelt", "Name", "Vorname", "Straße", "PLZ", "Ort"]
+    csv_rows.append(";".join(csv_header)+"\n")
+    for i, part in enumerate(arg_data):
+        p_row = [str(i+1), str(part.tent), str(part.lastname),
+                 str(part.firstname), str(part.street), str(part.zipcode), str(part.village)]
+        csv_rows.append(";".join(p_row) + "\n")
+
+    csv_path = PATH.OUTPUT_DIR_LISTS + arg_name+".csv"
+    with open(csv_path, "w", ) as outfile:
+        outfile.writelines(csv_rows)
+
+
 def generate_overall_list():
     """generate overall list"""
     with app.app_context():
         create_list_output_if_not_exist()
 
-        output_name = "2023_zeltlager_gesamtliste"
-        output_docx = output_name + ".docx"
-        document = MailMerge(PATH.LIST_TEMPLATE_DIR + "gesamtliste.docx")
-
-        merge_rows = []
-
+        # sort by lastname, firstname
+        output_name = "2023_zeltlager_gesamtliste_sort_by_name"
         loc_sorted_participants = sorted(
-            participants_d, key=lambda x: x.lastname, reverse=False)
+            participants_d, key=lambda x: (x.lastname, x.firstname), reverse=False)
+        rows_part = generate_participants_array(loc_sorted_participants)
 
-        for part in loc_sorted_participants:
-            loc_row = {'tent': str(part.tent),
-                       'lastname': part.lastname, 'firstname': part.firstname,
-                       'birthdate': part.birthdate,
-                       'street': part.street,
-                       'zipcode': str(part.zipcode), 'village': part.village,
-                       'emergencyContact': part.emergency_contact,
-                       'emergencyNumber': part.emergency_phone,
-                       'other': part.other}
-            merge_rows.append(loc_row)
+        loc_sorted_tent_leaders = sorted(
+            tent_leaders, key=lambda x: (x.lastname, x.firstname), reverse=False)
+        rows_leaders = generate_leader_array(loc_sorted_tent_leaders)
 
-        for leader in tent_leaders:
-            loc_row = {'tent': str(leader.job),
-                       'lastname': leader.lastname, 'firstname': leader.firstname,
-                       'birthdate': leader.birthdate,
-                       'street': leader.street,
-                       'zipcode': str(leader.zipcode), 'village': leader.village,
-                       'emergencyContact': "", 'emergencyNumber': "", 'other': leader.comment}
-            merge_rows.append(loc_row)
-        document.merge_rows('tent', merge_rows)
+        merge_rows = rows_part + rows_leaders
 
-        document.write(PATH.OUTPUT_DIR_LISTS + output_docx)
-        convert(PATH.OUTPUT_DIR_LISTS + output_docx)
+        generate_docx_and_pdf(output_name, "gesamtliste.docx", merge_rows)
+        generate_csv(output_name, loc_sorted_participants)
 
-        # generate addresslist csv
+        # sort by tent,lastname, firstname
+        output_name = "2023_zeltlager_gesamtliste_sort_by_tent"
+        loc_sorted_participants = sorted(
+            participants_d, key=lambda x: (x.tent, x.lastname, x.firstname), reverse=False)
+        rows_part = generate_participants_array(loc_sorted_participants)
 
-        csv_rows = []
-        csv_header = ["#", "Zelt", "Name", "Vorname", "Straße", "PLZ", "Ort"]
-        csv_rows.append(";".join(csv_header)+"\n")
-        for i, part in enumerate(loc_sorted_participants):
-            p_row = [str(i+1), str(part.tent), str(part.lastname),
-                     str(part.firstname), str(part.street), str(part.zipcode), str(part.village)]
-            csv_rows.append(";".join(p_row) + "\n")
+        loc_sorted_tent_leaders = sorted(
+            tent_leaders, key=lambda x: (x.job, x.lastname, x.firstname), reverse=False)
+        rows_leaders = generate_leader_array(loc_sorted_tent_leaders)
 
-        csv_path = PATH.OUTPUT_DIR_LISTS + output_docx.replace("docx", "csv")
-        with open(csv_path, "w", encoding="utf-8") as outfile:
-            outfile.writelines(csv_rows)
+        merge_rows = rows_part + rows_leaders
 
+        generate_docx_and_pdf(output_name, "gesamtliste.docx", merge_rows)
+        generate_csv(output_name, loc_sorted_participants)
+
+
+@ app.route("/api/lists/generate/all", methods=["GET"])
+def generate_lists():
+    """generate all lists"""
+    generate_overall_list()
     return jsonify("ok")
 
 
@@ -239,7 +288,7 @@ def get_lists():
     for filename in os.listdir(PATH.OUTPUT_DIR_LISTS):
         if os.path.isfile(os.path.join(PATH.OUTPUT_DIR_LISTS, filename)):
             files.append({"name": filename, "link": "/lists/"+filename})
-    print(files)
+
     return jsonify(files)
 
 

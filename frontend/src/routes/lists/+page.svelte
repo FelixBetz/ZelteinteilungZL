@@ -31,7 +31,7 @@
 				on:click={generatateOverallList}
 				on:keydown={generatateOverallList}
 			>
-				Generate Overall List
+				Generate list
 			</div>
 		</div>
 	</div>
