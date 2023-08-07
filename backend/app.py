@@ -17,7 +17,7 @@ from src.config import Config
 from src.mailing import mailing_routes
 from src.tent_leaders.tent_leaders import parse_tent_leader
 import pathes as PATH
-
+import pythoncom
 
 tent_leaders = []
 participants_d = []
@@ -250,42 +250,43 @@ def generate_csv(arg_name, arg_part, arg_leader):
 
 def generate_overall_list():
     """generate overall list"""
-    with app.app_context():
-        create_list_output_if_not_exist()
 
-        # sort by lastname, firstname
-        output_name = "2023_zeltlager_gesamtliste_sort_by_name"
-        loc_sorted_participants = sorted(
-            participants_d, key=lambda x: (x.lastname, x.firstname), reverse=False)
-        rows_part = generate_participants_array(loc_sorted_participants)
+    pythoncom.CoInitialize()
+    create_list_output_if_not_exist()
 
-        loc_sorted_tent_leaders = sorted(
-            tent_leaders, key=lambda x: (x.lastname, x.firstname), reverse=False)
-        rows_leaders = generate_leader_array(loc_sorted_tent_leaders)
+    # sort by lastname, firstname
+    output_name = "2023_zeltlager_gesamtliste_sort_by_name"
+    loc_sorted_participants = sorted(
+        participants_d, key=lambda x: (x.lastname, x.firstname), reverse=False)
+    rows_part = generate_participants_array(loc_sorted_participants)
 
-        merge_rows = rows_part + rows_leaders
+    loc_sorted_tent_leaders = sorted(
+        tent_leaders, key=lambda x: (x.lastname, x.firstname), reverse=False)
+    rows_leaders = generate_leader_array(loc_sorted_tent_leaders)
 
-        generate_docx_and_pdf(output_name, "gesamtliste.docx", merge_rows)
-        generate_csv(output_name, loc_sorted_participants,
-                     loc_sorted_tent_leaders)
+    merge_rows = rows_part + rows_leaders
 
-        # sort by tent,lastname, firstname
-        output_name = "2023_zeltlager_gesamtliste_sort_by_tent"
-        loc_sorted_participants = sorted(
-            participants_d, key=lambda x: (x.tent, x.lastname, x.firstname), reverse=False)
-        rows_part = generate_participants_array(loc_sorted_participants)
+    generate_docx_and_pdf(output_name, "gesamtliste.docx", merge_rows)
+    generate_csv(output_name, loc_sorted_participants,
+                 loc_sorted_tent_leaders)
 
-        loc_sorted_tent_leaders = sorted(
-            tent_leaders, key=lambda x: (x.job, x.lastname, x.firstname), reverse=False)
-        rows_leaders = generate_leader_array(loc_sorted_tent_leaders)
+    # sort by tent,lastname, firstname
+    output_name = "2023_zeltlager_gesamtliste_sort_by_tent"
+    loc_sorted_participants = sorted(
+        participants_d, key=lambda x: (x.tent, x.lastname, x.firstname), reverse=False)
+    rows_part = generate_participants_array(loc_sorted_participants)
 
-        merge_rows = rows_part + rows_leaders
+    loc_sorted_tent_leaders = sorted(
+        tent_leaders, key=lambda x: (x.job, x.lastname, x.firstname), reverse=False)
+    rows_leaders = generate_leader_array(loc_sorted_tent_leaders)
 
-        generate_docx_and_pdf(output_name, "gesamtliste.docx", merge_rows)
-        generate_csv(output_name, loc_sorted_participants,
-                     loc_sorted_tent_leaders)
+    merge_rows = rows_part + rows_leaders
 
-        # generate
+    generate_docx_and_pdf(output_name, "gesamtliste.docx", merge_rows)
+    generate_csv(output_name, loc_sorted_participants,
+                 loc_sorted_tent_leaders)
+
+    # generate
 
 
 def calc_age_by_birthdate(arg_birthdate):
