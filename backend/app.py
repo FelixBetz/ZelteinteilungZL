@@ -7,6 +7,7 @@ from flask_cors import CORS
 from flask import Flask, abort, jsonify, request, send_from_directory
 from mailmerge import MailMerge
 from docx2pdf import convert
+import pythoncom
 from src.lib.helpers import props
 from src.participants.participants import get_paticipant_by_id, parse_participants,\
     parse_participants_last_year, save_data
@@ -17,7 +18,7 @@ from src.config import Config
 from src.mailing import mailing_routes
 from src.tent_leaders.tent_leaders import parse_tent_leader
 import pathes as PATH
-import pythoncom
+
 
 tent_leaders = []
 participants_d = []
@@ -171,14 +172,14 @@ def get_participants_last_year():
     return jsonify(participants_last_year)
 
 
-def create_list_output_if_not_exist():
-    """create templatesl lists output dir"""
-    if os.path.exists(PATH.OUTPUT_DIR_LISTS):
-        shutil.rmtree(PATH.OUTPUT_DIR_LISTS)
-    os.makedirs(PATH.OUTPUT_DIR_LISTS)
+def create_dir_if_not_exist(arg_dir):
+    """create dir if not exist"""
+    if os.path.exists(arg_dir):
+        shutil.rmtree(arg_dir)
+    os.makedirs(arg_dir)
 
 
-def generate_docx_and_pdf(arg_name, arg_template_name, arg_rows):
+def generate_docx_and_pdf(arg_name, arg_path, arg_template_name, arg_rows):
     """write docx, pdf and csv file"""
     output_name = arg_name
     output_docx = output_name + ".docx"
@@ -186,8 +187,8 @@ def generate_docx_and_pdf(arg_name, arg_template_name, arg_rows):
 
     document.merge_rows('tent', arg_rows)
 
-    document.write(PATH.OUTPUT_DIR_LISTS + output_docx)
-    convert(PATH.OUTPUT_DIR_LISTS + output_docx)
+    document.write(arg_path + output_docx)
+    convert(arg_path + output_docx)
 
 
 def generate_participants_array(arg_participants):
@@ -223,7 +224,7 @@ def generate_leader_array(arg_leader):
     return ret_rows
 
 
-def generate_csv(arg_name, arg_part, arg_leader):
+def generate_csv(arg_name, arg_path, arg_part, arg_leader):
     """generate csv file"""
     # generate addresslist csv
     csv_rows = []
@@ -231,19 +232,22 @@ def generate_csv(arg_name, arg_part, arg_leader):
     csv_rows.append(";".join(csv_header)+"\n")
 
     # participants
+    cnt_offset = 0
     for i, part in enumerate(arg_part):
         p_row = [str(i+1), str(part.tent), str(part.lastname),
                  str(part.firstname), str(part.street), str(part.zipcode), str(part.village)]
         csv_rows.append(";".join(p_row) + "\n")
+        cnt_offset = i
 
     # leaders
         # participants
     for k, leader in enumerate(arg_leader):
-        p_row = [str(k+i+2), str(leader.job), str(leader.lastname),
-                 str(leader.firstname), str(leader.street), str(leader.zipcode), str(leader.village)]
+        p_row = [str(k+cnt_offset+2), str(leader.job), str(leader.lastname),
+                 str(leader.firstname), str(leader.street),
+                 str(leader.zipcode), str(leader.village)]
         csv_rows.append(";".join(p_row) + "\n")
 
-    csv_path = PATH.OUTPUT_DIR_LISTS + arg_name+".csv"
+    csv_path = arg_path + arg_name+".csv"
     with open(csv_path, "w", ) as outfile:
         outfile.writelines(csv_rows)
 
@@ -251,9 +255,9 @@ def generate_csv(arg_name, arg_part, arg_leader):
 def generate_overall_list():
     """generate overall list"""
 
-    pythoncom.CoInitialize()
-    create_list_output_if_not_exist()
+    loc_path = PATH.OUTPUT_DIR_LISTS + "Gesamt\\"
 
+    create_dir_if_not_exist(loc_path)
     # sort by lastname, firstname
     output_name = "2023_zeltlager_gesamtliste_sort_by_name"
     loc_sorted_participants = sorted(
@@ -266,9 +270,10 @@ def generate_overall_list():
 
     merge_rows = rows_part + rows_leaders
 
-    generate_docx_and_pdf(output_name, "gesamtliste.docx", merge_rows)
-    generate_csv(output_name, loc_sorted_participants,
-                 loc_sorted_tent_leaders)
+    generate_docx_and_pdf(output_name, loc_path,
+                          "gesamtliste.docx", merge_rows)
+    generate_csv(output_name, loc_path,
+                 loc_sorted_participants, loc_sorted_tent_leaders)
 
     # sort by tent,lastname, firstname
     output_name = "2023_zeltlager_gesamtliste_sort_by_tent"
@@ -282,9 +287,10 @@ def generate_overall_list():
 
     merge_rows = rows_part + rows_leaders
 
-    generate_docx_and_pdf(output_name, "gesamtliste.docx", merge_rows)
-    generate_csv(output_name, loc_sorted_participants,
-                 loc_sorted_tent_leaders)
+    generate_docx_and_pdf(output_name, loc_path,
+                          "gesamtliste.docx", merge_rows)
+    generate_csv(output_name, loc_path,
+                 loc_sorted_participants, loc_sorted_tent_leaders)
 
     # generate
 
@@ -303,6 +309,7 @@ def calc_age_by_birthdate(arg_birthdate):
 def generate_tent_leader_allocation():
     """generate list: tentleader to tent number allication"""
 
+    loc_path = PATH.OUTPUT_DIR_LISTS
     # generate array
     allocation = []
     for i in range(configs_d.num_tents):
@@ -332,16 +339,47 @@ def generate_tent_leader_allocation():
         p_row = [str(i+1), ",".join(tent["leaders"]), " "+str(tent["avg"]), ""]
         csv_rows.append(";".join(p_row) + "\n")
 
-    csv_path = PATH.OUTPUT_DIR_LISTS + "2023_zeltlager_zeltverteilung"+".csv"
+    csv_path = loc_path + "2023_zeltlager_zeltverteilung"+".csv"
     with open(csv_path, "w", ) as outfile:
         outfile.writelines(csv_rows)
+
+
+def generate_speacial_lists():
+    """generate list for sukus/medic (medicine,food allergy,...)"""
+
+    if os.path.exists(PATH.SPECIAL_LISTS):
+        shutil.rmtree(PATH.SPECIAL_LISTS)
+    os.makedirs(PATH.SPECIAL_LISTS)
+
+    loc_filterd_participants = filter(
+        lambda x: x.other.strip() != "", participants_d)
+    loc_sorted_participants = sorted(
+        loc_filterd_participants, key=lambda x: (x.tent, x.lastname, x.firstname), reverse=False)
+
+    rows_part = generate_participants_array(loc_sorted_participants)
+
+    output_name = "2023_zeltlager_sani_liste"
+    generate_docx_and_pdf(output_name, PATH.SPECIAL_LISTS,
+                          "sani.docx", rows_part)
+    generate_csv(output_name, PATH.OUTPUT_DIR_LISTS,
+                 loc_sorted_participants, [])
+
+    output_name = "2023_zeltlager_suku_liste"
+    generate_docx_and_pdf(output_name, PATH.SPECIAL_LISTS,
+                          "suku.docx", rows_part)
+    generate_csv(output_name, PATH.OUTPUT_DIR_LISTS,
+                 loc_sorted_participants, [])
 
 
 @ app.route("/api/lists/generate/all", methods=["GET"])
 def generate_lists():
     """generate all lists"""
+    pythoncom.CoInitialize()
+    create_dir_if_not_exist(PATH.OUTPUT_DIR_LISTS)
     generate_overall_list()
     generate_tent_leader_allocation()
+    generate_speacial_lists()
+
     return jsonify("ok")
 
 
