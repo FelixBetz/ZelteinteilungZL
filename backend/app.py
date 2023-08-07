@@ -1,7 +1,8 @@
 """main file of ZelteinteilungZL"""
 import json
 import os
-
+import shutil
+from datetime import datetime
 from flask_cors import CORS
 from flask import Flask, abort, jsonify, request, send_from_directory
 from mailmerge import MailMerge
@@ -16,7 +17,7 @@ from src.config import Config
 from src.mailing import mailing_routes
 from src.tent_leaders.tent_leaders import parse_tent_leader
 import pathes as PATH
-import shutil
+
 
 tent_leaders = []
 participants_d = []
@@ -222,15 +223,24 @@ def generate_leader_array(arg_leader):
     return ret_rows
 
 
-def generate_csv(arg_name, arg_data):
+def generate_csv(arg_name, arg_part, arg_leader):
     """generate csv file"""
     # generate addresslist csv
     csv_rows = []
     csv_header = ["#", "Zelt", "Name", "Vorname", "Straße", "PLZ", "Ort"]
     csv_rows.append(";".join(csv_header)+"\n")
-    for i, part in enumerate(arg_data):
+
+    # participants
+    for i, part in enumerate(arg_part):
         p_row = [str(i+1), str(part.tent), str(part.lastname),
                  str(part.firstname), str(part.street), str(part.zipcode), str(part.village)]
+        csv_rows.append(";".join(p_row) + "\n")
+
+    # leaders
+        # participants
+    for k, leader in enumerate(arg_leader):
+        p_row = [str(k+i+2), str(leader.job), str(leader.lastname),
+                 str(leader.firstname), str(leader.street), str(leader.zipcode), str(leader.village)]
         csv_rows.append(";".join(p_row) + "\n")
 
     csv_path = PATH.OUTPUT_DIR_LISTS + arg_name+".csv"
@@ -256,7 +266,8 @@ def generate_overall_list():
         merge_rows = rows_part + rows_leaders
 
         generate_docx_and_pdf(output_name, "gesamtliste.docx", merge_rows)
-        generate_csv(output_name, loc_sorted_participants)
+        generate_csv(output_name, loc_sorted_participants,
+                     loc_sorted_tent_leaders)
 
         # sort by tent,lastname, firstname
         output_name = "2023_zeltlager_gesamtliste_sort_by_tent"
@@ -271,13 +282,65 @@ def generate_overall_list():
         merge_rows = rows_part + rows_leaders
 
         generate_docx_and_pdf(output_name, "gesamtliste.docx", merge_rows)
-        generate_csv(output_name, loc_sorted_participants)
+        generate_csv(output_name, loc_sorted_participants,
+                     loc_sorted_tent_leaders)
+
+        # generate
+
+
+def calc_age_by_birthdate(arg_birthdate):
+    """calcualte age by given birhtdate"""
+    today = datetime.now()
+
+    year, month, day = map(int, arg_birthdate.split('-'))
+    birth_date = datetime(year, month, day)
+    diff_seconds = (today - birth_date).total_seconds()
+    age = diff_seconds / (60 * 60 * 24 * 365)
+    return age
+
+
+def generate_tent_leader_allocation():
+    """generate list: tentleader to tent number allication"""
+
+    # generate array
+    allocation = []
+    for i in range(configs_d.num_tents):
+        allocation.append({"leaders": [], "age": [], })
+
+    # add participants to tents
+    for part in participants_d:
+        if part.tent <= configs_d.num_tents:
+            loc_age = calc_age_by_birthdate(part.birthdate)
+            allocation[part.tent-1]["age"].append(loc_age)
+
+    # calc avg age
+    for i in range(len(allocation)):
+        loc_sum = 0
+        for age in allocation[i]["age"]:
+            loc_sum += age
+        allocation[i]["avg"] = round(loc_sum / len(allocation[i]["age"]), 2)
+
+    for leader in tent_leaders:
+        if leader.tent <= configs_d.num_tents:
+            allocation[leader.tent-1]["leaders"].append(leader.get_fullname())
+
+    csv_rows = []
+    csv_header = ["Zelt", "Zefü", "Durchschnittsalter", "Haijkbegleiter", ]
+    csv_rows.append(";".join(csv_header)+"\n")
+    for i, tent in enumerate(allocation):
+        p_row = [str(i+1), ",".join(tent["leaders"]), " "+str(tent["avg"]), ""]
+        csv_rows.append(";".join(p_row) + "\n")
+
+    csv_path = PATH.OUTPUT_DIR_LISTS + "2023_zeltlager_zeltverteilung"+".csv"
+    with open(csv_path, "w", ) as outfile:
+        outfile.writelines(csv_rows)
 
 
 @ app.route("/api/lists/generate/all", methods=["GET"])
 def generate_lists():
     """generate all lists"""
     generate_overall_list()
+    generate_tent_leader_allocation()
     return jsonify("ok")
 
 
