@@ -41,7 +41,23 @@
 			<ul>
 				{#each lists as l}
 					<li>
-						<a target="_blank" href={BASE_URL + l.link}>{l.name}</a>
+						{#if l.dir_name == ''}
+							{#each l.files as file}
+								<li>
+									<a target="_blank" href={BASE_URL + l.dir_link + file}>{file}</a>
+								</li>
+							{/each}
+						{:else}
+							{l.dir_name}
+
+							<ul>
+								{#each l.files as file}
+									<li>
+										<a target="_blank" href={BASE_URL + l.dir_link + file}>{file}</a>
+									</li>
+								{/each}
+							</ul>
+						{/if}
 					</li>
 				{/each}
 			</ul>

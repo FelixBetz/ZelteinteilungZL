@@ -255,9 +255,7 @@ def generate_csv(arg_name, arg_path, arg_part, arg_leader):
 def generate_overall_list():
     """generate overall list"""
 
-    loc_path = PATH.OUTPUT_DIR_LISTS + "Gesamt\\"
-
-    create_dir_if_not_exist(loc_path)
+    create_dir_if_not_exist(PATH.GESAMT_LISTS)
     # sort by lastname, firstname
     output_name = "2023_zeltlager_gesamtliste_sort_by_name"
     loc_sorted_participants = sorted(
@@ -270,9 +268,9 @@ def generate_overall_list():
 
     merge_rows = rows_part + rows_leaders
 
-    generate_docx_and_pdf(output_name, loc_path,
+    generate_docx_and_pdf(output_name, PATH.GESAMT_LISTS,
                           "gesamtliste.docx", merge_rows)
-    generate_csv(output_name, loc_path,
+    generate_csv(output_name, PATH.GESAMT_LISTS,
                  loc_sorted_participants, loc_sorted_tent_leaders)
 
     # sort by tent,lastname, firstname
@@ -287,9 +285,9 @@ def generate_overall_list():
 
     merge_rows = rows_part + rows_leaders
 
-    generate_docx_and_pdf(output_name, loc_path,
+    generate_docx_and_pdf(output_name, PATH.GESAMT_LISTS,
                           "gesamtliste.docx", merge_rows)
-    generate_csv(output_name, loc_path,
+    generate_csv(output_name, PATH.GESAMT_LISTS,
                  loc_sorted_participants, loc_sorted_tent_leaders)
 
     # generate
@@ -361,13 +359,13 @@ def generate_speacial_lists():
     output_name = "2023_zeltlager_sani_liste"
     generate_docx_and_pdf(output_name, PATH.SPECIAL_LISTS,
                           "sani.docx", rows_part)
-    generate_csv(output_name, PATH.OUTPUT_DIR_LISTS,
+    generate_csv(output_name, PATH.SPECIAL_LISTS,
                  loc_sorted_participants, [])
 
     output_name = "2023_zeltlager_suku_liste"
     generate_docx_and_pdf(output_name, PATH.SPECIAL_LISTS,
                           "suku.docx", rows_part)
-    generate_csv(output_name, PATH.OUTPUT_DIR_LISTS,
+    generate_csv(output_name, PATH.SPECIAL_LISTS,
                  loc_sorted_participants, [])
 
 
@@ -383,15 +381,48 @@ def generate_lists():
     return jsonify("ok")
 
 
+def get_files_in_directory(directory):
+    """get files as list"""
+    result = []
+    for root, _, files in os.walk(directory):
+        relative_root = os.path.relpath(root, directory)
+        dir_info = {
+            "dir_name": os.path.basename(root),
+            "dir_link": "/lists/" + relative_root.replace("\\", "/")+"/",
+            # Extract only the file names
+            "files": [os.path.basename(file) for file in files]
+        }
+        result.append(dir_info)
+    # Include files in the root directory
+    root_files = [os.path.basename(file) for file in os.listdir(
+        directory) if os.path.isfile(os.path.join(directory, file))]
+    if root_files:
+        root_info = {
+            "dir_name": os.path.basename(directory),
+            "dir_link": ".",
+            "files": root_files
+        }
+        result.insert(0, root_info)
+    result.pop(0)
+    return result
+
+
 @ app.route("/api/lists", methods=["GET"])
 def get_lists():
     """get lists download lists"""
-    files = []
-    for filename in os.listdir(PATH.OUTPUT_DIR_LISTS):
-        if os.path.isfile(os.path.join(PATH.OUTPUT_DIR_LISTS, filename)):
-            files.append({"name": filename, "link": "/lists/"+filename})
 
-    return jsonify(files)
+    files = []
+    for root, _, filenames in os.walk(PATH.OUTPUT_DIR_LISTS):
+        root_list = []
+        for filename in filenames:
+            file_path = os.path.join(root, filename)
+            relative_path = os.path.relpath(file_path, PATH.OUTPUT_DIR_LISTS)
+            root_list.append({"name": filename, "link": "/lists/" +
+                              relative_path.replace(os.path.sep, '/')})
+        files.append({"dir": root, "files": root_list})
+    ret = get_files_in_directory(PATH.OUTPUT_DIR_LISTS)
+
+    return jsonify(ret)
 
 
 @ app.route("/api/lists/<path:filename>")

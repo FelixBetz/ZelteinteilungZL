@@ -1,7 +1,8 @@
 import { BASE_URL } from './api';
 export interface List {
-	name: string;
-	link: string;
+	dir_link: string;
+	dir_name: string;
+	files: string[];
 }
 export async function apiGetGenerateOverallList(): Promise<string> {
 	const response = await fetch(BASE_URL + '/lists/generate/all')
