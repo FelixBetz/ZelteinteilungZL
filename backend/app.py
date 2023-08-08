@@ -7,6 +7,7 @@ from flask_cors import CORS
 from flask import Flask, abort, jsonify, request, send_from_directory
 from mailmerge import MailMerge
 from docx2pdf import convert
+from docx import Document
 import pythoncom
 from src.lib.helpers import props
 from src.participants.participants import get_paticipant_by_id, parse_participants,\
@@ -179,13 +180,16 @@ def create_dir_if_not_exist(arg_dir):
     os.makedirs(arg_dir)
 
 
-def generate_docx_and_pdf(arg_name, arg_path, arg_template_name, arg_rows):
+def generate_docx_and_pdf(arg_name, arg_path, arg_headline, arg_template_name, arg_rows):
     """write docx, pdf and csv file"""
     output_name = arg_name
     output_docx = output_name + ".docx"
     document = MailMerge(PATH.LIST_TEMPLATE_DIR + arg_template_name)
 
-    document.merge_rows('tent', arg_rows)
+    document.merge_templates(
+        [{"headline": str(arg_headline)}], separator='page_break')
+
+    document.merge_rows("tent", arg_rows)
 
     document.write(arg_path + output_docx)
     convert(arg_path + output_docx)
@@ -268,8 +272,8 @@ def generate_overall_list():
 
     merge_rows = rows_part + rows_leaders
 
-    generate_docx_and_pdf(output_name, PATH.GESAMT_LISTS,
-                          "gesamtliste.docx", merge_rows)
+    generate_docx_and_pdf(output_name, PATH.GESAMT_LISTS, "Gesamtliste sortiert nach Name",
+                          "liste.docx", merge_rows)
     generate_csv(output_name, PATH.GESAMT_LISTS,
                  loc_sorted_participants, loc_sorted_tent_leaders)
 
@@ -285,8 +289,8 @@ def generate_overall_list():
 
     merge_rows = rows_part + rows_leaders
 
-    generate_docx_and_pdf(output_name, PATH.GESAMT_LISTS,
-                          "gesamtliste.docx", merge_rows)
+    generate_docx_and_pdf(output_name, PATH.GESAMT_LISTS, "Gesamtliste sortiert nach Zelt",
+                          "liste.docx", merge_rows)
     generate_csv(output_name, PATH.GESAMT_LISTS,
                  loc_sorted_participants, loc_sorted_tent_leaders)
 
@@ -357,14 +361,14 @@ def generate_speacial_lists():
     rows_part = generate_participants_array(loc_sorted_participants)
 
     output_name = "2023_zeltlager_sani_liste"
-    generate_docx_and_pdf(output_name, PATH.SPECIAL_LISTS,
-                          "sani.docx", rows_part)
+    generate_docx_and_pdf(output_name, PATH.SPECIAL_LISTS, "Sani",
+                          "liste.docx", rows_part)
     generate_csv(output_name, PATH.SPECIAL_LISTS,
                  loc_sorted_participants, [])
 
     output_name = "2023_zeltlager_suku_liste"
-    generate_docx_and_pdf(output_name, PATH.SPECIAL_LISTS,
-                          "suku.docx", rows_part)
+    generate_docx_and_pdf(output_name, PATH.SPECIAL_LISTS, "Suku",
+                          "liste.docx", rows_part)
     generate_csv(output_name, PATH.SPECIAL_LISTS,
                  loc_sorted_participants, [])
 
@@ -377,8 +381,103 @@ def generate_lists():
     generate_overall_list()
     generate_tent_leader_allocation()
     generate_speacial_lists()
+    generate_tent_info()
 
     return jsonify("ok")
+
+
+def combine_word_documents(files, output_name):
+    """combine_word_documents"""
+    merged_document = Document()
+
+    for index, file in enumerate(files):
+        sub_doc = Document(file)
+
+        # Don't add a page break if you've reached the last file.
+        if index < len(files)-1:
+            sub_doc.add_page_break()
+
+        for element in sub_doc.element.body:
+            merged_document.element.body.append(element)
+        os.remove(file)
+    merged_document.save(output_name)
+
+
+def generate_tent_info():
+    """geneate tent info"""
+    create_dir_if_not_exist(PATH.TENTS_LISTS)
+
+    # for leaders
+    tent_files = []
+    for tent_num in range(1, configs_d.num_tents + 1):
+        pythoncom.CoInitialize()
+        document = MailMerge(PATH.LIST_TEMPLATE_DIR + "zeltinfos.docx")
+        tent_participants = []
+
+        for part in participants_d:
+            if part.tent == tent_num:
+
+                tent_participants.append(part)
+
+        ret_rows = []
+
+        for part in tent_participants:
+            loc_row = {'tent': str(part.tent),
+                       'lastname': part.lastname, 'firstname': part.firstname,
+                       'birthdate': part.birthdate,
+                       'street': part.street,
+                       'zipcode': str(part.zipcode), 'village': part.village,
+                       'emergencyContact': part.emergency_contact,
+                       'emergencyNumber': part.emergency_phone,
+                       'other': part.other}
+            ret_rows.append(loc_row)
+
+        output_name = "2023_zeltinfo" + str(tent_num).zfill(2)+".docx"
+        document.merge_templates(
+            [{"tentNum": str(tent_num)}], separator='page_break')
+        document.merge_rows('lastname', ret_rows)
+        document.write(PATH.TENTS_LISTS + output_name)
+        tent_files.append(PATH.TENTS_LISTS + output_name)
+
+    combinded_file_name = PATH.TENTS_LISTS+"2023_Zeltinfos.docx"
+    combine_word_documents(tent_files, combinded_file_name)
+    convert(combinded_file_name)
+
+    # desks
+    tent_files = []
+    for tent_num in range(1, configs_d.num_tents + 1):
+        pythoncom.CoInitialize()
+        document = MailMerge(PATH.LIST_TEMPLATE_DIR + "zeltinfos_tisch.docx")
+        tent_participants = []
+
+        for p in participants_d:
+            if p.tent == tent_num:
+
+                tent_participants.append(p)
+
+        ret_rows = []
+
+        for part in tent_participants:
+            loc_row = {'tent': str(part.tent),
+                       'lastname': part.lastname, 'firstname': part.firstname,
+                       'birthdate': part.birthdate,
+                       'street': part.street,
+                       'zipcode': str(part.zipcode), 'village': part.village,
+                       'emergencyContact': part.emergency_contact,
+                       'emergencyNumber': part.emergency_phone,
+                       'other': part.other}
+            ret_rows.append(loc_row)
+
+        output_name = "2023_zeltinfo_tisch" + str(tent_num).zfill(2)+".docx"
+        document.merge_templates(
+            [{"tentNum": str(tent_num)}], separator='page_break')
+        document.merge_rows('lastname', ret_rows)
+        document.write(PATH.TENTS_LISTS + output_name)
+        tent_files.append(PATH.TENTS_LISTS + output_name)
+
+    combinded_file_name = PATH.TENTS_LISTS+"2023_Zeltinfos_tisch.docx"
+    combine_word_documents(tent_files, combinded_file_name)
+    convert(combinded_file_name)
 
 
 def get_files_in_directory(directory):
