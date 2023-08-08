@@ -390,6 +390,79 @@ def generate_particpant_overview():
     convert(PATH.OUTPUT_DIR_LISTS + output_name)
 
 
+def generate_grants_list():
+    """generate_grants_list"""
+    create_dir_if_not_exist(PATH.GRANT_LISTS)
+
+    loc_sorted_tent_leaders = sorted(
+        tent_leaders, key=lambda x: (x.lastname, x.firstname), reverse=False)
+    loc_sorted_participants = sorted(
+        participants_d, key=lambda x: (x.tent, x.lastname, x.firstname), reverse=False)
+    # 7.2_Pädagogische Betreuer.docx
+    output_name = "7.2_Pädagogische Betreuer.docx"
+    document = MailMerge(PATH.LIST_TEMPLATE_DIR + "zuschuss_betreuer.docx")
+    mergeRow = []
+    for i, p in enumerate(loc_sorted_tent_leaders):
+        data = p.lastname + ", " + p.firstname + ", " + p.birthdate + \
+            ", " + p.street + " " + str(p.zipcode) + " " + p.village
+        tmp = {'id': str(i+1), 'data': data}
+        mergeRow.append(tmp)
+
+    document.merge_rows('id', mergeRow)
+    document.write(PATH.GRANT_LISTS + output_name)
+    convert(PATH.GRANT_LISTS + output_name)
+
+    # 2018_Teilnehmer
+    mergeRow = []
+    output_name = "2018_Teilnehmerliste.docx"
+    document = MailMerge(PATH.LIST_TEMPLATE_DIR + "2018_Teilnehmerliste.docx")
+    i = 1
+    for p in loc_sorted_participants:
+        fullname = p.lastname + ", " + p.firstname
+        address = p.street + " " + str(p.zipcode) + " " + p.village
+        tmp = {'i': str(i), 'fullname': fullname,
+               'address': address, 'birthdate': p.birthdate, "date": "11.08. bis 18.08.2023", "days": str(8)}
+        mergeRow.append(tmp)
+        i += 1
+
+    for p in loc_sorted_tent_leaders:
+        fullname = p.lastname + ", " + p.firstname
+        address = p.street + " " + str(p.zipcode) + " " + p.village
+        tmp = {'i': str(i), 'fullname': fullname,
+               'address': address, 'birthdate': p.birthdate, "date": "10.08. bis 19.08.2023", "days": str(10)}
+        mergeRow.append(tmp)
+        i += 1
+
+    document.merge_rows('i', mergeRow)
+    document.write(PATH.GRANT_LISTS + output_name)
+    convert(PATH.GRANT_LISTS + output_name)
+
+    # Teilnehmerliste
+    mergeRow = []
+    output_name = "Teilnehmerliste.docx"
+    document = MailMerge(PATH.LIST_TEMPLATE_DIR + "Teilnehmerliste.docx")
+    i = 1
+    for p in loc_sorted_participants:
+        fullname = p.lastname + ", " + p.firstname
+        address = p.street + " " + str(p.zipcode) + " " + p.village
+        tmp = {'i': str(i), 'fullname': fullname,
+               'address': address, 'birthdate': p.birthdate}
+        mergeRow.append(tmp)
+        i += 1
+
+    for p in loc_sorted_tent_leaders:
+        fullname = p.lastname + ", " + p.firstname
+        address = p.street + " " + str(p.zipcode) + " " + p.village
+        tmp = {'i': str(i), 'fullname': fullname,
+               'address': address, 'birthdate': p.birthdate}
+        mergeRow.append(tmp)
+        i += 1
+
+    document.merge_rows('i', mergeRow)
+    document.write(PATH.GRANT_LISTS + output_name)
+    convert(PATH.GRANT_LISTS + output_name)
+
+
 @ app.route("/api/lists/generate/all", methods=["GET"])
 def generate_lists():
     """generate all lists"""
@@ -402,6 +475,7 @@ def generate_lists():
     generate_arrival_list()
     generate_mat_list()
     generate_particpant_overview()
+    generate_grants_list()
     return jsonify("ok")
 
 

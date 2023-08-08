@@ -22,5 +22,6 @@ OUTPUT_DIR_LISTS = OUTPUT_DIR_PATH+"\\lists\\"
 SPECIAL_LISTS = OUTPUT_DIR_LISTS + "\\Special\\"
 GESAMT_LISTS = OUTPUT_DIR_LISTS + "\\Gesamt\\"
 TENTS_LISTS = OUTPUT_DIR_LISTS + "\\Zelte\\"
+GRANT_LISTS = OUTPUT_DIR_LISTS + "\\Zuschuesse\\"
 
 LIST_TEMPLATE_DIR = "..\\list_templates\\"
