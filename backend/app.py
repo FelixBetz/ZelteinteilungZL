@@ -373,6 +373,23 @@ def generate_speacial_lists():
                  loc_sorted_participants, [])
 
 
+def generate_particpant_overview():
+    "generate_particpant_overview"
+    document = MailMerge(PATH.LIST_TEMPLATE_DIR + "uebersicht.docx")
+    loc_sorted_participants = sorted(
+        participants_d, key=lambda x: (x.tent, x.lastname, x.firstname), reverse=False)
+    merge_rows = []
+    for part in loc_sorted_participants:
+        loc_row = {'tent': str(
+            part.tent), 'lastname': part.lastname, 'firstname': part.firstname, }
+        merge_rows.append(loc_row)
+
+    output_name = "2023_uebersicht_teilnehmer.docx"
+    document.merge_rows('lastname', merge_rows)
+    document.write(PATH.OUTPUT_DIR_LISTS + output_name)
+    convert(PATH.OUTPUT_DIR_LISTS + output_name)
+
+
 @ app.route("/api/lists/generate/all", methods=["GET"])
 def generate_lists():
     """generate all lists"""
@@ -382,7 +399,9 @@ def generate_lists():
     generate_tent_leader_allocation()
     generate_speacial_lists()
     generate_tent_info()
-
+    generate_arrival_list()
+    generate_mat_list()
+    generate_particpant_overview()
     return jsonify("ok")
 
 
@@ -504,6 +523,41 @@ def get_files_in_directory(directory):
         result.insert(0, root_info)
     result.pop(0)
     return result
+
+
+def generate_arrival_list():
+    """arriavel list"""
+    document = MailMerge(PATH.LIST_TEMPLATE_DIR + "ankunft.docx")
+    loc_sorted_participants = sorted(
+        participants_d, key=lambda x: (x.lastname, x.firstname), reverse=False)
+    merge_rows = []
+    for part in loc_sorted_participants:
+        loc_row = {'tent': str(
+            part.tent), 'lastname': part.lastname, 'firstname': part.firstname, }
+        merge_rows.append(loc_row)
+
+    output_name = "2023_Ankunftsliste.docx"
+    document.merge_rows('lastname', merge_rows)
+    document.write(PATH.OUTPUT_DIR_LISTS + output_name)
+    convert(PATH.OUTPUT_DIR_LISTS + output_name)
+
+
+def generate_mat_list():
+    """mat list"""
+    # for leaders
+    document = MailMerge(PATH.LIST_TEMPLATE_DIR + "mat.docx")
+    loc_sorted_participants = sorted(
+        participants_d, key=lambda x: (x.tent, x.lastname, x.firstname), reverse=False)
+    merge_rows = []
+    for part in loc_sorted_participants:
+        loc_row = {'tent': str(
+            part.tent), 'lastname': part.lastname, 'firstname': part.firstname, }
+        merge_rows.append(loc_row)
+
+    output_name = "2023_werkzeugmarke.docx"
+    document.merge_rows('lastname', merge_rows)
+    document.write(PATH.OUTPUT_DIR_LISTS + output_name)
+    convert(PATH.OUTPUT_DIR_LISTS + output_name)
 
 
 @ app.route("/api/lists", methods=["GET"])
