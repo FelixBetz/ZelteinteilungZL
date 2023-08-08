@@ -2,6 +2,7 @@
 import json
 import os
 import shutil
+import csv
 from datetime import datetime
 from flask_cors import CORS
 from flask import Flask, abort, jsonify, request, send_from_directory
@@ -294,8 +295,6 @@ def generate_overall_list():
     generate_csv(output_name, PATH.GESAMT_LISTS,
                  loc_sorted_participants, loc_sorted_tent_leaders)
 
-    # generate
-
 
 def calc_age_by_birthdate(arg_birthdate):
     """calcualte age by given birhtdate"""
@@ -398,6 +397,16 @@ def generate_grants_list():
         tent_leaders, key=lambda x: (x.lastname, x.firstname), reverse=False)
     loc_sorted_participants = sorted(
         participants_d, key=lambda x: (x.tent, x.lastname, x.firstname), reverse=False)
+
+    # parse Alternativprogramm
+
+    special_data = []
+
+    with open(PATH.INPUT_FILE_PATH + "2023_alternativprogramm.csv", "r", encoding="utf-8") as file:
+        csv_reader = csv.DictReader(file, delimiter=";")
+        for row in csv_reader:
+            special_data.append(row)
+
     # 7.2_Pädagogische Betreuer.docx
     output_name = "7.2_Pädagogische Betreuer.docx"
     document = MailMerge(PATH.LIST_TEMPLATE_DIR + "zuschuss_betreuer.docx")
@@ -425,6 +434,14 @@ def generate_grants_list():
         mergeRow.append(tmp)
         i += 1
 
+    for p in special_data:
+        fullname = p["Nachname"] + ", " + p["Vorname"]
+        address = p["StrasseHausnummer"] + " " + str(p["PLZ"]) + " " + p["Ort"]
+        tmp = {'i': str(i), 'fullname': fullname,
+               'address': address, 'birthdate': p["Geburtsdatum"], "date": "11.08. bis 18.08.2023", "days": str(8)}
+        mergeRow.append(tmp)
+        i += 1
+
     for p in loc_sorted_tent_leaders:
         fullname = p.lastname + ", " + p.firstname
         address = p.street + " " + str(p.zipcode) + " " + p.village
@@ -446,7 +463,15 @@ def generate_grants_list():
         fullname = p.lastname + ", " + p.firstname
         address = p.street + " " + str(p.zipcode) + " " + p.village
         tmp = {'i': str(i), 'fullname': fullname,
-               'address': address, 'birthdate': p.birthdate}
+               'address': address, 'birthdate': p.birthdate, "date": "11.08. bis 18.08.2023", "days": str(8)}
+        mergeRow.append(tmp)
+        i += 1
+
+    for p in special_data:
+        fullname = p["Nachname"] + ", " + p["Vorname"]
+        address = p["StrasseHausnummer"] + " " + str(p["PLZ"]) + " " + p["Ort"]
+        tmp = {'i': str(i), 'fullname': fullname,
+               'address': address, 'birthdate': p["Geburtsdatum"], "date": "11.08. bis 18.08.2023", "days": str(8)}
         mergeRow.append(tmp)
         i += 1
 
@@ -454,7 +479,7 @@ def generate_grants_list():
         fullname = p.lastname + ", " + p.firstname
         address = p.street + " " + str(p.zipcode) + " " + p.village
         tmp = {'i': str(i), 'fullname': fullname,
-               'address': address, 'birthdate': p.birthdate}
+               'address': address, 'birthdate': p.birthdate, "date": "10.08. bis 19.08.2023", "days": str(10)}
         mergeRow.append(tmp)
         i += 1
 
