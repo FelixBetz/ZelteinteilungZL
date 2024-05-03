@@ -259,7 +259,7 @@ def generate_csv(arg_name, arg_path, arg_part, arg_leader):
     """generate csv file"""
     # generate addresslist csv
     csv_rows = []
-    csv_header = ["#", "Zelt", "Name", "Vorname", "Straße", "PLZ", "Ort"]
+    csv_header = ["#", "Zelt", "Name", "Vorname", "Geburtstag", "Straße", "PLZ", "Ort"]
     csv_rows.append(";".join(csv_header) + "\n")
 
     # participants
@@ -270,6 +270,7 @@ def generate_csv(arg_name, arg_path, arg_part, arg_leader):
             str(part.tent),
             str(part.lastname),
             str(part.firstname),
+            str(part.birthdate),
             str(part.street),
             str(part.zipcode),
             str(part.village),
@@ -285,6 +286,7 @@ def generate_csv(arg_name, arg_path, arg_part, arg_leader):
             str(leader.job),
             str(leader.lastname),
             str(leader.firstname),
+            str(""),
             str(leader.street),
             str(leader.zipcode),
             str(leader.village),
