@@ -1,4 +1,5 @@
 """This module parses a input CSV list and generate some maps"""
+
 import os
 
 import folium
@@ -45,14 +46,14 @@ def generate_maps(zip_codes):
             #
             marker_locations.append([location.latitude, location.longitude])
         else:
-            zip_code_coords = pgeocode.Nominatim("de")\
-                .query_postal_code(zip_code[0])
+            zip_code_coords = pgeocode.Nominatim("de").query_postal_code(zip_code[0])
             marker_locations.append(
                 [zip_code_coords["latitude"], zip_code_coords["longitude"]]
             )
 
-            warning = "WARNING: could not find address: " + \
-                zip_code[2] + " " + zip_code[3]
+            warning = (
+                "WARNING: could not find address: " + zip_code[2] + " " + zip_code[3]
+            )
             print(warning)
             warnings.append(warning)
 
@@ -60,8 +61,13 @@ def generate_maps(zip_codes):
 
     ###########################################################################################
     # genearte makers map
-    map_object = folium.Map([middle_point[0], middle_point[1]],
-                            zoom_start=7, tiles="Stamen Toner")
+
+    attr = '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    tiles = "https://tiles.stadiamaps.com/tiles/{variant}/{z}/{x}/{y}{r}.{ext}"
+
+    map_object = folium.Map(
+        [middle_point[0], middle_point[1]], zoom_start=10, tiles="Cartodb Positron"
+    )
     map_cluster = MarkerCluster(name="Zeltlager Teilnehmer").add_to(map_object)
 
     # create markers form PLZ coordinates array
@@ -72,7 +78,7 @@ def generate_maps(zip_codes):
 
         folium.Marker(
             location=[pnt[0], pnt[1]],
-            popup=f"{name}, {address}"  # \r\n({pnt[0]}°| {pnt[1]}°)",
+            popup=f"{name}, {address}",  # \r\n({pnt[0]}°| {pnt[1]}°)",
         ).add_to(map_cluster)
 
     minimap = plugins.MiniMap()
@@ -97,7 +103,9 @@ def generate_maps(zip_codes):
     ###########################################################################################
     # genearte heatmap
     heatmap = folium.Map(
-        [middle_point[0], middle_point[1]], zoom_start=7, tiles="Stamen Toner"
+        [middle_point[0], middle_point[1]],
+        zoom_start=10,
+        tiles="Cartodb Positron",
     )  # tiles="Stamen Toner"
     plugins.HeatMap(marker_locations).add_to(heatmap)
     heatmap.save(OUTPUT_DIR_PATH + "heatmap.html")
