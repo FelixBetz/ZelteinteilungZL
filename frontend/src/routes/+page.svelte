@@ -259,9 +259,8 @@
 			}
 		});
 
-		beginZlDate.setDate(beginZlDate.getDate() - 3);
+		beginZlDate.setDate(beginZlDate.getDate() - 2);
 		endZlDate.setDate(beginZlDate.getDate() + 1);
-
 		pTentLeader.forEach((p) => {
 			const [year, month, day] = p.birthdate.split('-');
 			const birthDate = new Date(zlYear, +month - 1, +day); //(0 = January to 11 = December)
