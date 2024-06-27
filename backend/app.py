@@ -54,7 +54,7 @@ def get_participants():
         loc_revisions = []
         for loc_object in req:
             loc_particpant = get_paticipant_by_id(
-                participants_d, int(loc_object["identifier"])
+                participants_d, loc_object["identifier"]
             )
             loc_revisions += particpant_object_to_class(loc_particpant, loc_object)
 
@@ -75,7 +75,7 @@ def get_participant():
             req = request.form.get("participant")
             req = json.loads(req)
 
-            loc_id = int(req["identifier"])
+            loc_id = req["identifier"]
             loc_participant = get_paticipant_by_id(participants_d, loc_id)
             if loc_participant is None:
                 raise Exception
@@ -87,7 +87,7 @@ def get_participant():
             ret = props(loc_participant)
 
         else:
-            loc_id = int(request.args.get("id"))
+            loc_id = request.args.get("id")
             loc_participant = get_paticipant_by_id(participants_d, loc_id)
 
             if loc_participant is None:

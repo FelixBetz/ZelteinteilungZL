@@ -7,7 +7,7 @@ interface Participant {
 	emergency_phone: string;
 	firstname: string;
 	friends: string[];
-	identifier: number;
+	identifier: string;
 	is_vegetarian: boolean;
 	is_event_mail: boolean;
 	is_photo_allowed: boolean;
@@ -26,7 +26,7 @@ interface Participant {
 export class cTentParticipant {
 	public age = 0;
 	constructor(
-		public identifier: number,
+		public identifier: string,
 		public paid: boolean,
 		public firstname: string,
 		public lastname: string,
@@ -89,7 +89,7 @@ export async function apiGetParticipants(): Promise<cTentParticipant[]> {
 	return response;
 }
 
-export async function apiGetParticipant(pId: number): Promise<cTentParticipant | null> {
+export async function apiGetParticipant(pId: string): Promise<cTentParticipant | null> {
 	const response = await fetch(BASE_URL + '/participant?id=' + pId)
 		.then((res) => res.json())
 		.then((res: Participant) => {

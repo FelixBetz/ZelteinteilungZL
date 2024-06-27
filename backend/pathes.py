@@ -1,12 +1,13 @@
 """containes file pathes"""
+
 INPUT_FILE_PATH = r"..\\input\\"
-INPUT_FILE_NAME = "2023_teilnehmer_input.csv"
+INPUT_FILE_NAME = "2024_teilnehmer_input.csv"
 INPUT_TENT_LEADER_FILE_NAME = "2023_leitungsteam_anfrage.csv"
 INPUT_REVISION_FILE_NAME = "revisions.txt"
 INPUT_TENT_NUMBERS_FILE_NAME = "tent_numbers.txt"
 INPUT_PAID_FILE_NAME = "paid.txt"
 INPUT_CONFIG_FILE_NAME = "config.txt"
-INPUT_LAST_YEAR_FILE_NAME = "2022_zl_tn_out.csv"
+INPUT_LAST_YEAR_FILE_NAME = "2023_zeltlager_teilnehmer.csv"
 
 PARICIPANT = INPUT_FILE_PATH + INPUT_FILE_NAME
 TENT_LEADER = INPUT_FILE_PATH + INPUT_TENT_LEADER_FILE_NAME
@@ -18,7 +19,7 @@ LAST_YEAR = INPUT_FILE_PATH + INPUT_LAST_YEAR_FILE_NAME
 
 
 OUTPUT_DIR_PATH = r"..\\output\\"
-OUTPUT_DIR_LISTS = OUTPUT_DIR_PATH+"\\lists\\"
+OUTPUT_DIR_LISTS = OUTPUT_DIR_PATH + "\\lists\\"
 SPECIAL_LISTS = OUTPUT_DIR_LISTS + "\\Special\\"
 GESAMT_LISTS = OUTPUT_DIR_LISTS + "\\Gesamt\\"
 TENTS_LISTS = OUTPUT_DIR_LISTS + "\\Zelte\\"

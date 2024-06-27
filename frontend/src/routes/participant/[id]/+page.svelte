@@ -21,7 +21,7 @@
 
 	$: inputRegisteredValue = parseDatimeTimeStr(participant);
 
-	async function getParticipant(id: number) {
+	async function getParticipant(id: string) {
 		participant = await apiGetParticipant(id);
 	}
 
@@ -39,7 +39,7 @@
 	}
 
 	onMount(() => {
-		let id = parseInt($page.params['id']);
+		let id = $page.params['id'];
 		getParticipant(id);
 	});
 
