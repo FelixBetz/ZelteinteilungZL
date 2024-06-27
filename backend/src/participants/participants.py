@@ -228,6 +228,7 @@ def parse_participants(arg_errors):
             )
             raise
         loc_birthdate = row[IDX.PARP_BIRTHDATE]
+
         loc_participant = Participant(
             row[IDX.PARP_ID].strip(),
             # will be overwritten by parse_paid()
@@ -255,14 +256,13 @@ def parse_participants(arg_errors):
 
         loc_participants.append(loc_participant)
 
-        print("parsed input file: ", PATH.PARICIPANT)
         loc_participants, loc_revisions = apply_participants_revisons(
             loc_participants, arg_errors
         )
 
         loc_participants = parse_tent_numbers(loc_participants, arg_errors)
         loc_participants = parse_paid(loc_participants, arg_errors)
-
+    print("parsed input file: ", PATH.PARICIPANT)
     return loc_participants, loc_revisions
 
 

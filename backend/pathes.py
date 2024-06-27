@@ -2,7 +2,7 @@
 
 INPUT_FILE_PATH = r"..\\input\\"
 INPUT_FILE_NAME = "2024_teilnehmer_input.csv"
-INPUT_TENT_LEADER_FILE_NAME = "2023_leitungsteam_anfrage.csv"
+INPUT_TENT_LEADER_FILE_NAME = "2024_leitungsteam_anfrage.xlsm"
 INPUT_REVISION_FILE_NAME = "revisions.txt"
 INPUT_TENT_NUMBERS_FILE_NAME = "tent_numbers.txt"
 INPUT_PAID_FILE_NAME = "paid.txt"
