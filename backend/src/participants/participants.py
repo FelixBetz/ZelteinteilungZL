@@ -24,7 +24,7 @@ def check_if_participant_file_valid(arg_input_file):
 def get_paticipant_by_id(arg_participants, arg_id):
     """returns participant by given id"""
     for loc_participant in arg_participants:
-        if loc_participant.identifier == arg_id:
+        if loc_participant.identifier.strip() == arg_id.strip():
             return loc_participant
     return None
 
@@ -159,7 +159,7 @@ def parse_tent_numbers(arg_participants, arg_errors):
     with open(PATH.TENT_NUMBERS, encoding="utf8") as tent_numbers_file:
         for row in tent_numbers_file:
             splitted_row = row.split(";")
-            loc_id = int(splitted_row[0].strip())
+            loc_id = splitted_row[0].strip()
             loc_tent_number = int(splitted_row[1].strip())
 
             loc_participant = get_paticipant_by_id(arg_participants, loc_id)
@@ -256,12 +256,12 @@ def parse_participants(arg_errors):
 
         loc_participants.append(loc_participant)
 
-        loc_participants, loc_revisions = apply_participants_revisons(
-            loc_participants, arg_errors
-        )
+    loc_participants, loc_revisions = apply_participants_revisons(
+        loc_participants, arg_errors
+    )
 
-        loc_participants = parse_tent_numbers(loc_participants, arg_errors)
-        loc_participants = parse_paid(loc_participants, arg_errors)
+    loc_participants = parse_tent_numbers(loc_participants, arg_errors)
+    loc_participants = parse_paid(loc_participants, arg_errors)
     print("parsed input file: ", PATH.PARICIPANT)
     return loc_participants, loc_revisions
 
