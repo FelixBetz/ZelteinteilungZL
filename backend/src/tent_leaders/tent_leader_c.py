@@ -1,11 +1,11 @@
 """implementations of the class TentLeader"""
 
-
 from src.lib.person import Person
 
 
 class TentLeader(Person):
     """represents data of a zeltlager tentLeader"""
+
     # pylint: disable=too-many-locals
     # pylint: disable=too-many-arguments
 
@@ -24,20 +24,30 @@ class TentLeader(Person):
         arg_birthdate,
         arg_tent,
         arg_team,
+        arg_haijk,
         arg_comment,
     ):
         self.identifier = arg_id
 
         self.job = arg_job
 
-        super().__init__(arg_lastname, arg_firstname, arg_street,
-                         arg_zipcode, arg_village, arg_birthdate, arg_phone, arg_mail)
+        super().__init__(
+            arg_lastname,
+            arg_firstname,
+            arg_street,
+            arg_zipcode,
+            arg_village,
+            arg_birthdate,
+            arg_phone,
+            arg_mail,
+        )
 
         self.handy = arg_handy
 
         self.tent = arg_tent
         self.team = arg_team
         self.comment = arg_comment
+        self.haijk = arg_haijk
 
     def __str__(self):
         ret_str = super().__str__()

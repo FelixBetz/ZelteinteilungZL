@@ -69,6 +69,20 @@ def parse_tent_leader(arg_errors):
             )
             raise
 
+        try:
+            if row[IDX.LEAD_HAIJK] == "":
+                loc_haijk = 9999
+            else:
+                loc_haijk = int(row[IDX.LEAD_HAIJK])
+        except:
+            print(
+                "ERROR: failed to parse Haijk tent number: ",
+                row[IDX.LEAD_HAIJK],
+                "row: ",
+                row,
+            )
+            raise
+
         loc_tent_leader = TentLeader(
             loc_id,
             row[IDX.LEAD_JOB],
@@ -83,6 +97,7 @@ def parse_tent_leader(arg_errors):
             loc_birthdate,
             loc_tent,
             row[IDX.LEAD_TEAM],
+            loc_haijk,
             row[IDX.LEAD_COMMENT],
         )
         loc_id += 1

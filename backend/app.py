@@ -401,7 +401,8 @@ def generate_tent_leader_allocation():
     for leader in tent_leaders:
         if leader.tent <= configs_d.num_tents:
             allocation[leader.tent - 1]["leaders"].append(leader.get_fullname())
-
+        if leader.haijk <= configs_d.num_tents:
+            allocation[leader.haijk - 1]["haijk_person"].append(leader.get_fullname())
     csv_rows = []
     csv_header = [
         "Zelt",
@@ -411,7 +412,12 @@ def generate_tent_leader_allocation():
     ]
     csv_rows.append(";".join(csv_header) + "\n")
     for i, tent in enumerate(allocation):
-        p_row = [str(i + 1), ",".join(tent["leaders"]), " " + str(tent["avg"]), ""]
+        p_row = [
+            str(i + 1),
+            ",".join(tent["leaders"]),
+            " " + str(tent["avg"]),
+            ",".join(tent["haijk_person"]),
+        ]
         csv_rows.append(";".join(p_row) + "\n")
 
     csv_path = loc_path + YEAR + "_zeltlager_zeltverteilung" + ".csv"
