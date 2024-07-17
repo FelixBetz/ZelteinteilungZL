@@ -20,6 +20,7 @@ PARP_FRIEND1 = "Person1"
 PARP_FRIEND2 = "Person2"
 PARP_OTHER = "Sonstiges"
 PARP_PHOTO_ALLOWED = "Foto"
+PARP_PACKING_LIST = "Packliste"
 
 LEAD_JOB = "Aufgabe"
 LEAD_LAST_NAME = "Name"

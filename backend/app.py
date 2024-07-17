@@ -393,7 +393,10 @@ def generate_tent_leader_allocation():
         loc_sum = 0
         for age in allocation[i]["age"]:
             loc_sum += age
-        allocation[i]["avg"] = round(loc_sum / len(allocation[i]["age"]), 2)
+        if len(allocation[i]["age"]) > 0:
+            allocation[i]["avg"] = round(loc_sum / len(allocation[i]["age"]), 2)
+        else:
+            allocation[i]["avg"] = 0
 
     for leader in tent_leaders:
         if leader.tent <= configs_d.num_tents:
@@ -484,12 +487,15 @@ def generate_grants_list():
 
     special_data = []
 
-    with open(
-        PATH.INPUT_FILE_PATH + "2023_alternativprogramm.csv", "r", encoding="utf-8"
-    ) as file:
-        csv_reader = csv.DictReader(file, delimiter=";")
-        for row in csv_reader:
-            special_data.append(row)
+    if 0:  # do not genearte alternative programm
+        with open(
+            PATH.INPUT_FILE_PATH + YEAR + "_alternativprogramm.csv",
+            "r",
+            encoding="utf-8",
+        ) as file:
+            csv_reader = csv.DictReader(file, delimiter=";")
+            for row in csv_reader:
+                special_data.append(row)
 
     # 7.2_Pädagogische Betreuer.docx
     output_name = "7.2_Pädagogische Betreuer.docx"

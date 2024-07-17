@@ -65,7 +65,7 @@ def parse_paid(arg_participants, arg_errors):
     with open(PATH.PAID, encoding="utf8") as paid_file:
         for row in paid_file:
             splitted_row = row.split(";")
-            loc_id = int(splitted_row[0].strip())
+            loc_id = splitted_row[0].strip()
             loc_is_paid = splitted_row[1].strip()
 
             loc_participant = get_paticipant_by_id(arg_participants, loc_id)
@@ -231,8 +231,7 @@ def parse_participants(arg_errors):
 
         loc_participant = Participant(
             row[IDX.PARP_ID].strip(),
-            # will be overwritten by parse_paid()
-            is_paided("false"),
+            is_paided("false"),  # will be overwritten by parse_paid()
             loc_lastname,
             loc_firstname,
             row[IDX.PARP_STREET].strip(),

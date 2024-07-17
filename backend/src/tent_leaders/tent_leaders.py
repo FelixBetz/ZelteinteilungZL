@@ -89,19 +89,3 @@ def parse_tent_leader(arg_errors):
 
         loc_tent_leaders.append(loc_tent_leader)
     return loc_tent_leaders
-    with open(
-        PATH.TENT_LEADER,
-        newline="",
-    ) as csvfile:
-        spamreader = csv.reader(csvfile, delimiter=";", quotechar="|")
-        loc_id = 0
-        for i, row in enumerate(spamreader):
-            if i >= 1:
-                print(row)
-                strip_row(row)
-
-                loc_lastname = row[IDX.LEAD_LAST_NAME]
-                loc_firstname = row[IDX.LEAD_FIRST_NAME]
-
-        print("parsed input file: ", PATH.TENT_LEADER)
-    return loc_tent_leaders

@@ -1,4 +1,5 @@
 """implementations of the class Config"""
+
 import json
 
 
@@ -14,12 +15,17 @@ class Config:
 
     def __str__(self):
         ret_str = (
-            "---------------------------\n" +
-            "Configs: \n"
-            "  num_tents: " + str(self.num_tents) + "\n" +
-            "  zl_start: " + str(self.zl_start) + "\n" +
-            "  calender_url: " + str(self.calender_url) + "\n" +
-            "---------------------------"
+            "---------------------------\n" + "Configs: \n"
+            "  num_tents: "
+            + str(self.num_tents)
+            + "\n"
+            + "  zl_start: "
+            + str(self.zl_start)
+            + "\n"
+            + "  calender_url: "
+            + str(self.calender_url)
+            + "\n"
+            + "---------------------------"
         )
         return ret_str
 
@@ -46,20 +52,21 @@ class Config:
             try:
                 self.num_tents = int(loc_config["numTents"])
             except KeyError:
-                self.errors.append("Config ERROR: \"numTents\" nicht gefunden")
+                self.errors.append('Config ERROR: "numTents" nicht gefunden')
             except ValueError:
                 self.errors.append(
-                    "Config ERROR: \"numTents\" => \"" + loc_config["numTents"] +
-                    "\" ist keine Zahl")
+                    'Config ERROR: "numTents" => "'
+                    + loc_config["numTents"]
+                    + '" ist keine Zahl'
+                )
             # parse ZL start
             try:
                 self.zl_start = loc_config["zlStart"]
             except KeyError:
-                self.errors.append("Config ERROR: \"zlStart\" nicht gefunden")
+                self.errors.append('Config ERROR: "zlStart" nicht gefunden')
 
             # parse calender url
             try:
                 self.calender_url = loc_config["calenderUrl"]
             except KeyError:
-                self.errors.append(
-                    "Config ERROR: \"calenderUrl\" nicht gefunden")
+                self.errors.append('Config ERROR: "calenderUrl" nicht gefunden')
