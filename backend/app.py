@@ -459,8 +459,9 @@ def generate_particpant_overview():
         participants_d, key=lambda x: (x.tent, x.lastname, x.firstname), reverse=False
     )
     merge_rows = []
-    for part in loc_sorted_participants:
+    for idx, part in enumerate(loc_sorted_participants):
         loc_row = {
+            "num": str(idx + 1),
             "tent": str(part.tent),
             "lastname": part.lastname,
             "firstname": part.firstname,
@@ -807,8 +808,9 @@ def generate_mat_list():
         participants_d, key=lambda x: (x.tent, x.lastname, x.firstname), reverse=False
     )
     merge_rows = []
-    for part in loc_sorted_participants:
+    for idx, part in enumerate(loc_sorted_participants):
         loc_row = {
+            "num": str(idx + 1),
             "tent": str(part.tent),
             "lastname": part.lastname,
             "firstname": part.firstname,
