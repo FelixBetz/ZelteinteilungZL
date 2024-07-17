@@ -26,6 +26,7 @@ from src.mailing import mailing_routes
 from src.tent_leaders.tent_leaders import parse_tent_leader
 import pathes as PATH
 
+YEAR = str(2024)
 
 tent_leaders = []
 participants_d = []
@@ -306,7 +307,7 @@ def generate_overall_list():
 
     create_dir_if_not_exist(PATH.GESAMT_LISTS)
     # sort by lastname, firstname
-    output_name = "2023_zeltlager_gesamtliste_sort_by_name"
+    output_name = YEAR + "_zeltlager_gesamtliste_sort_by_name"
     loc_sorted_participants = sorted(
         participants_d, key=lambda x: (x.lastname, x.firstname), reverse=False
     )
@@ -331,7 +332,7 @@ def generate_overall_list():
     )
 
     # sort by tent,lastname, firstname
-    output_name = "2023_zeltlager_gesamtliste_sort_by_tent"
+    output_name = YEAR + "_zeltlager_gesamtliste_sort_by_tent"
     loc_sorted_participants = sorted(
         participants_d, key=lambda x: (x.tent, x.lastname, x.firstname), reverse=False
     )
@@ -410,7 +411,7 @@ def generate_tent_leader_allocation():
         p_row = [str(i + 1), ",".join(tent["leaders"]), " " + str(tent["avg"]), ""]
         csv_rows.append(";".join(p_row) + "\n")
 
-    csv_path = loc_path + "2023_zeltlager_zeltverteilung" + ".csv"
+    csv_path = loc_path + YEAR + "_zeltlager_zeltverteilung" + ".csv"
     with open(
         csv_path,
         "w",
@@ -434,13 +435,13 @@ def generate_speacial_lists():
 
     rows_part = generate_participants_array(loc_sorted_participants)
 
-    output_name = "2023_zeltlager_sani_liste"
+    output_name = YEAR + "_zeltlager_sani_liste"
     generate_docx_and_pdf(
         output_name, PATH.SPECIAL_LISTS, "Sani", "liste.docx", rows_part
     )
     generate_csv(output_name, PATH.SPECIAL_LISTS, loc_sorted_participants, [])
 
-    output_name = "2023_zeltlager_suku_liste"
+    output_name = YEAR + "_zeltlager_suku_liste"
     generate_docx_and_pdf(
         output_name, PATH.SPECIAL_LISTS, "Suku", "liste.docx", rows_part
     )
@@ -462,7 +463,7 @@ def generate_particpant_overview():
         }
         merge_rows.append(loc_row)
 
-    output_name = "2023_uebersicht_teilnehmer.docx"
+    output_name = YEAR + "_uebersicht_teilnehmer.docx"
     document.merge_rows("lastname", merge_rows)
     document.write(PATH.OUTPUT_DIR_LISTS + output_name)
     convert(PATH.OUTPUT_DIR_LISTS + output_name)
@@ -528,7 +529,7 @@ def generate_grants_list():
             "fullname": fullname,
             "address": address,
             "birthdate": p.birthdate,
-            "date": "11.08. bis 18.08.2023",
+            "date": "02.08. bis 09.08.2024",
             "days": str(8),
         }
         mergeRow.append(tmp)
@@ -542,7 +543,7 @@ def generate_grants_list():
             "fullname": fullname,
             "address": address,
             "birthdate": p["Geburtsdatum"],
-            "date": "11.08. bis 18.08.2023",
+            "date": "02.08. bis 09.08.2024",
             "days": str(8),
         }
         mergeRow.append(tmp)
@@ -556,7 +557,7 @@ def generate_grants_list():
             "fullname": fullname,
             "address": address,
             "birthdate": p.birthdate,
-            "date": "10.08. bis 19.08.2023",
+            "date": "01.08. bis 11.08.2024",
             "days": str(10),
         }
         mergeRow.append(tmp)
@@ -579,7 +580,7 @@ def generate_grants_list():
             "fullname": fullname,
             "address": address,
             "birthdate": p.birthdate,
-            "date": "11.08. bis 18.08.2023",
+            "date": "02.08. bis 09.08.2024",
             "days": str(8),
         }
         mergeRow.append(tmp)
@@ -593,7 +594,7 @@ def generate_grants_list():
             "fullname": fullname,
             "address": address,
             "birthdate": p["Geburtsdatum"],
-            "date": "11.08. bis 18.08.2023",
+            "date": "02.08. bis 09.08.2024",
             "days": str(8),
         }
         mergeRow.append(tmp)
@@ -607,7 +608,7 @@ def generate_grants_list():
             "fullname": fullname,
             "address": address,
             "birthdate": p.birthdate,
-            "date": "10.08. bis 19.08.2023",
+            "date": "01.08. bis 10.08.2024",
             "days": str(10),
         }
         mergeRow.append(tmp)
@@ -684,13 +685,13 @@ def generate_tent_info():
             }
             ret_rows.append(loc_row)
 
-        output_name = "2023_zeltinfo" + str(tent_num).zfill(2) + ".docx"
+        output_name = YEAR + "_zeltinfo" + str(tent_num).zfill(2) + ".docx"
         document.merge_templates([{"tentNum": str(tent_num)}], separator="page_break")
         document.merge_rows("lastname", ret_rows)
         document.write(PATH.TENTS_LISTS + output_name)
         tent_files.append(PATH.TENTS_LISTS + output_name)
 
-    combinded_file_name = PATH.TENTS_LISTS + "2023_Zeltinfos.docx"
+    combinded_file_name = PATH.TENTS_LISTS + YEAR + "_Zeltinfos.docx"
     combine_word_documents(tent_files, combinded_file_name)
     convert(combinded_file_name)
 
@@ -723,13 +724,13 @@ def generate_tent_info():
             }
             ret_rows.append(loc_row)
 
-        output_name = "2023_zeltinfo_tisch" + str(tent_num).zfill(2) + ".docx"
+        output_name = YEAR + "_zeltinfo_tisch" + str(tent_num).zfill(2) + ".docx"
         document.merge_templates([{"tentNum": str(tent_num)}], separator="page_break")
         document.merge_rows("lastname", ret_rows)
         document.write(PATH.TENTS_LISTS + output_name)
         tent_files.append(PATH.TENTS_LISTS + output_name)
 
-    combinded_file_name = PATH.TENTS_LISTS + "2023_Zeltinfos_tisch.docx"
+    combinded_file_name = PATH.TENTS_LISTS + YEAR + "_Zeltinfos_tisch.docx"
     combine_word_documents(tent_files, combinded_file_name)
     convert(combinded_file_name)
 
@@ -778,7 +779,7 @@ def generate_arrival_list():
         }
         merge_rows.append(loc_row)
 
-    output_name = "2023_Ankunftsliste.docx"
+    output_name = YEAR + "_Ankunftsliste.docx"
     document.merge_rows("lastname", merge_rows)
     document.write(PATH.OUTPUT_DIR_LISTS + output_name)
     convert(PATH.OUTPUT_DIR_LISTS + output_name)
@@ -800,7 +801,7 @@ def generate_mat_list():
         }
         merge_rows.append(loc_row)
 
-    output_name = "2023_werkzeugmarke.docx"
+    output_name = YEAR + "_werkzeugmarke.docx"
     document.merge_rows("lastname", merge_rows)
     document.write(PATH.OUTPUT_DIR_LISTS + output_name)
     convert(PATH.OUTPUT_DIR_LISTS + output_name)
