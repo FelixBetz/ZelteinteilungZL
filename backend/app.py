@@ -672,7 +672,13 @@ def generate_tent_info():
         tent_participants = []
         tent_leader = []
 
-        for part in participants_d:
+        loc_sorted_participants = sorted(
+            participants_d,
+            key=lambda x: (x.tent, x.lastname, x.firstname),
+            reverse=False,
+        )
+
+        for part in loc_sorted_participants:
             if part.tent == tent_num:
                 tent_participants.append(part)
 
@@ -717,9 +723,14 @@ def generate_tent_info():
         document = MailMerge(PATH.LIST_TEMPLATE_DIR + "zeltinfos_tisch.docx")
         tent_participants = []
 
-        for p in participants_d:
-            if p.tent == tent_num:
+        loc_sorted_participants = sorted(
+            participants_d,
+            key=lambda x: (x.tent, x.lastname, x.firstname),
+            reverse=False,
+        )
 
+        for p in loc_sorted_participants:
+            if p.tent == tent_num:
                 tent_participants.append(p)
 
         ret_rows = []
