@@ -669,11 +669,15 @@ def generate_tent_info():
         pythoncom.CoInitialize()
         document = MailMerge(PATH.LIST_TEMPLATE_DIR + "zeltinfos.docx")
         tent_participants = []
+        tent_leader = []
 
         for part in participants_d:
             if part.tent == tent_num:
-
                 tent_participants.append(part)
+
+        for leader in tent_leaders:
+            if leader.tent == tent_num:
+                tent_leader.append(leader.get_fullname())
 
         ret_rows = []
 
@@ -693,7 +697,10 @@ def generate_tent_info():
             ret_rows.append(loc_row)
 
         output_name = YEAR + "_zeltinfo" + str(tent_num).zfill(2) + ".docx"
-        document.merge_templates([{"tentNum": str(tent_num)}], separator="page_break")
+        document.merge_templates(
+            [{"tentNum": str(tent_num), "leader": ", ".join(tent_leader)}],
+            separator="page_break",
+        )
         document.merge_rows("lastname", ret_rows)
         document.write(PATH.TENTS_LISTS + output_name)
         tent_files.append(PATH.TENTS_LISTS + output_name)
