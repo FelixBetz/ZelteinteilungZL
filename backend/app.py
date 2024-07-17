@@ -375,12 +375,7 @@ def generate_tent_leader_allocation():
     # generate array
     allocation = []
     for i in range(configs_d.num_tents):
-        allocation.append(
-            {
-                "leaders": [],
-                "age": [],
-            }
-        )
+        allocation.append({"leaders": [], "age": [], "haijk_person": []})
 
     # add participants to tents
     for part in participants_d:
