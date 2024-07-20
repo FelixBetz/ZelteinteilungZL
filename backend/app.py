@@ -403,6 +403,7 @@ def generate_tent_leader_allocation():
         "Zelt",
         "Zefü",
         "Durchschnittsalter",
+        "Anz. Teilnehmer",
         "Haijkbegleiter",
     ]
     csv_rows.append(";".join(csv_header) + "\n")
@@ -410,7 +411,8 @@ def generate_tent_leader_allocation():
         p_row = [
             str(i + 1),
             ",".join(tent["leaders"]),
-            " " + str(tent["avg"]),
+            str(tent["avg"]).replace(".",","),
+            str(len(allocation[i]["age"])),
             ",".join(tent["haijk_person"]),
         ]
         csv_rows.append(";".join(p_row) + "\n")
