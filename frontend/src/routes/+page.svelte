@@ -62,9 +62,9 @@
 
 	let tentAvgAge: TentAvg[] = [];
 
-	let notPaid: string[] = [];
-	let noPhotosAllowed: string[] = [];
-	let vegetarians: string[] = [];
+	let notPaid: cTentParticipant[] = [];
+	let noPhotosAllowed: cTentParticipant[] = [];
+	let vegetarians: cTentParticipant[] = [];
 
 	let loopedDates: DateGraphData[] = [];
 	let registeredDistibution: BarplotData[] = [];
@@ -142,13 +142,13 @@
 
 		pParticipants.forEach((p) => {
 			if (!p.paid) {
-				notPaid[notPaid.length] = p.getFullname();
+				notPaid[notPaid.length] = p;
 			}
 			if (p.is_vegetarian) {
-				vegetarians[vegetarians.length] = p.getFullname();
+				vegetarians[vegetarians.length] = p;
 			}
 			if (!p.is_photo_allowed) {
-				noPhotosAllowed[noPhotosAllowed.length] = p.getFullname();
+				noPhotosAllowed[noPhotosAllowed.length] = p;
 			}
 		});
 	}
@@ -561,7 +561,7 @@
 						{:else}
 							<ul>
 								{#each noPhotosAllowed as p}
-									<li>{p}</li>
+									<li>{p.getFullname()} (Zelt {p.tent})</li>
 								{/each}
 							</ul>
 						{/if}
@@ -580,7 +580,7 @@
 						{:else}
 							<ul>
 								{#each vegetarians as p}
-									<li>{p}</li>
+									<li>{p.getFullname()} (Zelt {p.tent})</li>
 								{/each}
 							</ul>
 						{/if}
@@ -612,7 +612,7 @@
 
 						<ul class={showNotPaid ? '' : 'collapse'}>
 							{#each notPaid as p}
-								<li>{p}</li>
+								<li>{p.getFullname()}</li>
 							{/each}
 						</ul>
 					</DashboardCard>
